@@ -1,0 +1,84 @@
+{
+  "1": {
+    "question": "Define Zoonosis.",
+    "answer": "Zoonosis refers to diseases or infections of vertebrate animals that are transmissible to humans under natural conditions.",
+    "code": "U-10",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List the classifications of zoonoses based on reservoir host.",
+    "answer": [
+      "Anthropozoonosis — transmitted to humans from lower vertebrates.",
+      "Zooanthroponosis — transmitted from humans to lower vertebrates.",
+      "Amphixenoses — maintained naturally in both humans and lower vertebrates."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "3": {
+    "question": "List the classifications of zoonoses based on the lifecycle of the infecting agent.",
+    "answer": [
+      "Direct Zoonoses — transmitted directly between vertebrates (e.g., Rabies, Brucellosis).",
+      "Cyclozoonoses — require more than one vertebrate but no invertebrate host (e.g., Taeniasis, Echinococcosis).",
+      "Metazoonoses — transmitted biologically via invertebrate vectors (e.g., Plague, Schistosomiasis).",
+      "Saprozoonoses — involve both animal and non-animal reservoirs (e.g., Larva migrans, Mycoses)."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "4": {
+    "question": "List the main modes of transmission of zoonoses.",
+    "answer": [
+      "Consumption of infected animal products (e.g., Taeniasis).",
+      "Vector transmission from animals to humans (e.g., Plague, Viral encephalitis).",
+      "Animal bites (e.g., Rabies).",
+      "Environmental or food contamination (e.g., Salmonellosis)."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "5": {
+    "question": "What are the principal components of zoonotic disease control?",
+    "answer": [
+      "Control in animals.",
+      "Control of vehicles of transmission.",
+      "Prevention and treatment in humans."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "6": {
+    "question": "List measures for controlling zoonoses in animals.",
+    "answer": [
+      "Diagnosis and treatment of infected animals.",
+      "Quarantine of affected animals.",
+      "Immunization.",
+      "Destruction of infected animals when necessary."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "7": {
+    "question": "List measures for controlling vehicles of zoonotic transmission.",
+    "answer": [
+      "Enforce food hygiene practices.",
+      "Ensure safety of animal products (wool, hides, skins, bones, fat).",
+      "Proper disposal of carcasses and waste.",
+      "Implement disinfection and sanitation procedures."
+    ],
+    "code": "U-10",
+    "type": "list"
+  },
+  "8": {
+    "question": "List preventive and treatment measures for zoonoses in humans.",
+    "answer": [
+      "Immunization and chemoprophylaxis for high-risk groups.",
+      "Occupational health monitoring.",
+      "Health education and prevention of spread.",
+      "Prevention of environmental contamination.",
+      "Improved diagnostic facilities and early treatment."
+    ],
+    "code": "U-10",
+    "type": "list"
+  }
+}

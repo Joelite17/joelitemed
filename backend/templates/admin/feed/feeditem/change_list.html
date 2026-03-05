@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="send-digest/" class="button" style="background-color: #10b981; color: white; font-weight: bold;">
+            📬 Send Daily Digest Now
+        </a>
+    </li>
+    {{ block.super }}
+{% endblock %}

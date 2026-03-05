@@ -1,0 +1,86 @@
+{
+  "1": {
+    "question": "Define tuberculosis (TB).",
+    "answer": "Chronic infectious disease caused by Mycobacterium tuberculosis affecting almost any organ.",
+    "code": "U-07",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List the causative organisms of TB.",
+    "answer": ["Mycobacterium tuberculosis", "Mycobacterium bovis", "Mycobacterium africanum", "Mycobacterium kansasii", "Mycobacterium ulcerans", "Mycobacterium avium-intracellulare"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "3": {
+    "question": "List the main routes of transmission of TB.",
+    "answer": ["Inhalation of droplets from infected sputum", "About 10% of infected individuals develop active disease"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "4": {
+    "question": "What is the incubation period of TB?",
+    "answer": "4–8 weeks",
+    "code": "U-07",
+    "type": "plain"
+  },
+  "5": {
+    "question": "Classify TB by site.",
+    "answer": ["Pulmonary", "Extrapulmonary"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "6": {
+    "question": "Classify TB by smear result.",
+    "answer": ["Smear-positive", "Smear-negative"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "7": {
+    "question": "Classify TB by resistance.",
+    "answer": ["Non-resistant", "Mono-resistant", "Multidrug-resistant", "Extensively drug-resistant"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "8": {
+    "question": "List the categories of TB patients.",
+    "answer": ["New case", "Relapse", "Treatment failure", "Return after default", "Transfer-in"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "9": {
+    "question": "List the clinical features of TB.",
+    "answer": ["Cough >3 weeks", "Weight loss", "Chest pain", "Low-grade fever", "Night sweats", "Difficulty breathing", "Hemoptysis", "Wasting, nasal flaring, signs of consolidation"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "10": {
+    "question": "List the main diagnostic methods for TB.",
+    "answer": ["Clinical assessment", "Radiological and immunological tests", "Laboratory testing (GeneXpert, drug sensitivity tests)"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "11": {
+    "question": "List the components of the DOTS treatment strategy.",
+    "answer": ["Government commitment and financial support", "Standardized sputum microscopy for diagnosis", "Supervised standardized treatment", "Reliable supply of drugs and reagents", "Standardized recording and monitoring"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "12": {
+    "question": "List the standard TB treatment regimen.",
+    "answer": ["Intensive phase (2 months): Rifampicin, Isoniazid, Pyrazinamide, Ethambutol", "Continuation phase (4 months): Rifampicin, Isoniazid"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "13": {
+    "question": "List the multidrug-resistant TB regimen.",
+    "answer": ["Intensive phase (8 months): Kanamycin (or similar), Levofloxacin, Cycloserine, Prothionamide, Pyrazinamide", "Continuation phase (12 months): Levofloxacin, Cycloserine, Prothionamide, Pyrazinamide", "Add Pyridoxine"],
+    "code": "U-07",
+    "type": "list"
+  },
+  "14": {
+    "question": "List the key control measures for TB.",
+    "answer": ["Early case detection and adequate treatment", "Continuous monitoring to ensure cure", "BCG vaccination for all newborns", "Health education and promotion", "Preventive treatment for children under 5 years testing positive but asymptomatic", "Preventive treatment for newborns of mothers with active TB not yet treated", "Preventive treatment for HIV-positive individuals without active disease"],
+    "code": "U-07",
+    "type": "list"
+  }
+}

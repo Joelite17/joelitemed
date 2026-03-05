@@ -1,0 +1,120 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+  <style>
+    .upload-form {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #e5e5e5;
+      box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    }
+    .form-row {
+      margin-bottom: 20px;
+    }
+    .form-row label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .form-row input[type="text"],
+    .form-row input[type="file"],
+    .form-row select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .help {
+      font-size: 0.9em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+    }
+    .checkbox-row input {
+      width: auto;
+      margin-right: 8px;
+    }
+    .json-example {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9em;
+      white-space: pre-wrap;
+    }
+    .submit-row {
+      text-align: right;
+      padding: 10px 0;
+      border-top: 1px solid #eee;
+      margin-top: 20px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="upload-form">
+    <h1>{% trans "Upload Flashcard JSON" %}</h1>
+
+    <div class="help">
+      <p>Upload one or more JSON files containing flashcards. The JSON should follow this format:</p>
+      <div class="json-example">
+[
+  {
+    "META_DATA": {
+      "COURSE": "COMMED",
+      "TITLE": "EPIDEMIOLOGY AND CONTROL OF AIR-BORNE INFECTIONS"
+    }
+  },
+  {
+    "1": {
+      "question": "List viral agents of air-borne infections.",
+      "answer": ["Measles", "Mumps", "Chickenpox"],
+      "code": "U-01",
+      "type": "list"
+    }
+  },
+  {
+    "2": {
+      "question": "List bacterial agents of air-borne infections.",
+      "answer": ["Tuberculosis", "Cerebrospinal Meningitis"],
+      "code": "U-01",
+      "type": "list"
+    }
+  }
+]
+      </div>
+      <p>✅ Arrays will be displayed as numbered lists on the frontend.</p>
+      <p><strong>Note:</strong> The <code>COURSE</code> field is mapped to Medicine, Surgery, or Community Medicine.</p>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <label for="id_json_files">JSON Files:</label>
+        <input type="file" name="json_files" id="id_json_files" multiple accept=".json,application/json" required>
+        <div class="help">Select one or more JSON files. Each file will create a separate flashcard set.</div>
+      </div>
+
+      <div class="form-row checkbox-row">
+        {{ form.overwrite }}
+        <label for="id_overwrite">Overwrite existing sets with same title</label>
+        <div class="help" style="margin-left:20px;">{{ form.overwrite.help_text }}</div>
+      </div>
+
+      <div class="submit-row">
+        <input type="submit" value="Upload and Create Flashcard Sets" class="default">
+        <a href="{% url 'admin:flashcards_flashcardset_changelist' %}" class="button">Cancel</a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

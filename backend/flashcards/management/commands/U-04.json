@@ -1,0 +1,110 @@
+{
+  "1": {
+    "question": "Define onchocerciasis.",
+    "answer": "A chronic parasitic nematodal infection caused by Onchocerca volvulus, characterized by skin changes, subcutaneous nodules, ocular lesions, lymphatic pathology, and systemic effects.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List African vectors of onchocerciasis.",
+    "answer": ["Simulium damnosum", "Simulium naevi"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "3": {
+    "question": "List Central American vectors of onchocerciasis.",
+    "answer": ["Simulium metallicum", "Simulium callichum", "Simulium ochraceum"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "4": {
+    "question": "Describe the mechanism of transmission of onchocerciasis.",
+    "answer": ["Biting Simulium injects larvae into human skin", "Larvae penetrate subcutaneous lymphatics and develop into adult worms in skin and nodules", "Adult worms live 10–15 years", "Larvae in insect measure 6–30 mm", "Microfilariae develop into infective larvae in 6–8 days and migrate to the proboscis"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "5": {
+    "question": "State the incubation period of onchocerciasis.",
+    "answer": "Approximately 1 year before microfilariae appear in the skin.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "6": {
+    "question": "List high endemic areas of onchocerciasis in Africa.",
+    "answer": ["West Africa", "Equatorial Africa", "East Africa", "Sudan"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "7": {
+    "question": "State the geographic correlation of ocular and skin disease.",
+    "answer": ["Savanna: Ocular disease more common", "Rainforest: Skin lesions more common"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "8": {
+    "question": "List breeding sites of Simulium flies.",
+    "answer": ["Fast-flowing, highly oxygenated rivers with submerged vegetation and stones"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "9": {
+    "question": "Which host factors increase infection risk?",
+    "answer": ["Male gender (e.g., fishermen)", "Increasing age"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "10": {
+    "question": "What is the common site of Simulium bites in Africa and Central America?",
+    "answer": ["Africa: lower body", "Central America: head"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "11": {
+    "question": "List major clinical manifestations of onchocerciasis.",
+    "answer": ["Intense itching", "Leopard skin (hyperpigmentation)", "Lizard/Elephant/Presbydermis skin changes", "Subcutaneous nodules (Onchocercomata)", "Ocular lesions leading to visual impairment or blindness", "Lymphadenopathy", "Lymphedema", "Hydrocele", "Hanging groin", "Skin atrophy"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "12": {
+    "question": "List ocular lesions seen in onchocerciasis.",
+    "answer": ["Fluffy corneal opacity", "Sclerosing keratitis", "Anterior uveitis", "Optic neuritis", "Post-neuritic optic nerve atrophy", "Chorioretinitis"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "13": {
+    "question": "List drugs used in the treatment of onchocerciasis.",
+    "answer": ["Diethylcarbamazine", "Suramin"],
+    "code": "U-04",
+    "type": "list"
+  },
+  "14": {
+    "question": "Why is Diethylcarbamazine rarely used in onchocerciasis treatment?",
+    "answer": "Because it causes a severe allergic reaction known as the Mazzotti reaction due to rapid death of microfilariae.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "15": {
+    "question": "Why is Suramin rarely used in onchocerciasis treatment?",
+    "answer": "Because it is highly toxic, though effective against adult worms.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "16": {
+    "question": "Why is Ivermectin taken for 10–15 years?",
+    "answer": "Because adult Onchocerca volvulus worms have a lifespan of 10–15 years, requiring repeated dosing until they die naturally.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "17": {
+    "question": "Why may nodulectomy not be recommended as a control measure?",
+    "answer": "Because not all adult worms are encapsulated in nodules, making it an incomplete and limited method of control.",
+    "code": "U-04",
+    "type": "plain"
+  },
+  "18": {
+    "question": "List methods for epidemiological assessment of onchocerciasis.",
+    "answer": ["Nodule palpation in 50 adult males (Rapid Epidemiological Assessment)", "Rapid Epidemiological Mapping of Onchocerciasis (REMO) by sampling 2–4% of potential endemic villages"],
+    "code": "U-04",
+    "type": "list"
+  }
+}

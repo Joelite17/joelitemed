@@ -1,0 +1,179 @@
+{
+  "1": {
+    "question": "What viral family do HIV-1 and HIV-2 belong to?",
+    "answer": "Retroviridae",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "2": {
+    "question": "When was HIV/AIDS first recognized globally or first reported in Nigeria?",
+    "answer": "1981 globally, 1986 in Nigeria",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "3": {
+    "question": "Is HIV/AIDS endemic, epidemic, or pandemic?",
+    "answer": "Pandemic",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "4": {
+    "question": "List the two major transmission patterns of HIV/AIDS globally.",
+    "answer": [
+      "Pattern I: Seen in developed countries — mainly among homosexual/bisexual men and intravenous drug users, with limited heterosexual spread and near elimination of blood-borne transmission.",
+      "Pattern II: Seen in Africa, Caribbean, and Asia — mainly through heterosexual, perinatal, and blood/product transmission."
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "5": {
+    "question": "What is the disease in the Initial Stage of HIV infection?",
+    "answer": "Acute infection",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "6": {
+    "question": "What is the disease in the Intermediate Stage of HIV infection?",
+    "answer": "Asymptomatic infection or AIDS-related complex (ARC)",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "7": {
+    "question": "What is the disease in the Late Stage of HIV infection?",
+    "answer": "Full-blown AIDS",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "8": {
+    "question": "List the major clinical signs used in HIV case definition in the absence of testing.",
+    "answer": [
+      "Weight loss >10% body weight",
+      "Chronic diarrhea >1 month",
+      "Prolonged fever >1 month (intermittent or constant)"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "9": {
+    "question": "List the minor clinical signs used in HIV case definition in the absence of testing.",
+    "answer": [
+      "Persistent cough >1 month",
+      "Generalized pruritic dermatitis",
+      "Recurrent herpes zoster",
+      "Oropharyngeal candidiasis",
+      "Chronic or disseminated herpes simplex infection",
+      "Generalized lymphadenopathy"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "10": {
+    "question": "What WHO stage does this cluster belong to: Asymptomatic with generalized lymphadenopathy?",
+    "answer": "Stage I",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "11": {
+    "question": "What WHO stage does this cluster belong to: Weight loss <10% body weight, minor mucocutaneous manifestations, herpes zoster in last 5 years, recurrent upper respiratory infections?",
+    "answer": "Stage II",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "12": {
+    "question": "What WHO stage does this cluster belong to: Weight loss >10% body weight, unexplained diarrhea >1 month, unexplained prolonged fever >1 month, thrush, pulmonary tuberculosis within past year, severe bacterial infection?",
+    "answer": "Stage III",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "13": {
+    "question": "What WHO stage does this cluster belong to: HIV wasting syndrome, chronic diarrhea, chronic weakness, prolonged fever, opportunistic infections?",
+    "answer": "Stage IV",
+    "code": "U-09",
+    "type": "plain"
+  },
+  "14": {
+    "question": "What is the improved WHO clinical staging incorporating CD4 or lymphocyte counts?",
+    "answer": [
+      "A (>2000 lymphocytes / >500 CD4): Stage 1A, 2A, 3A, 4A",
+      "B (1000–2000 lymphocytes / 200–500 CD4): Stage 1B, 2B, 3B, 4B",
+      "C (<1000 lymphocytes / <200 CD4): Stage 1C, 2C, 3C, 4C"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "15": {
+    "question": "List the laboratory diagnostic tests for HIV.",
+    "answer": [
+      "Antibody tests — ELISA, Rapid test, Western blot (confirmatory)",
+      "Antigen detection — Viral culture, DNA PCR, RNA PCR (Viral load, most sensitive)"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "16": {
+    "question": "List the four main classes of antiretroviral drugs or give examples of each.",
+    "answer": [
+      "Reverse Transcriptase Inhibitors (RTIs): NRTIs — Zidovudine, Lamivudine, Stavudine, Abacavir; NNRTIs — Nevirapine, Efavirenz, Delaviridine; NTRTIs — Tenofovir",
+      "Protease Inhibitors (PIs): Saquinavir, Ritonavir, Atazanavir",
+      "Entry Inhibitors: Maraviroc, Enfuvirtide",
+      "Integrase Inhibitors: Raltegravir"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "17": {
+    "question": "Explain the mechanism of action of the main antiretroviral drug classes.",
+    "answer": [
+      "RTIs — block reverse transcription (DNA synthesis)",
+      "NNRTIs — bind to reverse transcriptase and inhibit its function",
+      "PIs — inhibit protease enzyme preventing viral assembly",
+      "Entry inhibitors — prevent viral fusion and entry",
+      "Integrase inhibitors — block integration of viral DNA into host genome",
+      "Maturation inhibitors — block gag cleavage",
+      "CCR5 antagonists — block viral attachment to T-cells"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "18": {
+    "question": "List the first-line, second-line, or third-line drugs for HIV management in Nigeria.",
+    "answer": [
+      "First line: Two NRTIs + one NNRTI (Zidovudine, Lamivudine, Stavudine, Nevirapine, Efavirenz). Dolutegravir now added due to resistance",
+      "Second and third line: Selected based on resistance profiles"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "19": {
+    "question": "Describe the preventive therapies for HIV-positive individuals.",
+    "answer": [
+      "Isoniazid Preventive Therapy (IPT): Used to prevent tuberculosis in HIV-positive individuals",
+      "Cotrimoxazole Preventive Therapy (CPT): Used to prevent secondary bacterial and parasitic infections"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "20": {
+    "question": "List the indications for Cotrimoxazole Preventive Therapy (CPT) in HIV-positive individuals.",
+    "answer": [
+      "Symptomatic HIV",
+      "Low TLC/CD₄⁺",
+      "Tuberculosis",
+      "Pregnancy (after 1st trimester)",
+      "HIV-positive child",
+      "HIV-exposed infant"
+    ],
+    "code": "U-09",
+    "type": "list"
+  },
+  "21": {
+    "question": "List the main preventive measures against HIV/AIDS.",
+    "answer": [
+      "General health promotion — health education and universal precautions",
+      "Specific protection — prevention of mother-to-child transmission (PMTCT) and post-exposure prophylaxis (PEP)",
+      "Early diagnosis and treatment — voluntary counseling and testing (VCT)"
+    ],
+    "code": "U-09",
+    "type": "list"
+  }
+}

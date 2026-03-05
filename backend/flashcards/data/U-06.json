@@ -1,0 +1,62 @@
+{
+  "1": {
+    "question": "Define leprosy.",
+    "answer": "Chronic infectious disease caused by Mycobacterium leprae affecting the skin, peripheral nerves, cornea, mucosa of the upper respiratory tract (URT), and eyes.",
+    "code": "U-06",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List the main routes of transmission of leprosy.",
+    "answer": ["Person-to-person contact", "Respiratory route"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "3": {
+    "question": "Classify leprosy based on bacterial load.",
+    "answer": ["Paucibacillary (PB)", "Multibacillary (MB)"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "4": {
+    "question": "List the subclasses of Paucibacillary leprosy.",
+    "answer": ["Tuberculoid (TT)", "Borderline Tuberculoid (BT)"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "5": {
+    "question": "List the subclasses of Multibacillary leprosy.",
+    "answer": ["Borderline Lepromatous (BL)", "Lepromatous (LL)"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "6": {
+    "question": "List the main diagnostic methods for leprosy.",
+    "answer": ["Laboratory & skin smear", "Nerve biopsy", "Lepromin test", "Histamine test"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "7": {
+    "question": "List drugs used for treatment of Multibacillary leprosy.",
+    "answer": ["Rifampicin", "Dapsone", "Clofazimine"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "8": {
+    "question": "List drugs used for treatment of Paucibacillary leprosy.",
+    "answer": ["Rifampicin", "Dapsone"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "9": {
+    "question": "List drugs used for treatment of single skin lesion leprosy.",
+    "answer": ["Rifampicin", "Ofloxacin", "Aminocycline"],
+    "code": "U-06",
+    "type": "list"
+  },
+  "10": {
+    "question": "List the key control measures for leprosy.",
+    "answer": ["Treatment", "Case finding", "Health education", "Vaccination (BCG)", "Chemoprophylaxis", "Management of children born to infected mothers", "Environmental sanitation and personal hygiene"],
+    "code": "U-06",
+    "type": "list"
+  }
+}

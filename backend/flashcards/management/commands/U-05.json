@@ -1,0 +1,146 @@
+{
+  "1": {
+    "question": "Define Trypanosomiasis.",
+    "answer": "A disease caused by the blood and tissue parasite Trypanosoma, transmitted by insect vectors.",
+    "code": "TR-01",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List the main types of Trypanosomiasis.",
+    "answer": ["African Trypanosomiasis (Sleeping Sickness)", "South American Trypanosomiasis (Chagas’ Disease)"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "3": {
+    "question": "Name the causative agents of African Trypanosomiasis.",
+    "answer": ["T. b. gambiense", "T. b. rhodesiense"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "4": {
+    "question": "What is the vector for African Trypanosomiasis?",
+    "answer": "Tsetse fly (Glossina spp.)",
+    "code": "TR-01",
+    "type": "plain"
+  },
+  "5": {
+    "question": "State the incubation periods for African Trypanosomiasis.",
+    "answer": ["Intrinsic: 2–3 weeks (up to 6 years)", "Extrinsic: ~3 weeks in tsetse fly"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "6": {
+    "question": "List reservoirs and hosts for African Trypanosomiasis.",
+    "answer": ["T. b. gambiense: Humans", "T. b. rhodesiense: Humans, bushbuck, lion, cattle"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "7": {
+    "question": "List host factors influencing African Trypanosomiasis.",
+    "answer": ["Sporadic at <50/km²", "Epidemic at ~500/km²", "Declines at higher densities", "Males more affected in endemic conditions", "Epidemics affect both sexes and children equally"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "8": {
+    "question": "List clinical features of T. b. rhodesiense.",
+    "answer": ["Abrupt onset", "High and swinging fever", "Effusion, hepatitis, myocarditis", "Macular or petechial rash", "Drowsiness, tremors, coma, death", "Duration: Weeks–months", "Parasitemia: Numerous in blood"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "9": {
+    "question": "List clinical features of T. b. gambiense.",
+    "answer": ["Insidious onset", "Low-grade fever", "Lymphadenopathy", "Erythematous, circinate rash", "Headache, insomnia, daytime sleepiness, tremors, paresis, wasting, coma", "Duration: Months–years", "Parasitemia: Numerous in lymph fluid"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "10": {
+    "question": "List drugs used for chemotherapy of African Trypanosomiasis.",
+    "answer": ["Pentamidine (early T. b. gambiense)", "Melarsoprol (CNS involvement, all forms)", "Eflornithine (DFMO, Melarsoprol-resistant T. b. gambiense)"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "11": {
+    "question": "List diagnostic methods for African Trypanosomiasis.",
+    "answer": ["Microscopy: Blood (rhodesiense), lymph node aspirate (gambiense), CSF", "Serology: FAT, IHA, CATT", "IgG: Usually elevated"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "12": {
+    "question": "List the main control principles of African Trypanosomiasis.",
+    "answer": ["Surveillance / Case Detection", "Chemotherapy", "Vector Control"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "13": {
+    "question": "List measures for individual protection against tsetse fly.",
+    "answer": ["Wear protective clothing", "Use vehicle gauze screens", "Apply insect repellents"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "14": {
+    "question": "List vector-directed control measures.",
+    "answer": ["Ground or area spraying", "Organized settlement", "Biological control (sterile male flies)", "Insecticide-impregnated traps/screens"],
+    "code": "TR-01",
+    "type": "list"
+  },
+  "15": {
+    "question": "Name the causative agent of Chagas’ Disease.",
+    "answer": "Trypanosoma cruzi",
+    "code": "U-05",
+    "type": "plain"
+  },
+  "16": {
+    "question": "List the transmission routes of Chagas’ Disease.",
+    "answer": ["Contaminated Reduviid bug feces", "Blood transfusion", "Transplacental", "Laboratory accidents"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "17": {
+    "question": "State the incubation period of Chagas’ Disease.",
+    "answer": "Approximately 2 weeks",
+    "code": "U-05",
+    "type": "plain"
+  },
+  "18": {
+    "question": "List reservoirs for Chagas’ Disease.",
+    "answer": ["Humans", "Multiple animal species"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "19": {
+    "question": "List vectors of Chagas’ Disease.",
+    "answer": ["Triatoma", "Panstrongylus", "Rhodnius (night-biting, mud huts)"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "20": {
+    "question": "List clinical features of acute Chagas’ Disease.",
+    "answer": ["Chagoma (swelling at entry site)", "Regional lymphadenopathy (Winterbottom’s sign)", "Romana’s sign (unilateral periorbital swelling)", "Fever", "Hepatosplenomegaly", "Neurological signs"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "21": {
+    "question": "List clinical features of chronic Chagas’ Disease.",
+    "answer": ["Enteromegaly (megacolon, megaesophagus)", "Myocarditis, cardiomyopathy", "Arrhythmias, heart block"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "22": {
+    "question": "List diagnostic methods for Chagas’ Disease.",
+    "answer": ["Microscopy: Blood films, lymph nodes, CSF", "Serology: Immunofluorescence, ELISA", "PCR (if available)"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "23": {
+    "question": "List individual control measures for Chagas’ Disease.",
+    "answer": ["Avoid mud houses", "Screen blood donors in endemic regions", "Add Gentian Violet to stored blood if screening unavailable"],
+    "code": "U-05",
+    "type": "list"
+  },
+  "24": {
+    "question": "List vector control measures for Chagas’ Disease.",
+    "answer": ["Replace mud huts with improved housing", "Large-scale pyrethroid spraying (e.g., Deltamethrin)", "Use fumigants and residual insecticides", "Promote community-based vigilance"],
+    "code": "U-05",
+    "type": "list"
+  }
+}

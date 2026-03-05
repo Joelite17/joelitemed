@@ -1,0 +1,104 @@
+{
+  "1": {
+    "question": "Define an arthropod.",
+    "answer": "An animal belonging to the phylum Arthropoda, characterized by a bilaterally symmetrical segmented body, thickened exoskeleton, jointed appendages, and absence of cilia.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "2": {
+    "question": "List the classes of arthropods of medical importance.",
+    "answer": ["Arachnida (ticks, mites)", "Crustacea (Cyclops)", "Insecta (mosquitoes, flies, fleas)", "Myriapoda", "Pentastomida"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "3": {
+    "question": "List important arthropod vectors.",
+    "answer": ["Flies", "Mosquitoes", "Fleas", "Ticks", "Mites"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "4": {
+    "question": "List examples of arthropod-borne viral infections (arboviruses).",
+    "answer": ["Yellow Fever", "Dengue Fever", "Zika Virus Infection", "Chikungunya"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "5": {
+    "question": "List examples of arthropod-borne bacterial infections.",
+    "answer": ["Plague (Yersinia pestis)", "Tick-borne Relapsing Fever (Borrelia duttoni)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "6": {
+    "question": "List examples of arthropod-borne protozoal infections.",
+    "answer": ["Malaria (Plasmodium species)", "African Trypanosomiasis (Trypanosoma gambiense, Trypanosoma rhodesiense)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "7": {
+    "question": "List examples of arthropod-borne helminthic infections.",
+    "answer": ["Filariasis (Wuchereria bancrofti, Brugia malayi)", "Onchocerciasis (Onchocerca volvulus)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "8": {
+    "question": "List the transmission routes from vector to host.",
+    "answer": ["Inoculation (e.g., malaria)", "Contamination via mucous membranes or broken skin (e.g., Chagas disease, louse-borne relapsing fever)", "Ingestion (e.g., Guinea worm disease)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "9": {
+    "question": "What is an anthropophilic vector?",
+    "answer": "A vector that prefers biting humans.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "10": {
+    "question": "What is a zoophilic vector?",
+    "answer": "A vector that prefers biting animals.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "11": {
+    "question": "Give an example of why certain mosquitoes are attracted to specific individuals.",
+    "answer": "Attraction is influenced by pheromones or differences in body odor.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "12": {
+    "question": "Explain immunity after exposure to Yellow Fever Virus.",
+    "answer": "Previous exposure confers lifelong immunity.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "13": {
+    "question": "Explain cross-protection in Group B arboviruses.",
+    "answer": "Infection with one virus may provide partial immunity against related viruses.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "14": {
+    "question": "Explain immunity in plague infection.",
+    "answer": "Immunity is temporary and incomplete.",
+    "code": "U-02",
+    "type": "plain"
+  },
+  "15": {
+    "question": "List control measures targeting the infective agent.",
+    "answer": ["Destruction of animal reservoirs (e.g., rats for plague)", "Isolation and treatment of infected persons (e.g., nursing Yellow Fever patients in screened wards or under mosquito nets)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "16": {
+    "question": "List control measures targeting transmission.",
+    "answer": ["Use mechanical barriers (house screening, mosquito nets, protective clothing)", "Eliminate vector breeding and resting sites", "Trap, collect, and destroy adult arthropods", "Apply insecticides", "Biological control (e.g., Bacillus thuringiensis)"],
+    "code": "U-02",
+    "type": "list"
+  },
+  "17": {
+    "question": "List control measures targeting host factors.",
+    "answer": ["Immunization (e.g., Yellow Fever Vaccine)", "Chemoprophylaxis (e.g., Intermittent Preventive Treatment for malaria)"],
+    "code": "U-02",
+    "type": "list"
+  }
+}

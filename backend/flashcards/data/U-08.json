@@ -1,0 +1,80 @@
+{
+  "1": {
+    "question": "Define STIs/STDs.",
+    "answer": "A group of infections primarily transmitted through sexual contact; previously called Veneral Diseases. Some can be transmitted through other routes.",
+    "code": "U-08",
+    "type": "plain"
+  },
+  "2": {
+    "question": "Classify STIs/STDs according to causative organism.",
+    "answer": [
+      "Bacterial STIs (e.g., Gonorrhea, Chancre, Granuloma Inguinale, Syphilis)",
+      "Viral STIs (e.g., HIV/AIDS, Hepatitis B, Genital Herpes, Genital Warts, CMV Infection)",
+      "Parasitic STIs (e.g., Trichomoniasis, Scabies, Pubic Louse)",
+      "Fungal STIs (e.g., Candidiasis, Tinea pubis)",
+      "Chlamydia & related infections (e.g., Non-specific genital infections, Lymphogranuloma venereum)"
+    ],
+    "code": "U-08",
+    "type": "list"
+  },
+  "3": {
+    "question": "Describe the gender differences in incidence and morbidity of STIs/STDs.",
+    "answer": "STIs/STDs are generally higher in males, though morbidity is greater in females.",
+    "code": "U-08",
+    "type": "plain"
+  },
+  "4": {
+    "question": "List factors affecting STI incidence.",
+    "answer": [
+      "Socioeconomic factors (e.g., poverty, poor hygiene)",
+      "Sociocultural factors (marital status, family disruption, change in norms, ignorance, occupation, alcoholism, Greater availability of contraception, Inadequate personality)"
+      
+    ],
+    "code": "U-08",
+    "type": "list"
+  },
+  "5": {
+    "question": "List the main routes of STI transmission.",
+    "answer": [
+      "Genital contact",
+      "Extragenital sexual contact",
+      "Non-sexual transmission (e.g., MTCT of HIV, syphilis, ophthalmia neonatorum)",
+      "Accidental contact by healthcare personnel",
+      "Fomites (e.g., soiled towels)",
+      "Blood and blood products"
+    ],
+    "code": "U-08",
+    "type": "list"
+  },
+  "6": {
+    "question": "List agent-level control measures for STIs.",
+    "answer": [
+      "Screening of sexually active persons",
+      "Voluntary counseling & testing (with chemotherapy for HIV)",
+      "Early diagnosis & treatment"
+    ],
+    "code": "U-08",
+    "type": "list"
+  },
+  "7": {
+    "question": "List transmission-level control measures for STIs.",
+    "answer": [
+      "Health (sex) education",
+      "Local protection (e.g., condom use, genital hygiene)",
+      "Legislation against prostitution or supervision of licensed brothels",
+      "Provision of facilities (e.g., manned quarters in work camps)"
+    ],
+    "code": "U-08",
+    "type": "list"
+  },
+  "8": {
+    "question": "List host-level control measures for STIs.",
+    "answer": [
+      "Specific prophylaxis (e.g., Hepatitis B immunization, PEP)",
+      "Diagnosis & treatment facilities should be accessible, available, affordable",
+      "Contact tracing (including cluster tracing if needed)"
+    ],
+    "code": "U-08",
+    "type": "list"
+  }
+}

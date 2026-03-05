@@ -1,0 +1,80 @@
+{
+  "1": {
+    "question": "Define rabies.",
+    "answer": "An infection caused by the rabies virus, producing fatal inflammation of the brain in humans.",
+    "code": "U-03",
+    "type": "plain"
+  },
+  "2": {
+    "question": "What is the incubation period of rabies?",
+    "answer": "Usually 3–8 weeks, but it may range from 4 days to several years after exposure.",
+    "code": "U-03",
+    "type": "plain"
+  },
+  "3": {
+    "question": "Where is rabies most common and where is it not endemic?",
+    "answer": ["Most common: South East Asia, Africa, Europe", "Not endemic: Great Britain, Australia, New Zealand, Scandinavia, West Indies, Pacific Islands"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "4": {
+    "question": "List the main modes of transmission of rabies.",
+    "answer": ["Animal bites (dogs, foxes)", "Licking of abraded skin or mucous membranes", "Inhalation of aerosolized virus in caves or labs", "Person-to-person transmission (rare)"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "5": {
+    "question": "List the clinical features of rabies.",
+    "answer": ["Anxiety and nervousness", "Difficulty swallowing due to painful throat spasms (hydrophobia)", "Intolerance to noise, bright light, or cold air (aerophobia)", "Convulsions", "Muscular paralysis and progressive coma"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "6": {
+    "question": "Describe furious rabies in dogs.",
+    "answer": "The dog is restless, aggressive, or unusually friendly, may have a chopped jaw, and drooling of saliva.",
+    "code": "U-03",
+    "type": "plain"
+  },
+  "7": {
+    "question": "Describe dumb rabies in dogs.",
+    "answer": "The dog is comatose and paralyzed.",
+    "code": "U-03",
+    "type": "plain"
+  },
+  "8": {
+    "question": "List laboratory methods for rabies diagnosis.",
+    "answer": ["Transport decapitated head under refrigeration for identification of Negri bodies", "Fluorescent antibody testing for rapid viral antigen detection"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "9": {
+    "question": "List control measures for pets and animals to prevent rabies.",
+    "answer": ["Vaccination and collar identification of pets", "Registration and licensing of dogs", "Restraining dogs in public places", "Elimination of stray dogs", "Quarantine of imported dogs for six months", "Control wildlife rabies using oral vaccine baits", "Avoid infected caves"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "10": {
+    "question": "What is pre-exposure rabies vaccination and who should receive it?",
+    "answer": "Vaccination given to veterinarians, laboratory staff, hunters, animal handlers, and wildlife officers on days 0, 7, and 28; serum antibody tested after one month; boosters given if antibody <0.5 IU/ml and while at risk.",
+    "code": "U-03",
+    "type": "plain"
+  },
+  "11": {
+    "question": "Describe post-exposure rabies vaccination.",
+    "answer": ["Take history of exposure (dog vaccination status, bite site, provoked/unprovoked)", "Local wound treatment; administer tetanus toxoid if deep", "Administer human rabies immunoglobulin", "Rabies vaccine on days 0, 3, 7, 14, 28; booster on day 90 if immunoglobulin given"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "12": {
+    "question": "How should the dog be observed after a bite?",
+    "answer": ["Observe for 10 days", "If alive, vaccination may stop", "If dies naturally, complete immunization and send specimen for diagnosis"],
+    "code": "U-03",
+    "type": "list"
+  },
+  "13": {
+    "question": "List treatment measures for individuals who develop rabies.",
+    "answer": ["Isolation in a quiet, dark room", "Relief of anxiety and pain (e.g., morphine)", "Relief of muscular contractions", "Ensure hydration and diuresis", "Intensive therapy for respiratory and cardiac support", "Intensive care nursing"],
+    "code": "U-03",
+    "type": "list"
+  }
+}

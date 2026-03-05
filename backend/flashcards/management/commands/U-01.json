@@ -1,0 +1,224 @@
+{
+  "1": {
+    "question": "List viral agents of air-borne infections.",
+    "answer": ["Measles", "Mumps", "Chickenpox"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "2": {
+    "question": "List bacterial agents of air-borne infections.",
+    "answer": ["Tuberculosis", "Cerebrospinal Meningitis"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "3": {
+    "question": "List fungal agents of air-borne infections.",
+    "answer": ["Histoplasmosis", "Aspergillosis"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "4": {
+    "question": "Name the rickettsial agent of air-borne infection.",
+    "answer": "Q-Fever",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "5": {
+    "question": "List infections transmitted through droplets.",
+    "answer": ["Tuberculosis", "Measles", "Mumps", "Chickenpox"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "6": {
+    "question": "List infections transmitted through droplet nuclei.",
+    "answer": ["Q-Fever", "Legionnaire’s Disease"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "7": {
+    "question": "List infections transmitted through dust.",
+    "answer": "Coccidioidomycosis",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "8": {
+    "question": "List other routes of transmission for air-borne infections.",
+    "answer": ["Wounds (streptococcal, staphylococcal infections)", "Vector-borne transmission"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "9": {
+    "question": "State the three main control measures of air-borne infections.",
+    "answer": ["Control of infective agent", "Control of mode of transmission", "Control of host factors"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "10": {
+    "question": "List control measures for infective agents.",
+    "answer": ["Eliminate human and animal reservoirs", "Disinfect floors", "Remove dust"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "11": {
+    "question": "List control measures for the mode of transmission.",
+    "answer": ["Maintain air hygiene and ventilation", "Use ultraviolet disinfection", "Avoid overcrowding", "Observe personal hygiene and cough etiquette", "Use face masks when necessary"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "12": {
+    "question": "List control measures for host factors.",
+    "answer": ["Provide immunization (active or passive)", "Use preventive medication (e.g., isoniazid for TB prevention)"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "13": {
+    "question": "What is the incubation period of measles?",
+    "answer": "10 days",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "14": {
+    "question": "List the routes of transmission of measles.",
+    "answer": ["Droplets", "Direct contact", "Contaminated objects"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "15": {
+    "question": "List the clinical features of measles.",
+    "answer": ["Fever", "Runny nose", "Cough", "Rash", "Koplik spots"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "16": {
+    "question": "List the complications of measles.",
+    "answer": ["Bronchopneumonia", "Skin infections", "Post-measles encephalitis"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "17": {
+    "question": "List diagnostic methods for measles.",
+    "answer": ["Clinical evaluation", "Serology", "Virus detection (PCR)"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "18": {
+    "question": "List control measures for measles.",
+    "answer": ["Immunization at 9 months (live attenuated vaccine)", "Passive immunization with immunoglobulins"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "19": {
+    "question": "State the incubation period of mumps.",
+    "answer": "2 – 4 weeks",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "20": {
+    "question": "List the transmission routes of mumps.",
+    "answer": ["Droplets", "Direct/indirect contact", "Contaminated objects"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "21": {
+    "question": "List clinical features of mumps.",
+    "answer": ["Fever", "Painful swelling of parotid, submandibular, or sublingual glands"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "22": {
+    "question": "List complications of mumps.",
+    "answer": ["Pancreatitis", "Orchitis (males)", "Oophoritis (females)"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "23": {
+    "question": "List diagnostic methods for mumps.",
+    "answer": ["Clinical evaluation", "Serological testing", "Culture from saliva, blood, or CSF"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "24": {
+    "question": "List control measures for mumps.",
+    "answer": ["Vaccination (Mumps/MMR)", "Isolation of infected persons", "Maintain utensil hygiene", "Dispose contaminated materials"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "25": {
+    "question": "State the incubation period of chickenpox.",
+    "answer": "10 – 21 days",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "26": {
+    "question": "List transmission routes of chickenpox.",
+    "answer": ["Direct contact (droplets)", "Indirect contact (contaminated objects)"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "27": {
+    "question": "List clinical features of chickenpox.",
+    "answer": ["Fever", "Vesicular rash"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "28": {
+    "question": "What is the main complication of chickenpox?",
+    "answer": "Primary viral pneumonia",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "29": {
+    "question": "List diagnostic methods for chickenpox.",
+    "answer": ["Clinical evaluation", "Serology", "Culture or immunologic tests"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "30": {
+    "question": "List control measures for chickenpox.",
+    "answer": ["Notify to exclude smallpox", "Isolation of cases", "Antiviral therapy (acyclovir, vidarabine)", "Active immunization (18 months – 12 years)", "Passive immunization (immunocompromised)"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "31": {
+    "question": "List the incubation period of cerebrospinal meningitis (CSM).",
+    "answer": "2 – 5 days",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "32": {
+    "question": "State the transmission route of cerebrospinal meningitis.",
+    "answer": "Droplets and discharges from infected persons or carriers",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "33": {
+    "question": "List antigenic types of Neisseria meningitidis.",
+    "answer": ["Groups A", "B", "C", "W-135", "X", "Y"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "34": {
+    "question": "Which strain of Neisseria meningitidis commonly causes epidemics?",
+    "answer": "Group A",
+    "code": "U-01",
+    "type": "plain"
+  },
+  "35": {
+    "question": "List clinical features of cerebrospinal meningitis.",
+    "answer": ["Fever", "Chills", "Severe headache", "Nausea and vomiting", "Stiff neck", "Rash", "Delirium"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "36": {
+    "question": "List diagnostic methods for cerebrospinal meningitis.",
+    "answer": ["Clinical evaluation", "Culture (throat/nasal swabs, CSF)", "Microscopy of centrifuged CSF"],
+    "code": "U-01",
+    "type": "list"
+  },
+  "37": {
+    "question": "List control measures for cerebrospinal meningitis.",
+    "answer": ["Early treatment (chloramphenicol, crystalline penicillin, sulfamethoxazole)", "Routine/mass immunization during epidemics", "Chemoprophylaxis for contacts (sulfonamides, rifampicin)", "Reduce overcrowding, disinfect rooms", "Health education and notification"],
+    "code": "U-01",
+    "type": "list"
+  }
+}

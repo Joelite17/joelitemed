@@ -1,0 +1,19 @@
+public
+src
+    >assets
+    >components
+    >pages
+    -App.css
+    -App.jsx
+    -index.css
+    -main.jsx
+.gitignore
+eslint.config.js
+index.html
+package-lock.json
+package.json
+page structure
+postcss.config.js
+README.md
+tailwind.config.js
+vite.config.js

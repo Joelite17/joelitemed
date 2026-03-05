@@ -1,0 +1,5 @@
+# Sensitive files
+backend/token.pickle
+backend/.env
+*.pickle
+.env
