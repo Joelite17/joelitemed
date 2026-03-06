@@ -27,7 +27,7 @@ export const AccountsAPI = {
 
   login: async (identifier, password) => {
     try {
-      const res = await axios.post(`${BASE_URL}accounts/login/`, {
+      const res = await axios.post(`${BASE_URL}/accounts/login/`, {
         identifier,
         password,
       });
