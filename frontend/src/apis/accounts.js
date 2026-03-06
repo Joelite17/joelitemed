@@ -9,6 +9,7 @@ const getAuthHeaders = () => {
 
 export const AccountsAPI = {
   register: async (data) => {
+    console.log(BASE_URL)
     try {
       const res = await axios.post(
         `${BASE_URL}/accounts/register/`,
