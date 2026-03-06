@@ -26,12 +26,14 @@ SECRET_KEY =  config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+# Allow hosts from comma-separated env variable
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', '*').split(',')
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://myapp-frontend-cdhh.onrender.com",
-    "https://myapp-f2ox.onrender.com",
-]
+# For CSRF (if your frontend sends POST requests)
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', '').split(',')
+
+# CORS (if you're using django-cors-headers)
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', '').split(',')
 
 
 
