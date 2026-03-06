@@ -189,13 +189,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 import os
-DEFAULT_FROM_EMAIL = 'chinedujosiahstu@gmail.com'   # Must match authenticated account
-FRONTEND_URL = 'http://localhost:5173'
-
-
-
-
-
+DEFAULT_FROM_EMAIL = 'chinedujosiahstu@gmail.com'  
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 
