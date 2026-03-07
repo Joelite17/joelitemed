@@ -1,6 +1,6 @@
 # Sensitive files
-backend/token.pickle
+# backend/token.pickle
 backend/.env
 backend/z_email_data
-# *.pickle
+*.pickle
 .env
