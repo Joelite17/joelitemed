@@ -12,11 +12,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
-
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
-
-FRONTEND_URL = "http://localhost:5173"  # React app URL
 import logging
 logger = logging.getLogger(__name__)
 
@@ -73,7 +70,7 @@ def send_email_via_gmail(to_email, subject, plain_message, html_message=None):
 # ----------------------------------------------------------------------
 
 def send_password_reset_email(user, token):
-    reset_url = f"{FRONTEND_URL}/reset-password?uid={user.pk}&token={token}"
+    reset_url = f"{settings.FRONTEND_URL}/reset-password?uid={user.pk}&token={token}"
     subject = "Reset your password"
     plain_message = (
         f"Hi {user.username},\n\n"
