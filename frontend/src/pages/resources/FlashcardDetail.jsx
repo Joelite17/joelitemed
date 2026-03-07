@@ -4,7 +4,7 @@ import { FlashcardsAPI } from "../../apis/flashcards";
 import { AccountsContext } from "../../context/AccountsContext";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
-import SubscriptionBlock from "../../components/SubscriptionBlock"; // <-- changed
+import SubscriptionBlock from "../../components/SubscriptionBlock";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export default function FlashcardDetailPage() {
@@ -208,6 +208,13 @@ export default function FlashcardDetailPage() {
     }
   };
 
+  // Helper to handle card flip, ignoring clicks on interactive elements
+  const handleFlip = (e) => {
+    // Ignore clicks on links, buttons, or elements with role="button"
+    if (e.target.closest('a, button, [role="button"]')) return;
+    setFlipped(!flipped);
+  };
+
   if (loading) {
     return <Spinner fullScreen text="Loading flashcards..." />;
   }
@@ -348,17 +355,28 @@ export default function FlashcardDetailPage() {
             </p>
             <div></div> {/* empty third column for centering */}
           </div>
+
           {/* Flashcard Container - 3D Flip Effect */}
           <div className="w-full max-w-3xl h-80 lg:h-96 mx-auto [perspective:1000px]">
             <div
               className={`relative w-full h-full transition-all duration-700 ${
                 flipped ? "[transform:rotateY(180deg)]" : ""
               }`}
-              style={{ transformStyle: "preserve-3d" }}
-              onClick={() => setFlipped(!flipped)}
+              style={{
+                transformStyle: "preserve-3d",
+                WebkitTransformStyle: "preserve-3d",    // Safari support
+                touchAction: "manipulation",            // prevent double-tap zoom interference
+              }}
+              onClick={handleFlip}
             >
               {/* Front Face */}
-              <div className="absolute inset-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col overflow-hidden [backface-visibility:hidden]">
+              <div
+                className="absolute inset-0 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col overflow-hidden"
+                style={{
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",   // Safari support
+                }}
+              >
                 <div className="flex-1 flex items-center justify-center overflow-y-auto p-2">
                   <p className="text-gray-900 dark:text-gray-100 text-lg whitespace-pre-line text-center">
                     {currentCard.question}
@@ -367,7 +385,14 @@ export default function FlashcardDetailPage() {
               </div>
 
               {/* Back Face */}
-              <div className="absolute inset-0 bg-green-100 dark:bg-green-800 rounded-lg shadow-lg p-4 flex flex-col overflow-hidden [transform:rotateY(180deg)] [backface-visibility:hidden]">
+              <div
+                className="absolute inset-0 bg-green-100 dark:bg-green-800 rounded-lg shadow-lg p-4 flex flex-col overflow-hidden"
+                style={{
+                  transform: "rotateY(180deg)",
+                  backfaceVisibility: "hidden",
+                  WebkitBackfaceVisibility: "hidden",   // Safari support
+                }}
+              >
                 <div
                   className={`flex-1 p-2 overflow-y-auto ${
                     currentCard.type === "plain"
