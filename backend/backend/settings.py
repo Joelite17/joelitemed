@@ -35,8 +35,9 @@ CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', '').split(',')
 # CORS (if you're using django-cors-headers)
 CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', '').split(',')
 
+CSRF_COOKIE_SECURE = True
 
-
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
