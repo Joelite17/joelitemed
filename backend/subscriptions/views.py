@@ -7,6 +7,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 import secrets
 import json
+from decouple import config
 
 from .models import SubscriptionPlan, UserSubscription, PaymentTransaction
 from .serializers import (
@@ -144,7 +145,7 @@ class PaymentView(APIView):
                     email=user.email,
                     amount=amount_in_kobo,
                     reference=reference,
-                    callback_url=f"{settings.FRONTEND_URL}/payment/verify/{reference}"
+                    callback_url=f"{config("FRONTEND_URL")}/payment/verify/{reference}"
                 )
                 
                 logger.info(f"Paystack response: {payment_data}")
@@ -167,7 +168,7 @@ class PaymentView(APIView):
                     "amount": plan.amount,
                     "plan": SubscriptionPlanSerializer(plan).data,
                     "email": user.email,
-                    "public_key": settings.PAYSTACK_PUBLIC_KEY,
+                    "public_key": config("PAYSTACK_PUBLIC_KEY"),
                     "message": "Payment initialized successfully. Redirecting to payment gateway..."
                 })
                 

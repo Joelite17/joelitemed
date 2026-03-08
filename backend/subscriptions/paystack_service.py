@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from django.utils import timezone
 import logging
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
@@ -9,8 +10,8 @@ class PaystackService:
     """Encapsulate all Paystack API interactions"""
     
     def __init__(self):
-        self.secret_key = settings.PAYSTACK_SECRET_KEY
-        self.public_key = settings.PAYSTACK_PUBLIC_KEY
+        self.secret_key = config("PAYSTACK_SECRET_KEY")
+        self.public_key = config("PAYSTACK_PUBLIC_KEY")
         self.base_url = "https://api.paystack.co"
     
     def _make_request(self, method, endpoint, data=None):
@@ -73,9 +74,9 @@ class PaystackService:
             "email": email.strip().lower(),
             "amount": amount_in_kobo,
             "reference": reference,
-            "callback_url": callback_url or f"{settings.FRONTEND_URL}/payment/verify/{reference}",
+            "callback_url": callback_url or f"{config("FRONTEND_URL")}/payment/verify/{reference}",
             "metadata": {
-                "cancel_action": f"{settings.FRONTEND_URL}/subscription/plans",
+                "cancel_action": f"{config("FRONTEND_URL")}/subscription/plans",
                 "custom_fields": [
                     {
                         "display_name": "Transaction Reference",
