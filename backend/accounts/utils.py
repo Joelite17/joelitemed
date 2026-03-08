@@ -61,7 +61,7 @@ def send_email_via_gmail(to_email, subject, plain_message, html_message=None):
 # ----------------------------------------------------------------------
 
 def send_password_reset_email(user, token):
-    reset_url = f"{settings.FRONTEND_URL}/reset-password?uid={user.pk}&token={token}"
+    reset_url = f"{config("FRONTEND_URL")}/reset-password?uid={user.pk}&token={token}"
     subject = "Reset your password"
     plain_message = (
         f"Hi {user.username},\n\n"
