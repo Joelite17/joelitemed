@@ -1,8 +1,35 @@
+import logging
+import traceback
+from django import forms
 from django.contrib import admin
+from django.contrib import messages
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 from .models import Contest, ContestParticipation
+
+logger = logging.getLogger(__name__)
+
+
+class ContestAdminForm(forms.ModelForm):
+    class Meta:
+        model = Contest
+        fields = '__all__'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        mcq_set = cleaned_data.get('mcq_set')
+        total_questions = cleaned_data.get('total_questions')
+        if mcq_set and total_questions:
+            if total_questions > mcq_set.mcqs.count():
+                raise forms.ValidationError({
+                    'total_questions': (
+                        f"Total questions ({total_questions}) cannot exceed the number of questions "
+                        f"in the selected MCQ set ({mcq_set.mcqs.count()})."
+                    )
+                })
+        return cleaned_data
 
 
 class ContestParticipationInline(admin.TabularInline):
@@ -33,6 +60,7 @@ class ContestParticipationInline(admin.TabularInline):
 
 @admin.register(Contest)
 class ContestAdmin(admin.ModelAdmin):
+    form = ContestAdminForm
     list_display = (
         'title', 'mcq_set', 'total_questions', 'start_time',
         'safe_end_time', 'status', 'participants_count', 'is_active_now'
@@ -99,17 +127,35 @@ class ContestAdmin(admin.ModelAdmin):
     make_draft.short_description = "Revert selected contests to draft"
 
     def save_model(self, request, obj, form, change):
+        """
+        Override save_model to catch any exceptions and display them in the admin.
+        """
         if not obj.pk:
             obj.created_by = request.user
-        super().save_model(request, obj, form, change)
 
-    actions = ['make_active', 'make_ended', 'make_draft', 'regenerate_questions']
+        try:
+            # Run full validation before saving
+            obj.full_clean()
+            super().save_model(request, obj, form, change)
+        except ValidationError as e:
+            # Convert ValidationError to user-friendly messages
+            for field, errors in e.message_dict.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+            logger.error(f"Validation error saving contest: {e}")
+        except Exception as e:
+            # Catch any other exception, log it, and show a message
+            logger.error(f"Unexpected error saving contest: {e}\n{traceback.format_exc()}")
+            messages.error(request, f"An unexpected error occurred: {e}")
 
     def regenerate_questions(self, request, queryset):
         for contest in queryset:
-            contest.selected_question_ids = contest.get_random_question_ids()
-            contest.questions_snapshot = contest._build_questions_snapshot()
-            contest.save(update_fields=['selected_question_ids', 'questions_snapshot'])
+            try:
+                contest.selected_question_ids = contest.get_random_question_ids()
+                contest.questions_snapshot = contest._build_questions_snapshot()
+                contest.save(update_fields=['selected_question_ids', 'questions_snapshot'])
+            except Exception as e:
+                messages.error(request, f"Failed to regenerate questions for {contest}: {e}")
         self.message_user(request, "Questions regenerated for selected contests.")
     regenerate_questions.short_description = "Regenerate question set"
 

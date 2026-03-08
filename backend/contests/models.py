@@ -1,10 +1,12 @@
+import random
+import logging
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from mcqs.models import MCQSet, MCQ
-import random
 
+logger = logging.getLogger(__name__)
 
 class Contest(models.Model):
     STATUS_CHOICES = [
@@ -18,7 +20,7 @@ class Contest(models.Model):
     description = models.TextField(blank=True)
     mcq_set = models.ForeignKey(
         MCQSet,
-        on_delete=models.CASCADE,          # <-- CHANGED from PROTECT to CASCADE
+        on_delete=models.CASCADE,
         related_name='contests'
     )
     total_questions = models.PositiveIntegerField(
@@ -58,17 +60,46 @@ class Contest(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        """Validate that total_questions does not exceed available questions in the set."""
+        if self.mcq_set_id and self.total_questions > self.mcq_set.mcqs.count():
+            raise ValidationError({
+                'total_questions': (
+                    f"Total questions ({self.total_questions}) cannot exceed the number of questions "
+                    f"in the selected MCQ set ({self.mcq_set.mcqs.count()})."
+                )
+            })
+
     def save(self, *args, **kwargs):
-        # Generate question set if it's empty and contest is ready to be active/scheduled
-        if not self.selected_question_ids and self.status in ['scheduled', 'active']:
-            self.selected_question_ids = self.get_random_question_ids()
+        # Ensure JSON fields are proper types (they should be, but double-check)
+        if self.selected_question_ids is None:
+            self.selected_question_ids = []
+        if self.questions_snapshot is None:
+            self.questions_snapshot = {}
 
-        # If we have selected_question_ids and no snapshot yet, create it
+        # Only generate questions if we have a valid mcq_set and the contest is not a draft
+        if self.mcq_set_id and self.status in ['scheduled', 'active'] and not self.selected_question_ids:
+            try:
+                self.selected_question_ids = self.get_random_question_ids()
+            except ValidationError as e:
+                # Re-raise ValidationError so the admin shows a user‑friendly message
+                raise ValidationError(f"Could not generate questions: {e.message}")
+            except Exception as e:
+                logger.error(f"Unexpected error generating questions for contest {self.pk}: {e}")
+                raise ValidationError("Failed to generate questions. Please check the selected MCQ set.")
+
+        # Build snapshot if we have selected_question_ids but no snapshot yet
         if self.selected_question_ids and not self.questions_snapshot:
-            self.questions_snapshot = self._build_questions_snapshot()
+            try:
+                self.questions_snapshot = self._build_questions_snapshot()
+            except Exception as e:
+                logger.error(f"Failed to build questions snapshot for contest {self.pk}: {e}")
+                raise ValidationError("Failed to build question snapshot. Please try again.")
 
+        # Calculate end_time if start_time and duration are provided
         if self.start_time and self.duration_minutes:
             self.end_time = self.start_time + timezone.timedelta(minutes=self.duration_minutes)
+
         super().save(*args, **kwargs)
 
     def is_active(self):
@@ -78,26 +109,22 @@ class Contest(models.Model):
     def participants_count(self):
         return self.participations.filter(status='completed').count()
 
-    def clean(self):
-        if self.total_questions > self.mcq_set.mcqs.count():
-            raise ValidationError(f"Total questions cannot exceed {self.mcq_set.mcqs.count()}")
-
-        # If status requires questions and they are missing, attempt to generate them automatically
-        if self.status in ['active', 'scheduled'] and not self.selected_question_ids:
-            try:
-                self.selected_question_ids = self.get_random_question_ids()
-            except ValidationError as e:
-                raise ValidationError(str(e))
-
     def get_random_question_ids(self):
         """Return a list of random MCQ IDs from the set, length = total_questions."""
+        if not self.mcq_set_id:
+            raise ValidationError("No MCQ set selected for this contest.")
         all_ids = list(self.mcq_set.mcqs.values_list('id', flat=True))
         if len(all_ids) < self.total_questions:
-            raise ValidationError("Not enough questions in the selected MCQ set.")
+            raise ValidationError(
+                f"Not enough questions in the selected MCQ set. "
+                f"Available: {len(all_ids)}, requested: {self.total_questions}."
+            )
         return random.sample(all_ids, self.total_questions)
 
     def _build_questions_snapshot(self):
         """Build a dict mapping question_id -> full question data."""
+        if not self.selected_question_ids:
+            return {}
         mcqs = MCQ.objects.filter(id__in=self.selected_question_ids).prefetch_related('options')
         snapshot = {}
         for mcq in mcqs:
@@ -138,6 +165,7 @@ class ContestParticipation(models.Model):
         ordering = ['-started_at']
 
     def __str__(self):
+        # Safely handle the representation – do NOT call .rstrip() on anything that could be a list.
         return f"{self.user.username} - {self.contest.title}"
 
     def calculate_score(self):
@@ -156,7 +184,7 @@ class ContestParticipation(models.Model):
             options = q_data['options']
             total_possible += len(options)
 
-            user_answers = self.answers.get(qid_str, {})  # { opt_key: "T"/"F"/null }
+            user_answers = self.answers.get(qid_str, {})
 
             for opt in options:
                 opt_key = opt['key']
@@ -164,12 +192,11 @@ class ContestParticipation(models.Model):
                 user_tf = user_answers.get(opt_key)
 
                 if user_tf is None:
-                    # unanswered → 0
                     continue
                 if user_tf == correct_tf:
                     correct_count += 1
                 else:
-                    correct_count -= 0.5  # penalty for wrong
+                    correct_count -= 0.5
 
         self.score = correct_count
         self.total_score = total_possible

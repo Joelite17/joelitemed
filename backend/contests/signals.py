@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.contrib.auth import get_user_model
-
+from decouple import config
 from .models import Contest
 from accounts.utils import send_bulk_html_email_direct
 
@@ -26,7 +26,7 @@ def send_new_contest_notification(sender, instance, created, **kwargs):
     subject = f"New Contest: {instance.title}"
     context = {
         'contest': instance,
-        'site_url': settings.FRONTEND_URL.rstrip('/'),
+        'site_url': config("FRONTEND_URL").rstrip('/'),
         'now': timezone.now(),
     }
 

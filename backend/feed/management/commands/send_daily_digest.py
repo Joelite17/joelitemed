@@ -6,6 +6,7 @@ from accounts.models import User
 from accounts.utils import send_bulk_html_email
 from datetime import timedelta
 import logging
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +35,7 @@ class Command(BaseCommand):
         subject = "📬 Your Daily Feed Digest – New Content Available!"
         context = {
             'feed_items': feed_items,
-            'site_url': settings.FRONTEND_URL,
+            'site_url': config("FRONTEND_URL"),
             'count': feed_items.count(),
             'now': now,
         }

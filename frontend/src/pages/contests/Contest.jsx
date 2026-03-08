@@ -1,33 +1,25 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AccountsContext } from "../../context/AccountsContext";
 import { ContestAPI } from "../../apis/contests";
 import {
-  CalendarIcon,
-  ClockIcon,
-  TrophyIcon,
   ExclamationTriangleIcon,
-  UserGroupIcon,
-  QuestionMarkCircleIcon,
   AcademicCapIcon,
   LightBulbIcon,
   ShieldCheckIcon,
+  TrophyIcon,
 } from "@heroicons/react/24/outline";
 import Spinner from "../../components/Spinner";
 import DataTable from "../../components/DataTable";
 
 export default function Contest() {
   const [contests, setContests] = useState([]);
-  const [selectedContest, setSelectedContest] = useState(null);
-  const [participation, setParticipation] = useState(null);
   const [contestHistory, setContestHistory] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [joining, setJoining] = useState(false);
+  const [joining, setJoining] = useState({});
   const [historyLoading, setHistoryLoading] = useState(false);
   const [error, setError] = useState("");
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
-  const [isContestActive, setIsContestActive] = useState(false);
-  const [hasCompleted, setHasCompleted] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({}); // key: contestId, value: {hours, minutes, seconds, isActive, isScheduled}
 
   const navigate = useNavigate();
   const { user } = useContext(AccountsContext);
@@ -35,13 +27,35 @@ export default function Contest() {
   useEffect(() => {
     fetchContests();
     fetchContestHistory();
-  }, []);
+  }, [user?.course_mode]);
 
   useEffect(() => {
-    if (!selectedContest) return;
-    const interval = setInterval(updateTimer, 1000);
+    const interval = setInterval(() => {
+      if (!contests.length) return;
+      const now = new Date();
+      const newTimeLeft = {};
+      contests.forEach((contest) => {
+        const start = new Date(contest.start_time);
+        const end = new Date(contest.end_time);
+        let diff = 0;
+        if (now < start) {
+          diff = start - now;
+        } else if (now <= end) {
+          diff = end - now;
+        }
+        newTimeLeft[contest.id] = {
+          hours: Math.max(0, Math.floor(diff / 3600000)),
+          minutes: Math.max(0, Math.floor((diff % 3600000) / 60000)),
+          seconds: Math.max(0, Math.floor((diff % 60000) / 1000)),
+          isActive: now >= start && now <= end,
+          isScheduled: now < start,
+        };
+      });
+      setTimeLeft(newTimeLeft);
+    }, 1000);
+
     return () => clearInterval(interval);
-  }, [selectedContest]);
+  }, [contests]);
 
   const fetchContests = async () => {
     setLoading(true);
@@ -50,23 +64,22 @@ export default function Contest() {
       const active = await ContestAPI.getContests('active');
       const scheduled = await ContestAPI.getContests('scheduled');
       const all = [...active, ...scheduled];
-      setContests(all);
-
+      
+      // Filter out contests that have already ended (end_time in the past)
       const now = new Date();
-      const activeNow = all.filter(c => {
-        const start = new Date(c.start_time);
-        const end = new Date(c.end_time);
-        return c.status === 'active' && now >= start && now <= end;
+      const upcoming = all.filter(contest => new Date(contest.end_time) > now);
+      
+      // Sort: active first (by end time), then scheduled (by start time)
+      upcoming.sort((a, b) => {
+        if (a.status === 'active' && b.status !== 'active') return -1;
+        if (a.status !== 'active' && b.status === 'active') return 1;
+        if (a.status === 'active' && b.status === 'active') {
+          return new Date(a.end_time) - new Date(b.end_time);
+        }
+        return new Date(a.start_time) - new Date(b.start_time);
       });
-      if (activeNow.length > 0) {
-        activeNow.sort((a, b) => new Date(a.end_time) - new Date(b.end_time));
-        setSelectedContest(activeNow[0]);
-      } else {
-        const upcoming = all.filter(c => c.status === 'scheduled');
-        upcoming.sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
-        if (upcoming.length > 0) setSelectedContest(upcoming[0]);
-        else setSelectedContest(null);
-      }
+      
+      setContests(upcoming);
     } catch (err) {
       setError("Failed to load contest information.");
       console.error(err);
@@ -88,72 +101,29 @@ export default function Contest() {
     }
   };
 
-  useEffect(() => {
-    if (!selectedContest || !user) return;
-
-    const checkParticipation = async () => {
-      try {
-        const history = await ContestAPI.getHistory();
-        const found = history.find(p => String(p.contest) === String(selectedContest.id));
-        if (found) {
-          setParticipation(found);
-          setHasCompleted(found.status === 'completed');
-        } else {
-          setParticipation(null);
-          setHasCompleted(false);
-        }
-      } catch (err) {
-        console.error("Failed to check participation:", err);
-      }
-    };
-    checkParticipation();
-  }, [selectedContest, user]);
-
-  const updateTimer = () => {
-    if (!selectedContest) return;
-    const now = new Date();
-    const start = new Date(selectedContest.start_time);
-    const end = new Date(selectedContest.end_time);
-
-    const activeNow = now >= start && now <= end && selectedContest.status === 'active';
-    setIsContestActive(activeNow);
-
-    let diff;
-    if (now < start) {
-      diff = start - now;
-    } else if (now <= end) {
-      diff = end - now;
-    } else {
-      diff = 0;
-    }
-
-    setTimeLeft({
-      hours: Math.max(0, Math.floor(diff / 3600000)),
-      minutes: Math.max(0, Math.floor((diff % 3600000) / 60000)),
-      seconds: Math.max(0, Math.floor((diff % 60000) / 1000))
-    });
+  const getParticipationForContest = (contestId) => {
+    return contestHistory.find(p => String(p.contest) === String(contestId));
   };
 
-  const handleJoinOrResume = async () => {
+  const handleJoin = async (contestId) => {
     if (!user) return navigate("/login");
-    if (!isContestActive) {
-      setError("Contest is not active yet. Please wait for the start time.");
-      return;
-    }
-    if (hasCompleted) {
-      setError("You have already completed this contest.");
-      return;
-    }
 
-    setJoining(true);
+    setJoining((prev) => ({ ...prev, [contestId]: true }));
     setError("");
+
     try {
-      let participationId;
-      if (participation && participation.status === 'started') {
-        participationId = participation.id;
-        navigate(`/contest/take/${participationId}`);
+      const existing = getParticipationForContest(contestId);
+
+      if (existing) {
+        if (existing.status === 'completed') {
+          setError("You have already completed this contest.");
+          setJoining((prev) => ({ ...prev, [contestId]: false }));
+          return;
+        }
+        // started → resume
+        navigate(`/contest/take/${existing.id}`);
       } else {
-        const newParticipation = await ContestAPI.joinContest(selectedContest.id);
+        const newParticipation = await ContestAPI.joinContest(contestId);
         if (!newParticipation?.id) {
           throw new Error("Server did not return a valid participation ID.");
         }
@@ -161,19 +131,12 @@ export default function Contest() {
       }
     } catch (err) {
       console.error("Join contest error:", err);
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
-      } else if (err.message) {
-        setError(err.message);
-      } else {
-        setError("Failed to join contest. Please try again.");
-      }
+      setError(err.response?.data?.error || err.message || "Failed to join contest.");
     } finally {
-      setJoining(false);
+      setJoining((prev) => ({ ...prev, [contestId]: false }));
     }
   };
 
-  // Columns for contest history table
   const contestHistoryColumns = [
     {
       key: "started_at",
@@ -261,7 +224,6 @@ export default function Contest() {
   return (
     <div className="w-full flex justify-center px-3 sm:px-6">
       <div className="w-full lg:w-4/6 space-y-8 py-6">
-
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded flex items-center">
             <ExclamationTriangleIcon className="w-5 h-5 mr-2" />
@@ -269,100 +231,102 @@ export default function Contest() {
           </div>
         )}
 
-        {selectedContest ? (
-          <>
-            {/* Timer and Join/Resume Card */}
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow">
-              <h2 className="text-xl sm:text-2xl font-bold mb-4">
-                {selectedContest.title}
-              </h2>
-
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-2xl shadow-inner">
-                <div className="flex flex-wrap justify-center gap-6">
-                  {["hours", "minutes", "seconds"].map(unit => (
-                    <div key={unit} className="text-center">
-                      <div className="text-4xl sm:text-5xl font-bold bg-white dark:bg-gray-800 px-6 py-4 rounded-xl shadow-md border border-green-200 dark:border-green-700 min-w-[100px]">
-                        {timeLeft[unit].toString().padStart(2, "0")}
-                      </div>
-                      <div className="text-sm uppercase tracking-wider mt-2 text-gray-600 dark:text-gray-400 font-medium">
-                        {unit}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center mt-4 text-sm text-gray-500 dark:text-gray-400">
-                  {isContestActive ? (
-                    <span className="text-green-600 dark:text-green-400 font-semibold">
-                      ⏳ Contest is active – time remaining
-                    </span>
-                  ) : new Date(selectedContest.start_time) > new Date() ? (
-                    <span className="text-amber-600 dark:text-amber-400 font-semibold">
-                      ⏰ Contest starts in
-                    </span>
-                  ) : (
-                    <span className="text-red-600 dark:text-red-400 font-semibold">
-                      Contest has ended
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <button
-                onClick={handleJoinOrResume}
-                disabled={joining || !isContestActive || hasCompleted}
-                className={`mt-6 w-full sm:w-auto px-6 py-3 font-bold rounded-xl transition disabled:opacity-50 ${
-                  hasCompleted
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : !isContestActive
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-              >
-                {joining
-                  ? "Please wait..."
-                  : !isContestActive
-                  ? new Date(selectedContest.start_time) > new Date()
-                    ? "Not Started Yet"
-                    : "Contest Ended"
-                  : hasCompleted
-                  ? "Already Participated"
-                  : participation
-                  ? "Resume Contest"
-                  : "Join Contest"}
-              </button>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Stat
-                label="Start Time"
-                value={new Date(selectedContest.start_time).toLocaleString()}
-                icon={CalendarIcon}
-              />
-              <Stat
-                label="Duration"
-                value={`${selectedContest.duration_minutes} mins`}
-                icon={ClockIcon}
-              />
-              <Stat
-                label="Questions"
-                value={selectedContest.total_questions}
-                icon={QuestionMarkCircleIcon}
-              />
-              <Stat
-                label="Participants"
-                value={selectedContest.participants_count || 0}
-                icon={UserGroupIcon}
-              />
-            </div>
-          </>
-        ) : (
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow text-center">
-            <p className="text-gray-600 dark:text-gray-300 text-lg">
-              No active or upcoming contests at the moment. Check back later!
-            </p>
+        {/* Contest List */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow overflow-hidden">
+          <div className="px-5 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold">Upcoming Contests</h2>
           </div>
-        )}
+          {contests.length === 0 ? (
+            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+              No upcoming contests at the moment.
+            </div>
+          ) : (
+            <ul className="divide-y divide-gray-200 dark:divide-gray-700">
+              {contests.map((contest) => {
+                const timer = timeLeft[contest.id] || {
+                  hours: 0,
+                  minutes: 0,
+                  seconds: 0,
+                  isActive: false,
+                  isScheduled: true,
+                };
+
+                const participation = getParticipationForContest(contest.id);
+                const hasCompleted = participation?.status === 'completed';
+                const hasStarted = participation?.status === 'started';
+
+                let statusBadge = null;
+                if (timer.isActive) {
+                  statusBadge = (
+                    <span className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs font-medium px-2.5 py-0.5 rounded-full ml-2">
+                      Active
+                    </span>
+                  );
+                } else if (timer.isScheduled) {
+                  statusBadge = (
+                    <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300 text-xs font-medium px-2.5 py-0.5 rounded-full ml-2">
+                      Scheduled
+                    </span>
+                  );
+                }
+
+                // Determine button state and text
+                const isJoining = joining[contest.id];
+                let buttonDisabled = isJoining || !timer.isActive || hasCompleted;
+                let buttonText = 'Join';
+                if (isJoining) buttonText = 'Joining...';
+                else if (hasCompleted) buttonText = 'Completed';
+                else if (hasStarted) buttonText = 'Resume';
+                else buttonText = 'Join';
+
+                return (
+                  <li key={contest.id} className="p-5">
+                    <div className="flex items-center mb-2">
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                        {contest.title}
+                      </h3>
+                      {statusBadge}
+                    </div>
+
+                    {/* Timer + Join Button Row */}
+                    <div className="flex flex-wrap items-center gap-6">
+                      <div className="text-center">
+                        <div className="text-4xl sm:text-5xl font-bold bg-white dark:bg-gray-800 px-6 py-4 rounded-xl shadow-md border border-green-200 dark:border-green-700 min-w-[100px]">
+                          {timer.hours.toString().padStart(2, "0")}
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-4xl sm:text-5xl font-bold bg-white dark:bg-gray-800 px-6 py-4 rounded-xl shadow-md border border-green-200 dark:border-green-700 min-w-[100px]">
+                          {timer.minutes.toString().padStart(2, "0")}
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-4xl sm:text-5xl font-bold bg-white dark:bg-gray-800 px-6 py-4 rounded-xl shadow-md border border-green-200 dark:border-green-700 min-w-[100px]">
+                          {timer.seconds.toString().padStart(2, "0")}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleJoin(contest.id)}
+                        disabled={buttonDisabled}
+                        className={`px-6 py-3 text-lg font-bold rounded-xl transition ${
+                          buttonDisabled && !hasCompleted
+                            ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                            : hasCompleted
+                            ? 'bg-gray-400 cursor-not-allowed text-white'
+                            : timer.isActive
+                            ? 'bg-green-600 hover:bg-green-700 text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                        }`}
+                      >
+                        {buttonText}
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
 
         {/* Instructions */}
         <div className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow">
@@ -413,18 +377,6 @@ export default function Contest() {
           />
         </div>
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, icon: Icon }) {
-  return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-      <div className="flex items-center text-sm text-gray-500 mb-1">
-        <Icon className="w-4 h-4 mr-2" />
-        {label}
-      </div>
-      <div className="font-bold text-lg">{value}</div>
     </div>
   );
 }
