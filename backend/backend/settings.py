@@ -197,7 +197,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 import os
-DEFAULT_FROM_EMAIL = 'chinedujosiahstu@gmail.com'  
+DEFAULT_FROM_EMAIL = 'Joelitemed <chinedujosiahstu@gmail.com>'  
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATIC_URL = '/static/'
 

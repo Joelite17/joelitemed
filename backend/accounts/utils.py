@@ -60,16 +60,33 @@ def send_email_via_gmail(to_email, subject, plain_message, html_message=None):
 # Password Reset Email
 # ----------------------------------------------------------------------
 
+from django.template.loader import render_to_string
+from django.conf import settings
+
 def send_password_reset_email(user, token):
-    reset_url = f"{config("FRONTEND_URL")}/reset-password?uid={user.pk}&token={token}"
+    """
+    Send a styled HTML password reset email using a separate template.
+    """
+    reset_url = f"{config('FRONTEND_URL')}/reset-password?uid={user.pk}&token={token}"
     subject = "Reset your password"
+
+    # Plain text fallback
     plain_message = (
         f"Hi {user.username},\n\n"
         f"Reset your password by visiting the following link:\n\n"
         f"{reset_url}\n\n"
         f"If you didn't request this, you can ignore this email."
     )
-    send_email_via_gmail(user.email, subject, plain_message)
+
+    # HTML message from template
+    context = {
+        'username': user.username,
+        'reset_url': reset_url,
+    }
+    html_message = render_to_string('emails/password_reset_email.html', context)
+
+    # Send using your Gmail API function
+    send_email_via_gmail(user.email, subject, plain_message, html_message)
 
 # ----------------------------------------------------------------------
 # HTML Email (Single recipient)
@@ -83,7 +100,7 @@ def send_html_email(subject, template_name, context, recipient_list):
     if not recipient_list:
         return
     html_message = render_to_string(template_name, context)
-    plain_message = f"Please enable HTML to view this email, or visit {settings.FRONTEND_URL}"
+    plain_message = f"Please enable HTML to view this email, or visit {config("FRONTEND_URL")}"
     send_email_via_gmail(recipient_list[0], subject, plain_message, html_message)
 
 # ----------------------------------------------------------------------
