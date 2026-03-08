@@ -9,12 +9,9 @@ const getAuthHeaders = () => {
 
 export const AccountsAPI = {
   register: async (data) => {
-    console.log(BASE_URL)
+    console.log(BASE_URL);
     try {
-      const res = await axios.post(
-        `${BASE_URL}/accounts/register/`,
-        data
-      );
+      const res = await axios.post(`${BASE_URL}/accounts/register/`, data);
       return res.data;
     } catch (err) {
       throw new Error(
@@ -101,6 +98,19 @@ export const AccountsAPI = {
       return response.data;
     } catch (err) {
       throw new Error(err.response?.data?.detail || "Failed to update dark mode");
+    }
+  },
+
+  // ✅ NEW METHOD – fetch current user profile
+  getProfile: async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/accounts/profile/`, {
+        headers: getAuthHeaders(),
+      });
+      return res.data;
+    } catch (err) {
+      console.error("Failed to fetch profile:", err);
+      throw err;
     }
   },
 };

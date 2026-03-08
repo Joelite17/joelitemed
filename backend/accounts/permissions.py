@@ -5,6 +5,7 @@ from datetime import timedelta
 from django.contrib.contenttypes.models import ContentType
 from .models import FreeTrialUsage, UserSetAttempt
 from osces.models import OSCESet
+from subscriptions.models import UserSubscription   # direct import
 
 class FreeTrialExpired(APIException):
     status_code = 403
@@ -23,12 +24,20 @@ class HasFreeAccessOrSubscription(BasePermission):
     - For OSCE sets, additionally restrict to **one batch across all sets**.
     """
 
+    def _has_active_subscription(self, user):
+        """Direct, reliable subscription check."""
+        return UserSubscription.objects.filter(
+            user=user,
+            is_active=True,
+            expires_at__gt=timezone.now()
+        ).exists()
+
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
 
         # Subscribed users have unlimited access
-        if request.user.has_active_subscription:
+        if self._has_active_subscription(request.user):
             return True
 
         # Check daily 60‑minute trial
@@ -47,6 +56,10 @@ class HasFreeAccessOrSubscription(BasePermission):
         return True
 
     def has_object_permission(self, request, view, obj):
+        # Subscribed users bypass all object‑level checks
+        if self._has_active_subscription(request.user):
+            return True
+
         # Only enforce the OSCE batch limit for OSCE sets
         if isinstance(obj, OSCESet):
             # Get the content type for OSCESet

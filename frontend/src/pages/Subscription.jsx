@@ -1,10 +1,11 @@
 import { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { SubscriptionAPI } from "../apis/subscriptions";
+import { AccountsAPI } from "../apis/accounts";          // <-- added
 import { useNavigate } from "react-router-dom";
 import { AccountsContext } from "../context/AccountsContext";
-import { 
-  CalendarIcon, 
-  ClockIcon, 
+import {
+  CalendarIcon,
+  ClockIcon,
   CheckCircleIcon,
   ArrowPathIcon,
   ChartBarIcon,
@@ -20,7 +21,7 @@ import {
 import { VITE_PAYSTACK_PUBLIC_KEY } from "../apis/base_url";
 import Spinner from "../components/Spinner";
 import SuccessCheck from "../components/SuccessCheck";
-import DataTable from "../components/DataTable"; // Import the DataTable component
+import DataTable from "../components/DataTable";
 
 // Helper to check if Paystack is properly loaded
 const isPaystackLoaded = () => {
@@ -34,20 +35,20 @@ export default function Subscription() {
   const [plans, setPlans] = useState([]);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  
+
   // Payment states
   const [paymentInitializing, setPaymentInitializing] = useState(false);
   const [paymentInitialized, setPaymentInitialized] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [paystackLoaded, setPaystackLoaded] = useState(false);
   const [paymentError, setPaymentError] = useState("");
-  
+
   // Success state
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   const navigate = useNavigate();
-  const { user } = useContext(AccountsContext);
+  const { user, updateUser } = useContext(AccountsContext);   // <-- get updateUser
   const plansRef = useRef(null);
 
   useEffect(() => {
@@ -81,7 +82,7 @@ export default function Subscription() {
     try {
       setPlansLoading(true);
       const data = await SubscriptionAPI.getPlans();
-      
+
       if (data && data.length > 0) {
         const compactPlans = data.slice(0, 4).map(plan => ({
           id: plan.id,
@@ -103,7 +104,6 @@ export default function Subscription() {
     if (isPaystackLoaded()) {
       setPaystackLoaded(true);
     } else {
-      // Try to load Paystack script if not loaded
       const script = document.createElement('script');
       script.src = 'https://js.paystack.co/v1/inline.js';
       script.async = true;
@@ -154,14 +154,14 @@ export default function Subscription() {
 
   const getSubscriptionStatus = () => {
     if (!subscription) return "inactive";
-    
+
     if (subscription.has_subscription && subscription.expires_at) {
       const daysRemaining = calculateDaysRemaining(subscription.expires_at);
       if (daysRemaining > 0) return "active";
       if (daysRemaining === 0) return "expiring_today";
       return "expired";
     }
-    
+
     return "inactive";
   };
 
@@ -176,49 +176,49 @@ export default function Subscription() {
     return null;
   };
 
+  // ========== UPDATED: refresh user after payment ==========
   const handlePaymentCallback = useCallback(async (plan, response) => {
     setPaymentInitializing(false);
     setPaymentInitialized(false);
-    
+
     try {
       console.log("DEBUG: Payment callback received:", response);
       const result = await SubscriptionAPI.verifyPayment(response.reference);
-      
+
       if (result.success) {
-        // Show success animation
+        // Refresh user data from the server
+        const freshUser = await AccountsAPI.getProfile();
+        console.log(freshUser)
+        updateUser(freshUser);   // update context and localStorage
+
         setSuccessMessage(`Payment Successful! Your ${plan.name} subscription is now active.`);
         setShowSuccess(true);
-        
+
         // Refresh subscription data
         await fetchSubscription();
         // Refresh payment history
         await fetchPaymentHistory();
-        // Clear any payment error
         setPaymentError("");
-        
-        // SuccessCheck component will auto-close after 2 seconds
-        // and then call handleSuccessClose which will navigate
       } else {
         setPaymentError(result.message || "Payment verification failed. Please contact support.");
       }
-      
     } catch (err) {
       console.error("Verification error:", err);
       setPaymentError(err.message || "Payment verification failed. Please check your payment status or contact support.");
     } finally {
       setSelectedPlan(null);
     }
-  }, []);
+  }, [updateUser]);
 
   const handleSuccessClose = () => {
     setShowSuccess(false);
     // Navigate to home page with success state
-    navigate("/", { 
+    navigate("/", {
       replace: true,
-      state: { 
+      state: {
         subscriptionActivated: true,
         showSuccess: true
-      } 
+      }
     });
   };
 
@@ -231,7 +231,7 @@ export default function Subscription() {
 
   const handleSubscribe = async (plan) => {
     console.log("DEBUG: Subscribe clicked for plan:", plan.name);
-    
+
     if (!user) {
       navigate("/login", { state: { from: "/subscription/status" } });
       return;
@@ -257,14 +257,14 @@ export default function Subscription() {
       setPaymentInitializing(true);
       console.log("DEBUG: Initializing payment for plan:", plan.id);
       const paymentData = await SubscriptionAPI.initializePayment(plan.id);
-      
+
       if (!paymentData.success) {
         throw new Error(paymentData.error || "Payment initialization failed");
       }
 
       console.log("DEBUG: Payment data received:", paymentData);
       console.log("DEBUG: Paystack public key:", VITE_PAYSTACK_PUBLIC_KEY);
-      
+
       if (!window.PaystackPop) {
         throw new Error("Paystack payment gateway not loaded. Please refresh the page.");
       }
@@ -304,9 +304,9 @@ export default function Subscription() {
         callback: paymentCallback,
         onClose: paymentOnClose
       });
-      
+
       setPaymentInitialized(true);
-      
+
       // Open Paystack iframe
       setTimeout(() => {
         try {
@@ -319,12 +319,12 @@ export default function Subscription() {
           setSelectedPlan(null);
         }
       }, 100);
-      
+
     } catch (err) {
       console.error("Payment initialization error:", err);
-      
+
       let errorMessage = "Failed to initialize payment. ";
-      
+
       if (err.response?.status === 400) {
         errorMessage += "Invalid request parameters. Please try again or contact support.";
       } else if (err.response?.status === 401) {
@@ -338,7 +338,7 @@ export default function Subscription() {
       } else {
         errorMessage += "Please check your internet connection and try again.";
       }
-      
+
       setPaymentError(errorMessage);
       setPaymentInitializing(false);
       setPaymentInitialized(false);
@@ -348,7 +348,7 @@ export default function Subscription() {
 
   const scrollToPlans = () => {
     if (plansRef.current) {
-      plansRef.current.scrollIntoView({ 
+      plansRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center'
       });
@@ -386,7 +386,6 @@ export default function Subscription() {
           textColor: "text-gray-800 dark:text-gray-300"
         };
 
-        // Determine status configuration
         if (value === "successful" || value === "success") {
           statusConfig = {
             text: "Successful",
@@ -444,15 +443,15 @@ export default function Subscription() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 p-4">
         <div className="text-center max-w-md">
-          <Spinner fullScreen text={paymentInitialized ? "Processing Payment..." : "Initializing Payment..."}/>
+          <Spinner fullScreen text={paymentInitialized ? "Processing Payment..." : "Initializing Payment..."} />
           <div className="mt-6 space-y-4">
             <p className="text-gray-600 dark:text-gray-300">
-              {paymentInitialized 
+              {paymentInitialized
                 ? "Please complete the payment in the popup window. Do not close this tab."
                 : "Preparing secure payment gateway..."
               }
             </p>
-            
+
             {paymentInitialized && (
               <>
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -462,7 +461,7 @@ export default function Subscription() {
                     <span className="font-bold">Email:</span> {user?.email}
                   </p>
                 </div>
-                
+
                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                   <p className="text-sm text-yellow-700 dark:text-yellow-300">
                     <span className="font-bold">Note:</span> If the payment window doesn't appear, check your browser's popup blocker and allow popups for this site.
@@ -470,7 +469,7 @@ export default function Subscription() {
                 </div>
               </>
             )}
-            
+
             <button
               onClick={() => {
                 setPaymentInitializing(false);
@@ -496,12 +495,12 @@ export default function Subscription() {
   return (
     <>
       {/* Success Check Animation */}
-      <SuccessCheck 
-        show={showSuccess} 
-        message={successMessage} 
-        onClose={handleSuccessClose} 
+      <SuccessCheck
+        show={showSuccess}
+        message={successMessage}
+        onClose={handleSuccessClose}
       />
-      
+
       <div className="flex flex-col items-center w-full text-gray-900 dark:text-gray-100">
         <div className="w-full lg:w-4/6 space-y-6 py-6 px-4">
           {/* Status Card */}
@@ -521,7 +520,7 @@ export default function Subscription() {
                    "Subscribe to unlock all content"}
                 </p>
               </div>
-              
+
               {isActive ? (
                 <div className="mt-4 md:mt-0">
                   <span className="inline-flex items-center px-4 py-2 rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 text-sm font-bold">
@@ -551,7 +550,7 @@ export default function Subscription() {
                     {subscription.plan_name || "Premium Plan"}
                   </p>
                 </div>
-                
+
                 <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 shadow-sm">
                   <div className="flex items-center mb-1">
                     <ClockIcon className="w-5 h-5 text-blue-600 mr-2" />
@@ -561,7 +560,7 @@ export default function Subscription() {
                     {formatDate(subscription.expires_at)}
                   </p>
                 </div>
-                
+
                 <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 shadow-sm">
                   <div className="flex items-center mb-1">
                     <ChartBarIcon className="w-5 h-5 text-purple-600 mr-2" />
@@ -582,10 +581,10 @@ export default function Subscription() {
                   <span>{calculateDaysRemaining(subscription.expires_at)} days remaining</span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
-                  <div 
+                  <div
                     className="bg-green-600 h-2.5 rounded-full transition-all duration-500"
-                    style={{ 
-                      width: `${Math.min(100, (calculateDaysRemaining(subscription.expires_at) / 30) * 100)}%` 
+                    style={{
+                      width: `${Math.min(100, (calculateDaysRemaining(subscription.expires_at) / 30) * 100)}%`
                     }}
                   ></div>
                 </div>
@@ -717,7 +716,7 @@ export default function Subscription() {
               ) : plans.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
                   {plans.map((plan, index) => (
-                    <div 
+                    <div
                       key={plan.id || index}
                       className={`border rounded-xl p-4 transition-all duration-200 hover:shadow-md ${
                         subscription?.plan_id === plan.id
@@ -734,8 +733,7 @@ export default function Subscription() {
                             {plan.plan_type === "monthly" ? "Monthly plan" :
                              plan.plan_type === "three_months" ? "3 months access" :
                              plan.plan_type === "six_months" ? "6 months access" :
-                             plan.plan_type === "yearly" ? "Yearly access":
-                             ""}
+                             plan.plan_type === "yearly" ? "Yearly access" : ""}
                           </p>
                         </div>
                         {subscription?.plan_id === plan.id && (
@@ -744,7 +742,7 @@ export default function Subscription() {
                           </div>
                         )}
                       </div>
-                      
+
                       <div className="mt-3">
                         <div className="flex items-baseline">
                           <span className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -752,7 +750,7 @@ export default function Subscription() {
                           </span>
                         </div>
                       </div>
-                      
+
                       <button
                         onClick={() => handleSubscribe(plan)}
                         disabled={!paystackLoaded || !user}
@@ -783,7 +781,7 @@ export default function Subscription() {
                     Try Again
                   </button>
                 </div>
-              )}  
+              )}
             </div>
           )}
 
@@ -822,7 +820,6 @@ export default function Subscription() {
                   hoverable={true}
                   onRowClick={(row) => {
                     console.log("Payment details clicked:", row);
-                    // You could show a modal with more details here
                   }}
                   emptyMessage="No payment history found."
                 />
