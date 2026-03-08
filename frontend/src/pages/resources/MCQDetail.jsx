@@ -3,7 +3,7 @@ import { MCQAPI, ScoreAPI } from "../../apis/mcqs";
 import { useParams, useNavigate } from "react-router-dom";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
-import SubscriptionBlock from "../../components/SubscriptionBlock"; // <-- changed
+import SubscriptionBlock from "../../components/SubscriptionBlock";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export default function MCQDetailPage() {
@@ -25,6 +25,7 @@ export default function MCQDetailPage() {
 
   // Trial expired state
   const [showTrialExpired, setShowTrialExpired] = useState(false);
+  const [trialExpiredMessage, setTrialExpiredMessage] = useState("");
 
   // SuccessCheck states
   const [showSuccess, setShowSuccess] = useState(false);
@@ -117,12 +118,39 @@ export default function MCQDetailPage() {
       }
     } catch (err) {
       console.error("Error fetching MCQ set:", err);
-      if (err.response?.status === 403 && err.response?.data?.code === 'free_trial_expired') {
+
+      // Log detailed error information for debugging
+      if (err.response) {
+        console.log("Error status:", err.response.status);
+        console.log("Error data:", err.response.data);
+      }
+
+      // Handle permission errors (403)
+      if (err.response?.status === 403) {
+        const errorData = err.response.data || {};
+        const errorCode = errorData.code;
+        const errorDetail = errorData.detail || errorData.message || "";
+
+        // Check for free trial expired
+        if (errorCode === 'free_trial_expired' || errorDetail.includes('free trial')) {
+          setTrialExpiredMessage(
+            "You've used your 60 minutes of free access today. " +
+            "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
+          );
+        } else {
+          // Generic subscription message for other 403 errors
+          setTrialExpiredMessage(
+            "You've reached a limit for free access. " +
+            "Please subscribe to continue."
+          );
+        }
         setShowTrialExpired(true);
         setQuestions([]);
         setLoading(false);
-        return;
+        return; // Exit early – no further processing
       }
+
+      // For other errors, just set empty questions (but keep showTrialExpired false)
       if (mounted.current) setQuestions([]);
     } finally {
       if (mounted.current && !showTrialExpired) setLoading(false);
@@ -310,7 +338,7 @@ export default function MCQDetailPage() {
             <div className="w-20"></div>
             <div className="w-20"></div>
           </div>
-          <SubscriptionBlock />
+          <SubscriptionBlock message={trialExpiredMessage} />
         </div>
       </div>
     );

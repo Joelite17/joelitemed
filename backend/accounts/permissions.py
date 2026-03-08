@@ -1,26 +1,37 @@
-# accounts/permissions.py
 from rest_framework.permissions import BasePermission
+from rest_framework.exceptions import APIException
 from django.utils import timezone
 from datetime import timedelta
-from .models import FreeTrialUsage
-from .exceptions import FreeTrialExpired
+from django.contrib.contenttypes.models import ContentType
+from .models import FreeTrialUsage, UserSetAttempt
+from osces.models import OSCESet
+
+class FreeTrialExpired(APIException):
+    status_code = 403
+    default_detail = "Your free trial has expired. Please subscribe to continue."
+    default_code = 'free_trial_expired'
+
+class OSCEBatchLimitExceeded(APIException):
+    status_code = 403
+    default_detail = "You have completed one OSCE batch. Please subscribe to continue."
+    default_code = 'osce_batch_limit_exceeded'
 
 class HasFreeAccessOrSubscription(BasePermission):
     """
-    Allows access if user has an active subscription.
-    If not, grants access for the first 20 minutes of the day (based on first request).
-    After 20 minutes, raises FreeTrialExpired.
+    - Active subscription → allow all.
+    - Otherwise, 60‑minute daily trial (global).
+    - For OSCE sets, additionally restrict to **one batch across all sets**.
     """
 
     def has_permission(self, request, view):
-        # Must be authenticated
         if not request.user or not request.user.is_authenticated:
             return False
 
-        # Active subscription → allow
+        # Subscribed users have unlimited access
         if request.user.has_active_subscription:
             return True
 
+        # Check daily 60‑minute trial
         today = timezone.now().date()
         usage, created = FreeTrialUsage.objects.get_or_create(
             user=request.user,
@@ -28,11 +39,31 @@ class HasFreeAccessOrSubscription(BasePermission):
             defaults={'first_access': timezone.now()}
         )
 
-        if created:
+        if not created:
+            time_elapsed = timezone.now() - usage.first_access
+            if time_elapsed > timedelta(minutes=60):
+                raise FreeTrialExpired()
+
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        # Only enforce the OSCE batch limit for OSCE sets
+        if isinstance(obj, OSCESet):
+            # Get the content type for OSCESet
+            osce_content_type = ContentType.objects.get_for_model(OSCESet)
+
+            # Check if the user has already completed a batch in ANY OSCE set
+            any_attempt = UserSetAttempt.objects.filter(
+                user=request.user,
+                content_type=osce_content_type,
+                attempt_count__gte=1
+            ).exists()
+
+            if any_attempt:
+                raise OSCEBatchLimitExceeded()
+
+            # No attempt yet → allowed (first batch)
             return True
 
-        time_elapsed = timezone.now() - usage.first_access
-        if time_elapsed > timedelta(minutes=20):
-            raise FreeTrialExpired()
-
+        # For other resource types, no extra limit
         return True

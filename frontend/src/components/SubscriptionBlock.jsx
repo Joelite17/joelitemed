@@ -9,7 +9,7 @@ export default function SubscriptionBlock({ message }) {
       </svg>
       <h2 className="text-2xl font-bold mb-2">Free Trial Expired</h2>
       <p className="text-gray-600 dark:text-gray-300 mb-6">
-        {message || "You've used your 20 minutes of free access today. Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."}
+        {message || "You've used your 60 minutes of free access today. Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."}
       </p>
       <button
         onClick={() => navigate('/subscription')}

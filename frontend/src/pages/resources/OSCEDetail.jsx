@@ -5,7 +5,7 @@ import { AccountsContext } from "../../context/AccountsContext";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
-import SubscriptionBlock from "../../components/SubscriptionBlock"; // <-- changed
+import SubscriptionBlock from "../../components/SubscriptionBlock";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export default function OSCEDetailPage() {
@@ -25,8 +25,9 @@ export default function OSCEDetailPage() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [pendingCompletion, setPendingCompletion] = useState(false);
 
-  // Trial expired state
+  // Trial expired / limit reached state
   const [showTrialExpired, setShowTrialExpired] = useState(false);
+  const [trialExpiredMessage, setTrialExpiredMessage] = useState("");
 
   useEffect(() => {
     fetchSet();
@@ -110,12 +111,60 @@ export default function OSCEDetailPage() {
       }
     } catch (err) {
       console.error("Error fetching OSCE set:", err);
-      if (err.response?.status === 403 && err.response?.data?.code === 'free_trial_expired') {
+      
+      // Log detailed error information for debugging
+      if (err.response) {
+        console.log("Error status:", err.response.status);
+        console.log("Error data:", err.response.data);
+        console.log("Error headers:", err.response.headers);
+      } else if (err.request) {
+        console.log("No response received:", err.request);
+      } else {
+        console.log("Error message:", err.message);
+      }
+
+      // Handle permission errors (403)
+      if (err.response?.status === 403) {
+        const errorData = err.response.data || {};
+        const errorCode = errorData.code;
+        const errorDetail = errorData.detail || errorData.message || "";
+
+        // Check for free trial expired
+        if (errorCode === 'free_trial_expired' || errorDetail.includes('free trial')) {
+          setTrialExpiredMessage(
+            "You've used your 60 minutes of free access today. " +
+            "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
+          );
+          setShowTrialExpired(true);
+          setCards([]);
+          setLoading(false);
+          return;
+        }
+
+        // Check for OSCE batch limit exceeded
+        if (errorCode === 'osce_batch_limit_exceeded' || errorDetail.includes('one OSCE batch')) {
+          setTrialExpiredMessage(
+            "You have completed one OSCE batch. " +
+            "Please subscribe to continue with more OSCE stations."
+          );
+          setShowTrialExpired(true);
+          setCards([]);
+          setLoading(false);
+          return;
+        }
+
+        // If it's a 403 but not our specific codes, still show a generic subscription message
+        setTrialExpiredMessage(
+          "You've reached a limit for free access. " +
+          "Please subscribe to continue."
+        );
         setShowTrialExpired(true);
         setCards([]);
         setLoading(false);
         return;
       }
+
+      // For other errors, show generic error message
       setError("Failed to load OSCE set. Please try again.");
     } finally {
       setLoading(false);
@@ -203,7 +252,7 @@ export default function OSCEDetailPage() {
     return <Spinner fullScreen text="Loading OSCE stations..." />;
   }
 
-  // Trial expired view – shown instead of the content
+  // Trial expired / batch limit reached view
   if (showTrialExpired) {
     return (
       <div className="flex justify-center w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-10 px-4">
@@ -219,7 +268,7 @@ export default function OSCEDetailPage() {
             <div className="w-20"></div>
             <div className="w-20"></div>
           </div>
-          <SubscriptionBlock />
+          <SubscriptionBlock message={trialExpiredMessage} />
         </div>
       </div>
     );

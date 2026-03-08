@@ -59,12 +59,8 @@ export const OSCEAPI = {
       }
       
       console.error("Failed to fetch OSCE sets:", err);
-      return {
-        results: [],
-        count: 0,
-        currentPage: 1,
-        totalPages: 1
-      };
+      // Re-throw the error so the caller can handle it (e.g., for 403)
+      throw err;
     }
   },
 
@@ -76,7 +72,8 @@ export const OSCEAPI = {
       return res.data;
     } catch (err) {
       console.error(`Failed to fetch OSCE set ${setId}:`, err);
-      return null;
+      // Re-throw the error so the component can catch and inspect it
+      throw err;
     }
   },
 
@@ -94,7 +91,6 @@ export const OSCEAPI = {
     }
   },
   
-  // New: Increment attempt count
   incrementAttempt: async (setId) => {
     try {
       const res = await axios.post(
@@ -109,7 +105,6 @@ export const OSCEAPI = {
     }
   },
   
-  // New: Get progress for a set
   getProgress: async (setId) => {
     try {
       const res = await axios.get(
@@ -122,6 +117,7 @@ export const OSCEAPI = {
       throw err;
     }
   },
+  
   resetAttempt: async (setId) => {
     try {
       const res = await axios.post(
@@ -135,5 +131,4 @@ export const OSCEAPI = {
       throw err;
     }
   },
-  
 };

@@ -8,6 +8,12 @@ const getAuthHeaders = () => {
 };
 
 export const MCQAPI = {
+  /**
+   * Fetch paginated list of MCQ sets.
+   * @param {number} page - Page number.
+   * @param {number} pageSize - Items per page.
+   * @returns {Promise<Object>} Normalized pagination object.
+   */
   fetchMCQSets: async (page = 1, pageSize = 10) => {
     try {
       const res = await axios.get(`${BASE_URL}/mcqsets/`, {
@@ -17,21 +23,24 @@ export const MCQAPI = {
           page_size: pageSize
         }
       });
-      
+
       let results, count;
-      
+
       if (res.data.results !== undefined) {
+        // Paginated response from Django REST Framework
         results = res.data.results;
         count = res.data.count;
       } else if (Array.isArray(res.data)) {
+        // Non-paginated response (just an array)
         results = res.data;
         count = res.data.length;
       } else {
+        // Unexpected response structure
         console.warn("Unexpected MCQ API response structure:", res.data);
         results = [];
         count = 0;
       }
-      
+
       return {
         results: results,
         count: count,
@@ -41,6 +50,7 @@ export const MCQAPI = {
         totalPages: Math.ceil(count / pageSize)
       };
     } catch (err) {
+      // Handle 404 specifically – no data for this page
       if (err.response && err.response.status === 404) {
         console.log(`MCQ page ${page} not found (no more data)`);
         return {
@@ -52,23 +62,25 @@ export const MCQAPI = {
           totalPages: Math.max(1, page - 1)
         };
       }
-      
+
       console.error("Failed to fetch MCQ sets:", err);
-      return {
-        results: [],
-        count: 0,
-        currentPage: 1,
-        totalPages: 1
-      };
+      // Re‑throw other errors (e.g., 403) so the caller can handle them
+      throw err;
     }
   },
 
+  /**
+   * Fetch a single MCQ set by ID, including progress.
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @returns {Promise<Object>} The MCQ set data with progress.
+   */
   fetchMCQSet: async (mcqSetId) => {
     try {
       const res = await axios.get(`${BASE_URL}/mcqsets/${mcqSetId}/`, {
         headers: getAuthHeaders(),
       });
-      
+
+      // If progress is missing, fetch it separately
       if (!res.data.progress) {
         console.warn("No progress data in response, fetching progress separately");
         try {
@@ -79,22 +91,30 @@ export const MCQAPI = {
           res.data.progress = progressRes.data.progress;
         } catch (progressErr) {
           console.error("Failed to fetch progress:", progressErr);
+          // If progress fetch fails, set a default fallback (non‑blocking)
           res.data.progress = {
             attempt_count: 0,
             current_batch: 1,
             total_batches: 1,
-            progress_percentage: 0
+            progress_percentage: 0,
+            has_completed: false,
           };
         }
       }
-      
+
       return res.data;
     } catch (err) {
       console.error(`Failed to fetch MCQ set ${mcqSetId}:`, err);
-      return null;
+      // Throw the error so the component can catch 403, 404, etc.
+      throw err;
     }
   },
 
+  /**
+   * Toggle like status for an MCQ set.
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @returns {Promise<Object>} Response with liked status and new like count.
+   */
   toggleLike: async (mcqSetId) => {
     try {
       const res = await axios.post(
@@ -108,7 +128,12 @@ export const MCQAPI = {
       throw err;
     }
   },
-  
+
+  /**
+   * Increment attempt count (called when user completes a batch).
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @returns {Promise<Object>} Response with updated progress.
+   */
   incrementAttempt: async (mcqSetId) => {
     try {
       const res = await axios.post(
@@ -122,7 +147,12 @@ export const MCQAPI = {
       throw err;
     }
   },
-  
+
+  /**
+   * Get progress for a specific MCQ set.
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @returns {Promise<Object>} Progress object.
+   */
   getProgress: async (mcqSetId) => {
     try {
       const res = await axios.get(
@@ -132,16 +162,16 @@ export const MCQAPI = {
       return res.data;
     } catch (err) {
       console.error(`Failed to get progress for MCQSet ${mcqSetId}:`, err);
-      return {
-        progress: {
-          attempt_count: 0,
-          current_batch: 1,
-          total_batches: 1,
-          progress_percentage: 0
-        }
-      };
+      // Throw error so component can handle it (e.g., show a message)
+      throw err;
     }
   },
+
+  /**
+   * Reset attempt count for an MCQ set.
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @returns {Promise<Object>} Response confirming reset.
+   */
   resetAttempt: async (mcqSetId) => {
     try {
       const res = await axios.post(
@@ -158,6 +188,13 @@ export const MCQAPI = {
 };
 
 export const ScoreAPI = {
+  /**
+   * Post a user's score for an MCQ set.
+   * @param {string|number} mcqSetId - ID of the MCQ set.
+   * @param {number} score - Score achieved.
+   * @param {number} total_score - Maximum possible score.
+   * @returns {Promise<Object>} The created score record.
+   */
   postScore: async (mcqSetId, score, total_score) => {
     try {
       const res = await axios.post(
@@ -172,7 +209,13 @@ export const ScoreAPI = {
     }
   },
 
-  // Updated to accept courseMode parameter
+  /**
+   * Fetch paginated scores, optionally filtered by course mode.
+   * @param {number} page - Page number.
+   * @param {number} pageSize - Items per page.
+   * @param {string|null} courseMode - Course mode filter.
+   * @returns {Promise<Object>} Normalized pagination object.
+   */
   fetchAllScores: async (page = 1, pageSize = 10, courseMode = null) => {
     try {
       const params = {
@@ -186,9 +229,9 @@ export const ScoreAPI = {
         headers: getAuthHeaders(),
         params
       });
-      
+
       let results, count;
-      
+
       if (res.data.results !== undefined) {
         results = res.data.results;
         count = res.data.count;
@@ -200,7 +243,7 @@ export const ScoreAPI = {
         results = [];
         count = 0;
       }
-      
+
       return {
         results: results,
         count: count,
@@ -217,14 +260,9 @@ export const ScoreAPI = {
           totalPages: Math.max(1, page - 1)
         };
       }
-      
+
       console.error("Failed to fetch scores:", err);
-      return {
-        results: [],
-        count: 0,
-        currentPage: 1,
-        totalPages: 1
-      };
+      throw err;
     }
   },
 };

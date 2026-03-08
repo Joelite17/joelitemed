@@ -1,3 +1,4 @@
+# backend/accounts/serializers.py
 from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
@@ -5,13 +6,21 @@ from rest_framework import serializers
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
+    has_active_subscription = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'dark_mode', 'course_mode']
+        fields = [
+            'id', 'username', 'first_name', 'last_name', 'email',
+            'dark_mode', 'course_mode', 'has_active_subscription'
+        ]
         extra_kwargs = {
             'username': {'read_only': True},
             'course_mode': {'required': False, 'allow_null': True}
         }
+
+    def get_has_active_subscription(self, obj):
+        return obj.has_active_subscription
 
     def validate_email(self, value):
         request = self.context.get('request')

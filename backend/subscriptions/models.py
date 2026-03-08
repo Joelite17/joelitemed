@@ -26,6 +26,7 @@ class SubscriptionPlan(models.Model):
         return f"{self.name} - ₦{self.amount:,}"
 
 class UserSubscription(models.Model):
+    
     """Track user's active subscription"""
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

@@ -1,3 +1,4 @@
+// frontend/src/components/Sidebar.jsx
 import { MdDashboard } from "react-icons/md";
 import { FaHome, FaUser, FaCreditCard, FaSignOutAlt } from "react-icons/fa";
 import { IoDocumentText, IoFlash, IoMedical, IoAlbums, IoTrophy } from "react-icons/io5";
@@ -77,10 +78,10 @@ export default function Sidebar({ isOpen, setIsOpen, darkMode, setDarkMode }) {
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">M</span>
+              <span className="text-white font-bold text-lg">JM</span>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">MediStudy</h1>
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">JoeliteMed</h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">Premium Content</p>
             </div>
           </div>
@@ -162,7 +163,7 @@ export default function Sidebar({ isOpen, setIsOpen, darkMode, setDarkMode }) {
           </div>
         </nav>
 
-        {/* Footer/Dark Mode Toggle */}
+        {/* Footer/Dark Mode Toggle with Subscription Status */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -175,8 +176,15 @@ export default function Sidebar({ isOpen, setIsOpen, darkMode, setDarkMode }) {
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   {user?.username || "User"}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user?.has_active_subscription ? "Premium User" : "Free Account"}
+                <p className="text-xs flex items-center gap-1">
+                  {user?.has_active_subscription ? (
+                    <>
+                      {/* <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse" /> */}
+                      <span className="text-green-600 dark:text-green-400 font-medium">Subscribed</span>
+                    </>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400">Free Account</span>
+                  )}
                 </p>
               </div>
             </div>
