@@ -14,56 +14,47 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from google.auth.transport.requests import Request
 from googleapiclient.discovery import build
+from decouple import config
 import logging
 logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------
 # Gmail API Email Sending (Single)
 # ----------------------------------------------------------------------
-
 def send_email_via_gmail(to_email, subject, plain_message, html_message=None):
     """
-    Send an email using the Gmail API with OAuth 2.0.
-    Requires a valid token.pickle file in the project root.
+    Send email using Gmail API.
+    Reads TOKEN_PICKLE and DEFAULT_FROM_EMAIL from .env or Railway.
     """
-    creds = None
-    token_path = os.path.join(settings.BASE_DIR, 'token.pickle')
+    token_env = config("TOKEN_PICKLE")
+    default_from = settings.DEFAULT_FROM_EMAIL
 
-    if os.path.exists(token_path):
-        with open(token_path, 'rb') as token:
-            creds = pickle.load(token)
+    creds = pickle.loads(base64.b64decode(token_env))
 
     # Refresh token if expired
-    if creds and creds.expired and creds.refresh_token:
+    if creds.expired and creds.refresh_token:
         creds.refresh(Request())
-        with open(token_path, 'wb') as token:
-            pickle.dump(creds, token)
+        # Optionally update token_env if you want to store refreshed token
 
-    if not creds:
-        raise Exception("No valid Gmail API credentials found. Run generate_token.py first.")
+    service = build('gmail', 'v1', credentials=creds)
 
-    try:
-        service = build('gmail', 'v1', credentials=creds)
+    # Build the email
+    if html_message:
+        msg = MIMEMultipart('alternative')
+        msg.attach(MIMEText(plain_message, 'plain'))
+        msg.attach(MIMEText(html_message, 'html'))
+    else:
+        msg = MIMEText(plain_message, 'plain')
 
-        # Build message
-        if html_message:
-            msg = MIMEMultipart('alternative')
-            msg.attach(MIMEText(plain_message, 'plain'))
-            msg.attach(MIMEText(html_message, 'html'))
-        else:
-            msg = MIMEText(plain_message, 'plain')
+    msg['to'] = to_email
+    msg['from'] = default_from
+    msg['subject'] = subject
 
-        msg['to'] = to_email
-        msg['from'] = settings.DEFAULT_FROM_EMAIL
-        msg['subject'] = subject
+    raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
+    body = {'raw': raw}
 
-        raw = base64.urlsafe_b64encode(msg.as_bytes()).decode()
-        body = {'raw': raw}
-
-        sent = service.users().messages().send(userId='me', body=body).execute()
-        return sent
-    except Exception as e:
-        raise Exception(f"Gmail API error: {e}")
+    sent = service.users().messages().send(userId='me', body=body).execute()
+    return sent
 
 # ----------------------------------------------------------------------
 # Password Reset Email
