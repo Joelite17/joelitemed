@@ -120,5 +120,8 @@
 .rich-text-answer li {
   margin-bottom: 0.25rem;
 }
-
+.nav-logo{
+  height: 10px;
+  width: auto;
+}
 /* End of osce answer listing */
