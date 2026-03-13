@@ -124,16 +124,15 @@ def text_to_html(text, wrap_paragraphs=True):
     else:
         return '<br>\n'.join(output_lines)
 
-
 # ----------------------------------------------------------------------
-#  Form for JSON upload (multiple files, no title)
+#  Form for JSON upload – updated help text
 # ----------------------------------------------------------------------
 class OSCEUploadForm(forms.Form):
     overwrite = forms.BooleanField(
         required=False,
         initial=False,
         label='Overwrite existing sets with same title',
-        help_text='If checked, will delete existing set with same title and create new one.'
+        help_text='If checked, any existing set with the same title will have its cards replaced (the set ID stays the same).'
     )
 
 # ----------------------------------------------------------------------
@@ -154,7 +153,7 @@ class OSCECardInline(admin.TabularInline):
     extra = 1
 
 # ----------------------------------------------------------------------
-#  OSCESet Admin (with JSON upload)
+#  OSCESet Admin – MODIFIED _process_new_format and _process_old_format
 # ----------------------------------------------------------------------
 @admin.register(OSCESet)
 class OSCESetAdmin(admin.ModelAdmin):
@@ -260,7 +259,7 @@ class OSCESetAdmin(admin.ModelAdmin):
             return {'success': False, 'message': f"Failed: {str(e)}"}
 
     # ------------------------------------------------------------------
-    #  New format processor (array with metadata)
+    #  New format processor (array with metadata) – MODIFIED
     # ------------------------------------------------------------------
     def _process_new_format(self, json_list, overwrite, user, filename):
         meta = json_list[0]['META_DATA']
@@ -279,13 +278,25 @@ class OSCESetAdmin(admin.ModelAdmin):
         course_mode = course_map.get(meta.get('COURSE', '').upper(), 'commed')
 
         if overwrite:
-            OSCESet.objects.filter(title=final_title).delete()
-
-        osce_set = OSCESet.objects.create(
-            title=final_title,
-            user=user,
-            course_mode=course_mode
-        )
+            # Find or create set with same title
+            osce_set, created = OSCESet.objects.get_or_create(
+                title=final_title,
+                defaults={'user': user, 'course_mode': course_mode}
+            )
+            if not created:
+                # Set already existed – delete its cards (cascade to questions/answers)
+                osce_set.cards.all().delete()
+                # Update metadata
+                osce_set.user = user
+                osce_set.course_mode = course_mode
+                osce_set.save()
+        else:
+            # Always create a new set
+            osce_set = OSCESet.objects.create(
+                title=final_title,
+                user=user,
+                course_mode=course_mode
+            )
 
         cards_created = 0
         # Process each subsequent element (each is a card object)
@@ -351,20 +362,29 @@ class OSCESetAdmin(admin.ModelAdmin):
         }
 
     # ------------------------------------------------------------------
-    #  Old format processor (backward compatibility)
+    #  Old format processor (backward compatibility) – MODIFIED
     # ------------------------------------------------------------------
     def _process_old_format(self, json_dict, overwrite, user, filename):
         # Use filename as title (without extension)
         final_title = filename.rsplit('.', 1)[0] if filename else 'Untitled Set'
 
         if overwrite:
-            OSCESet.objects.filter(title=final_title).delete()
-
-        osce_set = OSCESet.objects.create(
-            title=final_title,
-            user=user,
-            course_mode='commed'  # default for legacy
-        )
+            osce_set, created = OSCESet.objects.get_or_create(
+                title=final_title,
+                defaults={'user': user, 'course_mode': 'commed'}
+            )
+            if not created:
+                # Set existed – delete cards, update metadata
+                osce_set.cards.all().delete()
+                osce_set.user = user
+                osce_set.course_mode = 'commed'
+                osce_set.save()
+        else:
+            osce_set = OSCESet.objects.create(
+                title=final_title,
+                user=user,
+                course_mode='commed'
+            )
 
         cards_created = 0
         for card_key, card_data in json_dict.items():

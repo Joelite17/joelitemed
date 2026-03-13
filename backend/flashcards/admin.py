@@ -16,7 +16,7 @@ class FlashcardUploadForm(forms.Form):
         required=False,
         initial=False,
         label='Overwrite existing sets with same title',
-        help_text='If checked, any existing set with the same title will be deleted before creating a new one.'
+        help_text='If checked, any existing set with the same title will have its cards replaced (the set ID stays the same).'
     )
 
 # ----------------------------------------------------------------------
@@ -161,7 +161,7 @@ class FlashcardSetAdmin(admin.ModelAdmin):
             return {'success': False, 'message': f"Failed: {str(e)}"}
 
     # ------------------------------------------------------------------
-    #  New format processor (array with metadata)
+    #  New format processor (array with metadata) – MODIFIED
     # ------------------------------------------------------------------
     def _process_new_format(self, json_list, overwrite, user, filename):
         meta = json_list[0]['META_DATA']
@@ -180,13 +180,25 @@ class FlashcardSetAdmin(admin.ModelAdmin):
         course_mode = course_map.get(meta.get('COURSE', '').upper(), 'commed')
 
         if overwrite:
-            FlashcardSet.objects.filter(title=final_title).delete()
-
-        flashcard_set = FlashcardSet.objects.create(
-            title=final_title,
-            user=user,
-            course_mode=course_mode
-        )
+            # Try to get existing set with same title
+            flashcard_set, created = FlashcardSet.objects.get_or_create(
+                title=final_title,
+                defaults={'user': user, 'course_mode': course_mode}
+            )
+            if not created:
+                # Set already existed – delete its cards (keep the set itself)
+                flashcard_set.cards.all().delete()
+                # Update metadata (user and course_mode may have changed)
+                flashcard_set.user = user
+                flashcard_set.course_mode = course_mode
+                flashcard_set.save()
+        else:
+            # No overwrite – always create a new set (even if title duplicates)
+            flashcard_set = FlashcardSet.objects.create(
+                title=final_title,
+                user=user,
+                course_mode=course_mode
+            )
 
         cards_created = 0
         # Process each subsequent element (each is a card object)
@@ -224,23 +236,29 @@ class FlashcardSetAdmin(admin.ModelAdmin):
         }
 
     # ------------------------------------------------------------------
-    #  Old format processor (backward compatibility)
+    #  Old format processor (backward compatibility) – MODIFIED
     # ------------------------------------------------------------------
     def _process_old_format(self, json_dict, overwrite, user, filename):
         # Use filename as title (without extension)
-        if filename:
-            final_title = filename.rsplit('.', 1)[0]
-        else:
-            final_title = 'Untitled Set'
+        final_title = filename.rsplit('.', 1)[0] if filename else 'Untitled Set'
 
         if overwrite:
-            FlashcardSet.objects.filter(title=final_title).delete()
-
-        flashcard_set = FlashcardSet.objects.create(
-            title=final_title,
-            user=user,
-            course_mode='commed'  # default for legacy
-        )
+            flashcard_set, created = FlashcardSet.objects.get_or_create(
+                title=final_title,
+                defaults={'user': user, 'course_mode': 'commed'}
+            )
+            if not created:
+                # Set existed – delete its cards, update metadata
+                flashcard_set.cards.all().delete()
+                flashcard_set.user = user
+                flashcard_set.course_mode = 'commed'
+                flashcard_set.save()
+        else:
+            flashcard_set = FlashcardSet.objects.create(
+                title=final_title,
+                user=user,
+                course_mode='commed'
+            )
 
         cards_created = 0
         for card_key, card_data in json_dict.items():

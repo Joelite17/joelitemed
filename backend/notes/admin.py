@@ -196,7 +196,7 @@ def json_to_note_html(json_data):
     return '\n'.join(html_parts)
 
 # ----------------------------------------------------------------------
-#  Upload Form – only file and overwrite (no title/visibility fields)
+#  Upload Form – updated help text
 # ----------------------------------------------------------------------
 class NoteDocumentUploadForm(forms.Form):
     document = forms.FileField(
@@ -207,11 +207,11 @@ class NoteDocumentUploadForm(forms.Form):
         required=False,
         initial=False,
         label='Overwrite existing note with same title',
-        help_text='If checked, will delete existing note with same title and create new one.'
+        help_text='If checked, any existing note with the same title will have its content replaced (the note ID stays the same).'
     )
 
 # ----------------------------------------------------------------------
-#  Note Admin
+#  Note Admin – MODIFIED process_document_data
 # ----------------------------------------------------------------------
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('title', 'user', 'visibility', 'created_at', 'likes_count')
@@ -266,8 +266,6 @@ class NoteAdmin(admin.ModelAdmin):
                     else:
                         # For .txt/.docx, we still need a way to provide title/visibility,
                         # but since the form no longer has those fields, we'll show an error
-                        # or you could auto‑extract title and default to private.
-                        # For simplicity, we'll error out – user should use JSON.
                         messages.error(request, "Only JSON files are supported. Please upload a JSON file with metadata.")
                         return HttpResponseRedirect(request.path_info)
 
@@ -305,14 +303,32 @@ class NoteAdmin(admin.ModelAdmin):
         try:
             with transaction.atomic():
                 if overwrite:
-                    Note.objects.filter(title=title).delete()
-                note = Note.objects.create(
-                    title=title,
-                    content=html_content,
-                    user=user,
-                    visibility=visibility,
-                    course_mode=course_mode
-                )
+                    # Try to get existing note with same title
+                    note, created = Note.objects.get_or_create(
+                        title=title,
+                        defaults={
+                            'content': html_content,
+                            'user': user,
+                            'visibility': visibility,
+                            'course_mode': course_mode
+                        }
+                    )
+                    if not created:
+                        # Note existed – update its fields
+                        note.content = html_content
+                        note.user = user
+                        note.visibility = visibility
+                        note.course_mode = course_mode
+                        note.save()
+                else:
+                    # Always create a new note
+                    note = Note.objects.create(
+                        title=title,
+                        content=html_content,
+                        user=user,
+                        visibility=visibility,
+                        course_mode=course_mode
+                    )
                 return {'success': True, 'note_id': note.id}
         except Exception as e:
             return {'success': False, 'message': f"Failed to create note: {str(e)}"}
