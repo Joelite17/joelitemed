@@ -242,10 +242,10 @@ def get_user_progress(user, set_obj, item_queryset, items_per_set=10):
     }
 
 
+from django.utils import timezone
+from datetime import timedelta
+
 def increment_attempt_count(user, set_obj):
-    """
-    Increment attempt count ONLY when the user completes a batch.
-    """
     if not user or not user.is_authenticated:
         return 0
 
@@ -259,8 +259,17 @@ def increment_attempt_count(user, set_obj):
             object_id=set_obj.id,
             defaults={'attempt_count': 0}
         )
+
+        # For free users, prevent incrementing if they already have a batch completed within 24h
+        if not user.has_active_subscription and not created:
+            if attempt.attempt_count >= 1 and attempt.last_attempted:
+                if (timezone.now() - attempt.last_attempted) < timedelta(days=1):
+                    # Still within cooldown – do not increment
+                    return attempt.attempt_count
+
+        # Allowed to increment
         attempt.attempt_count += 1
-        attempt.last_attempted = datetime.now()
+        attempt.last_attempted = timezone.now()
         attempt.save()
 
     return attempt.attempt_count

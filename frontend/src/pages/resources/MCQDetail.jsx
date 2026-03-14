@@ -137,8 +137,16 @@ export default function MCQDetailPage() {
             "You've used your 60 minutes of free access today. " +
             "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
           );
-        } else {
-          // Generic subscription message for other 403 errors
+        }
+        // Check for daily batch limit
+        else if (errorCode === 'daily_batch_limit' || errorDetail.includes('one batch')) {
+          setTrialExpiredMessage(
+            "You have already completed one batch of this MCQ set today. " +
+            "Please subscribe to continue now, or wait 24 hours."
+          );
+        }
+        // Generic subscription message for other 403 errors
+        else {
           setTrialExpiredMessage(
             "You've reached a limit for free access. " +
             "Please subscribe to continue."
@@ -150,7 +158,7 @@ export default function MCQDetailPage() {
         return; // Exit early – no further processing
       }
 
-      // For other errors, just set empty questions (but keep showTrialExpired false)
+      // For other errors, just set empty questions
       if (mounted.current) setQuestions([]);
     } finally {
       if (mounted.current && !showTrialExpired) setLoading(false);

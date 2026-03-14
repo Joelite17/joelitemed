@@ -1,89 +1,77 @@
-from rest_framework.permissions import BasePermission
-from rest_framework.exceptions import APIException
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 from django.utils import timezone
 from datetime import timedelta
+from .models import UserSetAttempt, FreeTrialUsage
 from django.contrib.contenttypes.models import ContentType
-from .models import FreeTrialUsage
-from osces.models import OSCESet
-from subscriptions.models import UserSubscription
 
-# ----------------------------------------------------------------------
-# Custom exceptions (unchanged)
-# ----------------------------------------------------------------------
-class FreeTrialExpired(APIException):
-    status_code = 403
-    default_detail = "Your free trial has expired. Please subscribe to continue."
-    default_code = 'free_trial_expired'
-
-class OSCEBatchLimitExceeded(APIException):
-    status_code = 403
-    default_detail = "You can only access one OSCE set for free. Please subscribe to access more."
-    default_code = 'osce_batch_limit_exceeded'
-
-# ----------------------------------------------------------------------
-# Permission class – modified to use first_osce_set instead of attempt count
-# ----------------------------------------------------------------------
-class HasFreeAccessOrSubscription(BasePermission):
+class HasFreeAccessOrSubscription(permissions.BasePermission):
     """
-    - Active subscription → allow all.
-    - Otherwise, 60‑minute daily trial (global).
-    - For OSCE sets, additionally restrict to **one set total** (the first accessed).
+    Custom permission for free users:
+    - 60 minutes total per day (across all content).
+    - For MCQ/Flashcard sets: one batch (10 items) per set per day (resets after 24h).
+    - For OSCE sets: only one batch total across all sets (no reset).
     """
-
-    def _has_active_subscription(self, user):
-        """Check if the user has a valid, active subscription."""
-        return UserSubscription.objects.filter(
-            user=user,
-            is_active=True,
-            expires_at__gt=timezone.now()
-        ).exists()
-
-    def has_permission(self, request, view):
-        """
-        Global permission check: user must be authenticated, and daily trial is enforced.
-        """
-        if not request.user or not request.user.is_authenticated:
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        if not user.is_authenticated:
             return False
 
-        # Subscribed users bypass all further checks
-        if self._has_active_subscription(request.user):
+        # 1. Active subscription → always allowed
+        if user.has_active_subscription:
             return True
 
-        # 60‑minute daily trial (same as before)
+        # 2. Daily free trial time limit (60 minutes)
         today = timezone.now().date()
-        usage, created = FreeTrialUsage.objects.get_or_create(
-            user=request.user,
-            date=today,
-            defaults={'first_access': timezone.now()}
-        )
-        if not created:
-            time_elapsed = timezone.now() - usage.first_access
-            if time_elapsed > timedelta(minutes=60):
-                raise FreeTrialExpired()
+        usage = FreeTrialUsage.objects.filter(user=user, date=today).first()
+        if usage:
+            if (timezone.now() - usage.first_access).total_seconds() > 60 * 60:
+                raise PermissionDenied(
+                    detail="You have used your 60 minutes of free access today. Please subscribe or wait 24 hours.",
+                    code="free_trial_expired"
+                )
+        else:
+            FreeTrialUsage.objects.create(user=user, date=today, first_access=timezone.now())
 
-        return True
+        model_name = obj._meta.model_name
 
-    def has_object_permission(self, request, view, obj):
-        """
-        Object‑level permission. Only applies to OSCE sets.
-        For non‑OSCE resources, no extra restriction.
-        """
-        # Subscribed users always allowed
-        if self._has_active_subscription(request.user):
-            return True
+        # 3. MCQ / Flashcard sets: per‑set daily batch limit
+        if model_name == 'mcqset':
+            content_type = ContentType.objects.get_for_model(obj)
+            try:
+                attempt = UserSetAttempt.objects.get(
+                    user=user,
+                    content_type=content_type,
+                    object_id=obj.id
+                )
+            except UserSetAttempt.DoesNotExist:
+                attempt = None
 
-        # Only enforce the one‑set limit for OSCE sets
-        if isinstance(obj, OSCESet):
-            # If user has no first_osce_set yet, the view will set it – allow for now
-            if request.user.first_osce_set is None:
-                return True
+            if attempt and attempt.attempt_count >= 1:
+                # Check if last attempt was within the last 24 hours
+                if attempt.last_attempted and (timezone.now() - attempt.last_attempted) < timedelta(days=1):
+                    raise PermissionDenied(
+                        detail="You have already completed one batch of this set today. Please subscribe or wait 24 hours.",
+                        code="daily_batch_limit"
+                    )
+                else:
+                    # More than 24 hours ago → reset attempt count so user starts from batch 1
+                    attempt.attempt_count = 0
+                    attempt.save()
 
-            # If this is the same set they already accessed, allow
-            if request.user.first_osce_set == obj:
-                return True
+        # 4. OSCE sets: global limit – only one batch total across all OSCE sets
+        elif model_name == 'osceset':
+            osce_content_type = ContentType.objects.get_for_model(obj)
+            # If the user has any OSCE set attempt with attempt_count >= 1, block access
+            if UserSetAttempt.objects.filter(
+                user=user,
+                content_type=osce_content_type,
+                attempt_count__gte=1
+            ).exists():
+                raise PermissionDenied(
+                    detail="You have completed one OSCE batch. Please subscribe to continue with more OSCE stations.",
+                    code="osce_batch_limit_exceeded"
+                )
 
-            # Otherwise, they are trying to access a different set – block
-            raise OSCEBatchLimitExceeded()
-
-        # For any other resource type (MCQ, Flashcard, Note, etc.), no extra limit
+        # All checks passed → allow access
         return True
