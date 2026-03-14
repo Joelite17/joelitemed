@@ -1,12 +1,14 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.utils import timezone
 from accounts.utils import get_next_items_for_user, increment_attempt_count, get_user_progress
-from .models import *
-from .serializers import *
+from .models import OSCESet, OSCECard
+from .serializers import OSCESetSerializer, OSCECardSerializer
 from accounts.models import UserSetAttempt
 from django.contrib.contenttypes.models import ContentType
-from accounts.permissions import HasFreeAccessOrSubscription   # <-- new
+from accounts.permissions import HasFreeAccessOrSubscription
+from subscriptions.models import UserSubscription
 
 class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = OSCESet.objects.all()
@@ -25,33 +27,52 @@ class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(course_mode=user.course_mode)
         return queryset
 
+    def _has_active_subscription(self, user):
+        """Check if the user has a valid active subscription."""
+        if not user.is_authenticated:
+            return False
+        return UserSubscription.objects.filter(
+            user=user,
+            is_active=True,
+            expires_at__gt=timezone.now()
+        ).exists()
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
         data = serializer.data
-        
+
+        user = request.user
+
+        # --- NEW: For unpaid users, record the first OSCE set they ever access ---
+        if user.is_authenticated and not self._has_active_subscription(user):
+            if user.first_osce_set is None:
+                # This is their first OSCE access – save it
+                user.first_osce_set = instance
+                user.save(update_fields=['first_osce_set'])
+
         # Get next 10 OSCE cards for this user
         cards = get_next_items_for_user(
-            request.user,
+            user,
             instance,
             instance.cards.all(),
             items_per_set=10
         )
-        
+
         # Get user progress
         progress = get_user_progress(
-            request.user,
+            user,
             instance,
             instance.cards.all(),
             items_per_set=10
         )
-        
+
         # Update cards in response
         data["cards"] = OSCECardSerializer(cards, many=True).data
         data["progress"] = progress
-        
+
         return Response(data)
-    
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def toggle_like(self, request, pk=None):
         osce_set = self.get_object()
@@ -66,7 +87,7 @@ class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
             "liked": liked,
             "likes_count": osce_set.likes.count()
         })
-    
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def increment_attempt(self, request, pk=None):
         """
@@ -74,7 +95,7 @@ class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
         """
         instance = self.get_object()
         new_count = increment_attempt_count(request.user, instance)
-        
+
         # Get updated progress
         progress = get_user_progress(
             request.user,
@@ -82,14 +103,14 @@ class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
             instance.cards.all(),
             items_per_set=10
         )
-        
+
         return Response({
             "success": True,
             "attempt_count": new_count,
             "progress": progress,
             "message": f"Attempt count incremented to {new_count}"
         })
-    
+
     @action(detail=True, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def get_progress(self, request, pk=None):
         """
@@ -102,10 +123,11 @@ class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
             instance.cards.all(),
             items_per_set=10
         )
-        
+
         return Response({
             "progress": progress
         })
+
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def reset_attempt(self, request, pk=None):
         """Reset attempt count to 0 so the user can restart from batch 1."""

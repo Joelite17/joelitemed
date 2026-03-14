@@ -12,15 +12,24 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password  # ADD THIS
 import logging
+import uuid
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
 def get_tokens_for_user(user):
-    refresh = RefreshToken.for_user(user)
-    return {"refresh": str(refresh), "access": str(refresh.access_token)}
+    # Generate a new session ID if not already present (it will be present after login)
+    if not user.current_session_id:
+        user.current_session_id = str(uuid.uuid4())
+        user.save(update_fields=['current_session_id'])
 
+    refresh = RefreshToken.for_user(user)
+    # Add custom claim
+    refresh['session_id'] = user.current_session_id
+    access = refresh.access_token
+
+    return {"refresh": str(refresh), "access": str(access)}
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = (permissions.AllowAny,)
@@ -56,6 +65,11 @@ class LoginView(APIView):
             serializer = LoginSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data["user"]
+
+            # --- NEW: Generate a fresh session ID ---
+            user.current_session_id = str(uuid.uuid4())
+            user.save(update_fields=['current_session_id'])
+            # ----------------------------------------
             tokens = get_tokens_for_user(user)
             
             # Include user data with dark_mode in response
@@ -80,13 +94,15 @@ class LoginView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
 class LogoutView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def post(self, request):
         try:
-            # With JWT, logout is client-side, but you can blacklist the token if needed
-            # For now, just return success
+            # Clear the session ID
+            request.user.current_session_id = None
+            request.user.save(update_fields=['current_session_id'])
             return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
         except Exception as e:
             logger.error(f"Logout error: {str(e)}")
@@ -94,7 +110,7 @@ class LogoutView(APIView):
                 {"detail": "An error occurred during logout."},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
+        
 class PasswordResetRequestView(APIView):
     permission_classes = (permissions.AllowAny,)
 

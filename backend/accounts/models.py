@@ -22,6 +22,14 @@ class User(AbstractUser):
         null=True,
         help_text="User's selected course mode for content filtering"
     )
+    first_osce_set = models.ForeignKey(
+        'osces.OSCESet',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="The first OSCE set the user accessed for free (one‑set limit)."
+    )
+    current_session_id = models.CharField(max_length=100, null=True, blank=True, editable=False)
     
     @property
     def has_active_subscription(self):
