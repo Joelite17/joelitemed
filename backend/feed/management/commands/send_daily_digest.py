@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from feed.models import FeedItem
 from accounts.models import User
-from accounts.utils import send_bulk_html_email
+from accounts.utils import send_bulk_html_email_direct
 from datetime import timedelta
 import logging
 from decouple import config
@@ -43,7 +43,7 @@ class Command(BaseCommand):
         email_list = [user.email for user in users]
 
         # Send using multithreading
-        send_bulk_html_email(
+        send_bulk_html_email_direct(
             subject=subject,
             template_name='emails/daily_digest.html',
             context=context,
