@@ -1,9 +1,9 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from django.conf import settings
+from django.template.loader import render_to_string
 from feed.models import FeedItem
 from accounts.models import User
-from accounts.utils import send_bulk_html_email_direct
+from accounts.utils import send_bulk_html_email_direct   # Use the correct function
 from datetime import timedelta
 import logging
 from decouple import config
@@ -40,13 +40,17 @@ class Command(BaseCommand):
             'now': now,
         }
 
+        # ✅ Render the template to strings
+        html_message = render_to_string('emails/daily_digest.html', context)
+        plain_message = f"Please enable HTML to view this email, or visit {config('FRONTEND_URL')}"
+
         email_list = [user.email for user in users]
 
-        # Send using multithreading
+        # ✅ Call the bulk sender with pre‑rendered messages
         send_bulk_html_email_direct(
             subject=subject,
-            template_name='emails/daily_digest.html',
-            context=context,
+            html_message=html_message,
+            plain_message=plain_message,
             recipient_list=email_list,
             max_workers=10
         )
