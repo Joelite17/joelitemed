@@ -1,12 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
+import { MCQAPI, ScoreAPI } from "../../apis/mcqs";
 import { useParams, useNavigate } from "react-router-dom";
-import { ContestAPI } from "../../apis/contests";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
+import SubscriptionBlock from "../../components/SubscriptionBlock";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
-export default function ContestTake() {
-  const { participationId } = useParams();
+export default function MCQDetailPage() {
+  const { id: mcqSetId } = useParams();
   const navigate = useNavigate();
 
   const [questions, setQuestions] = useState([]);
@@ -17,15 +18,20 @@ export default function ContestTake() {
   const [totalPossibleScore, setTotalPossibleScore] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [timeLeft, setTimeLeft] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [error, setError] = useState("");
-
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [pendingCompletion, setPendingCompletion] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [showCompletedPage, setShowCompletedPage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
+
+  // Trial expired state
+  const [showTrialExpired, setShowTrialExpired] = useState(false);
+  const [trialExpiredMessage, setTrialExpiredMessage] = useState("");
+
+  // SuccessCheck states
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [pendingNextBatch, setPendingNextBatch] = useState(false);
+  const [pendingRestart, setPendingRestart] = useState(false);
 
   const mounted = useRef(true);
   useEffect(() => {
@@ -47,189 +53,145 @@ export default function ContestTake() {
   }, [loading]);
 
   useEffect(() => {
-    fetchParticipation();
-  }, [participationId]);
+    fetchSet();
+  }, [mcqSetId]);
 
-  const tfMapToSelectedKey = (tfMap, optionsKeys) => {
-    if (!tfMap) return null;
-    for (let key of optionsKeys) {
-      if (tfMap[key] === "T") return key;
-    }
-    return null;
-  };
-
-  const fetchParticipation = async () => {
+  const fetchSet = async () => {
     if (!mounted.current) return;
     setLoading(true);
     try {
-      const data = await ContestAPI.getParticipation(participationId);
+      const data = await MCQAPI.fetchMCQSet(mcqSetId);
       if (!mounted.current) return;
 
-      if (data.status === "completed") {
-        navigate(`/contest/answers/${participationId}`);
+      if ((!data || !data.mcqs || data.mcqs.length === 0) && data?.progress?.has_completed) {
+        setShowCompletedPage(true);
+        setProgress(data.progress);
+        setQuestions([]);
+        setLoading(false);
         return;
       }
 
-      const formatted = (data.questions || []).map((q) => {
-        const opts = q.options || [];
-        const trueAnswers = opts.filter((opt) => opt.is_correct).map((opt) => opt.key);
-        return {
-          id: q.id,
-          question: q.question,
-          mcq_type: q.mcq_type || (trueAnswers.length === 1 ? "MC" : "TF"),
-          options: opts.reduce((acc, opt) => {
-            acc[opt.key] = opt.text;
-            return acc;
-          }, {}),
-          trueAnswers,
-          explanation: q.explanation || "",
-        };
-      });
+      if (!data || !data.mcqs || data.mcqs.length === 0) {
+        setQuestions([]);
+        setLoading(false);
+        return;
+      }
+
+      const formatted = data.mcqs.map((q) => ({
+        id: q.id,
+        question: q.question,
+        mcq_type: q.mcq_type,
+        options: q.options.reduce((acc, opt) => {
+          acc[opt.key] = opt.text;
+          return acc;
+        }, {}),
+        trueAnswers: q.options.filter((o) => o.is_correct).map((o) => o.key),
+        explanation: q.explanation || "",
+      }));
       setQuestions(formatted);
-
-      const savedAnswers = data.answers || {};
-      const initialSelected = {};
-      formatted.forEach((q, idx) => {
-        const savedTfMap = savedAnswers[q.id];
-        if (q.mcq_type === "TF") {
-          initialSelected[idx] = savedTfMap || {};
-        } else {
-          const optionsKeys = Object.keys(q.options);
-          initialSelected[idx] = tfMapToSelectedKey(savedTfMap, optionsKeys);
-        }
-      });
-      setSelectedOptions(initialSelected);
-
-      // Total possible: TF = sum of options, MC = 1 each
-      const totalPoints = formatted.reduce((sum, q) => {
-        if (q.mcq_type === "TF") return sum + Object.keys(q.options).length;
-        return sum + 1;
-      }, 0);
-      setTotalPossibleScore(totalPoints);
-
-      if (data.end_time) {
-        setEndTime(data.end_time);
-        const now = new Date();
-        const end = new Date(data.end_time);
-        const diff = end - now;
-        if (diff > 0) {
-          setTimeLeft({
-            minutes: Math.floor(diff / 60000),
-            seconds: Math.floor((diff % 60000) / 1000),
-          });
-        } else {
-          setTimeLeft({ minutes: 0, seconds: 0 });
-          handleTimeExpired();
-        }
-      }
-
-      setMode("exam");
       setCurrent(0);
+      setSelectedOptions({});
+      setMode("exam");
       setShowExplanation(false);
-    } catch (err) {
-      console.error("Error fetching participation:", err);
-      setError("Failed to load contest. Please try again.");
-    } finally {
-      if (mounted.current) setLoading(false);
-    }
-  };
+      setShowCompletedPage(false);
 
-  useEffect(() => {
-    if (!timeLeft || mode !== "exam" || !endTime) return;
-    const interval = setInterval(() => {
-      const now = new Date();
-      const end = new Date(endTime);
-      const diff = end - now;
-      if (diff <= 0) {
-        clearInterval(interval);
-        setTimeLeft({ minutes: 0, seconds: 0 });
-        handleTimeExpired();
+      if (data.progress) {
+        setProgress(data.progress);
       } else {
-        setTimeLeft({
-          minutes: Math.floor(diff / 60000),
-          seconds: Math.floor((diff % 60000) / 1000),
-        });
+        try {
+          const progressData = await MCQAPI.getProgress(mcqSetId);
+          if (mounted.current) {
+            setProgress(progressData.progress);
+          }
+        } catch (err) {
+          console.warn("Could not fetch progress:", err);
+          if (mounted.current) {
+            setProgress({
+              attempt_count: 0,
+              current_batch: 1,
+              total_batches: 1,
+              progress_percentage: 0,
+              has_completed: false,
+            });
+          }
+        }
       }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timeLeft, mode, endTime]);
+    } catch (err) {
+      console.error("Error fetching MCQ set:", err);
 
-  const handleTimeExpired = () => {
-    setSuccessMessage("⏰ Time's up! Submitting your answers...");
-    setShowSuccess(true);
-    setTimeout(() => handleSubmitContest(true), 1000);
-  };
+      // Log detailed error information for debugging
+      if (err.response) {
+        console.log("Error status:", err.response.status);
+        console.log("Error data:", err.response.data);
+      }
 
-  const getTfMapForSaving = (questionIdx) => {
-    const q = questions[questionIdx];
-    const answer = selectedOptions[questionIdx];
-    if (q.mcq_type === "TF") {
-      return answer || {};
-    } else {
-      const map = {};
-      Object.keys(q.options).forEach((key) => {
-        map[key] = answer === key ? "T" : "F";
-      });
-      return map;
+      // Handle permission errors (403)
+      if (err.response?.status === 403) {
+        const errorData = err.response.data || {};
+        const errorCode = errorData.code;
+        const errorDetail = errorData.detail || errorData.message || "";
+
+        // Check for free trial expired
+        if (errorCode === 'free_trial_expired' || errorDetail.includes('free trial')) {
+          setTrialExpiredMessage(
+            "You've used your 60 minutes of free access today. " +
+            "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
+          );
+        }
+        // Check for daily batch limit
+        else if (errorCode === 'daily_batch_limit' || errorDetail.includes('one batch')) {
+          setTrialExpiredMessage(
+            "You have already completed one batch of this MCQ set today. " +
+            "Please subscribe to continue now, or wait 24 hours."
+          );
+        }
+        // Generic subscription message for other 403 errors
+        else {
+          setTrialExpiredMessage(
+            "You've reached a limit for free access. " +
+            "Please subscribe to continue."
+          );
+        }
+        setShowTrialExpired(true);
+        setQuestions([]);
+        setLoading(false);
+        return; // Exit early – no further processing
+      }
+
+      // For other errors, just set empty questions
+      if (mounted.current) setQuestions([]);
+    } finally {
+      if (mounted.current && !showTrialExpired) setLoading(false);
     }
   };
 
-  const saveAnswer = useCallback(
-    async (questionIdx) => {
-      const q = questions[questionIdx];
-      if (!q) return;
-      const tfMap = getTfMapForSaving(questionIdx);
-      try {
-        await ContestAPI.submitAnswer(participationId, q.id, tfMap);
-      } catch (err) {
-        console.error(`Failed to save answer for question ${questionIdx}:`, err);
-      }
-    },
-    [participationId, selectedOptions, questions]
-  );
-
-  useEffect(() => {
-    if (mode !== "exam" || !questions[current]) return;
-    const timeout = setTimeout(() => {
-      saveAnswer(current);
-    }, 500);
-    return () => clearTimeout(timeout);
-  }, [selectedOptions, current, mode, questions, saveAnswer]);
-
-  const handleOptionChange = (questionIdx, optKey, value = null) => {
+  const handleOptionChange = (questionIndex, optKey, value = null) => {
     if (mode !== "exam") return;
-    const q = questions[questionIdx];
+    const q = questions[questionIndex];
     if (!q) return;
 
-    if (q.mcq_type === "TF") {
+    if (q.mcq_type === 'TF') {
       setSelectedOptions((prev) => ({
         ...prev,
-        [questionIdx]: {
-          ...prev[questionIdx],
-          [optKey]: prev[questionIdx]?.[optKey] === value ? null : value,
+        [questionIndex]: {
+          ...prev[questionIndex],
+          [optKey]: prev[questionIndex]?.[optKey] === value ? null : value,
         },
       }));
     } else {
       setSelectedOptions((prev) => ({
         ...prev,
-        [questionIdx]: optKey,
+        [questionIndex]: optKey,
       }));
     }
   };
 
   const handleNext = () => {
-    if (mode === "exam") {
-      saveAnswer(current);
-    }
     if (current < questions.length - 1) {
       setCurrent(current + 1);
       setShowExplanation(false);
     } else {
-      if (mode === "exam") {
-        handleSubmitContest();
-      } else if (mode === "review") {
-        setMode("result");
-      }
+      handleSubmit();
     }
   };
 
@@ -240,13 +202,16 @@ export default function ContestTake() {
     }
   };
 
-  // Scoring – exactly as in MCQDetailPage
-  const computeScore = () => {
+  const handleSubmit = async () => {
+    if (isSubmittingRef.current || submitting) return;
+    isSubmittingRef.current = true;
+    setSubmitting(true);
+
     let totalScore = 0;
     let totalPossible = 0;
 
     questions.forEach((q, idx) => {
-      if (q.mcq_type === "TF") {
+      if (q.mcq_type === 'TF') {
         const selected = selectedOptions[idx] || {};
         Object.keys(q.options).forEach((key) => {
           const isTrue = q.trueAnswers.includes(key);
@@ -264,51 +229,65 @@ export default function ContestTake() {
       }
     });
 
-    return { score: Math.max(0, totalScore), totalPossible };
-  };
-
-  const handleSubmitContest = async (isAuto = false) => {
-    if (mode !== "exam" || isSubmittingRef.current) return;
-    isSubmittingRef.current = true;
-    setSubmitting(true);
-
-    try {
-      await saveAnswer(current);
-    } catch (err) {
-      console.error("Failed to save current question before submit:", err);
-    }
-
-    const { score: finalScore, totalPossible } = computeScore();
-    setScore(finalScore);
-    setTotalPossibleScore(totalPossible);
-
-    try {
-      const result = await ContestAPI.submitContest(participationId);
-      if (!mounted.current) return;
+    if (mode === "exam") {
+      setScore(totalScore);
+      setTotalPossibleScore(totalPossible);
       setMode("result");
-      setPendingCompletion(true);
-      setSuccessMessage(
-        isAuto
-          ? "⏰ Time expired! Contest submitted."
-          : "✅ Contest submitted successfully!"
-      );
-      setShowSuccess(true);
-      setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 2000);
-    } catch (err) {
-      console.error("Error submitting contest:", err);
-      setError("Failed to submit contest. Please try again.");
-    } finally {
-      isSubmittingRef.current = false;
-      setSubmitting(false);
+      try {
+        await ScoreAPI.postScore(mcqSetId, totalScore, totalPossible);
+        const progressData = await MCQAPI.getProgress(mcqSetId);
+        if (!mounted.current) return;
+
+        if (progressData && progressData.progress) {
+          const updatedProgress = progressData.progress;
+          setProgress(updatedProgress);
+          if (updatedProgress.has_completed) {
+            setSuccessMessage("🎉 Full set completed! You've seen all questions.");
+            setShowSuccess(true);
+          }
+        }
+      } catch (err) {
+        console.error("Error posting score or fetching progress:", err);
+      } finally {
+        isSubmittingRef.current = false;
+        setSubmitting(false);
+      }
     }
   };
 
   const handleSuccessClose = () => {
     setShowSuccess(false);
-    if (pendingCompletion) {
-      setPendingCompletion(false);
+    if (pendingNextBatch) {
+      fetchSet();
+      setPendingNextBatch(false);
+    } else if (pendingRestart) {
+      fetchSet();
+      setPendingRestart(false);
+    }
+  };
+
+  const handleRetry = () => {
+    if (progress?.has_completed) {
+      handleRestart();
+    } else {
+      setPendingNextBatch(true);
+      setSuccessMessage("✅ Batch completed! Loading next batch...");
+      setShowSuccess(true);
+    }
+  };
+
+  const handleRestart = async () => {
+    setLoading(true);
+    try {
+      await MCQAPI.resetAttempt(mcqSetId);
+      await fetchSet();
+      setSuccessMessage("🔄 Set restarted! Starting from batch 1.");
+      setShowSuccess(true);
+    } catch (err) {
+      console.error("Failed to restart:", err);
+      setSuccessMessage("Could not restart set. Please try again.");
+      setShowSuccess(true);
+      setLoading(false);
     }
   };
 
@@ -318,18 +297,18 @@ export default function ContestTake() {
     setShowExplanation(false);
   };
 
-  const handleBackToContests = () => {
-    navigate("/contest");
-  };
-
   const getOptionStyle = (q, optKey) => {
     if (mode !== "review") return "";
     const selected = selectedOptions[current];
     const isCorrect = q.trueAnswers.includes(optKey);
-    if (q.mcq_type === "TF") return "";
-    if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
-    if (selected === optKey && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
-    return "";
+    
+    if (q.mcq_type === 'TF') {
+      return "";
+    } else {
+      if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
+      if (selected === optKey && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
+      return "";
+    }
   };
 
   const getCheckboxStyle = (optKey, value, isCorrect) => {
@@ -337,6 +316,7 @@ export default function ContestTake() {
     const selected = selectedOptions[current] || {};
     const userAnswer = selected[optKey];
     const correctValue = isCorrect ? "T" : "F";
+    
     if (value === correctValue) {
       return "bg-green-100 dark:bg-green-800/40 border-green-600";
     }
@@ -346,45 +326,88 @@ export default function ContestTake() {
     return "";
   };
 
-  const getNextButtonText = () => {
-    if (mode === "exam") {
-      return current < questions.length - 1 ? "Next" : "Submit";
-    } else if (mode === "review") {
-      return current < questions.length - 1 ? "Next" : "Finish Review";
-    }
-    return "Next";
-  };
-
   if (loading) {
-    return <Spinner fullScreen text="Loading contest..." />;
+    return <Spinner fullScreen text="Loading Questions..." />;
   }
 
-  if (error) {
+  // Trial expired view – shown instead of the content
+  if (showTrialExpired) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow text-center max-w-md">
-          <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
-          <button
-            onClick={() => navigate("/contest")}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Back to Contests
-          </button>
+      <div className="flex justify-center w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-10 px-4">
+        <div className="w-full lg:w-4/6">
+          <div className="flex items-center justify-between w-full mb-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 mr-1" />
+              Back
+            </button>
+            <div className="w-20"></div>
+            <div className="w-20"></div>
+          </div>
+          <SubscriptionBlock message={trialExpiredMessage} />
         </div>
       </div>
     );
   }
 
-  if (!questions || questions.length === 0) {
+  if (showCompletedPage) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow text-center">
-          <p className="mb-4">No questions available for this contest.</p>
+      <div className="flex justify-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-[calc(100vh-64px)] p-4">
+        <div className="w-full lg:w-4/6">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto">
+            <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-12 h-12 text-green-600 dark:text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-5m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              🎉 Congratulations!
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              You have completed all MCQ questions in this set.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleRestart}
+                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Restart Set
+              </button>
+              <button
+                onClick={() => navigate(-1)}
+                className="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 p-4">
+        <div className="text-center">
+          <p className="text-gray-600 dark:text-gray-300">No questions available for this set.</p>
           <button
-            onClick={() => navigate("/contest")}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            onClick={() => navigate(-1)}
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
           >
-            Back to Contests
+            Go Back
           </button>
         </div>
       </div>
@@ -402,9 +425,9 @@ export default function ContestTake() {
         onClose={handleSuccessClose}
       />
 
-      <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
+      <div className="flex flex-col items-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
         {mode !== "result" && (
-          <div className="w-full lg:w-4/6 flex justify-between items-center mb-4">
+          <div className="flex items-center justify-between w-full lg:w-4/6 mb-4">
             <button
               onClick={() => navigate(-1)}
               className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -415,18 +438,7 @@ export default function ContestTake() {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Question {current + 1} of {questions.length}
             </p>
-            {mode === "exam" && timeLeft && (
-              <div
-                className={`text-center text-lg font-mono px-4 py-2 rounded ${
-                  timeLeft.minutes === 0 && timeLeft.seconds <= 30
-                    ? "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 animate-pulse"
-                    : "bg-gray-100 dark:bg-gray-700"
-                }`}
-              >
-                {String(timeLeft.minutes).padStart(2, "0")}:
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </div>
-            )}
+            <div className="w-20"></div>
           </div>
         )}
 
@@ -444,21 +456,22 @@ export default function ContestTake() {
                   onClick={handleReview}
                   className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                 >
-                  Review Answers
+                  Review
                 </button>
                 <button
-                  onClick={handleBackToContests}
-                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600"
+                  onClick={handleRetry}
+                  disabled={submitting}
+                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Back to Contests
+                  {progress?.has_completed ? "Restart Set" : "Next Batch"}
                 </button>
               </div>
             </div>
           ) : (
             <>
-              <p className="text-base font-medium mb-4">{q.question}</p>
+              <p className="text-sm font-semibold mb-4">{q.question}</p>
 
-              {q.mcq_type === "TF" ? (
+              {q.mcq_type === 'TF' ? (
                 Object.entries(q.options).map(([optKey, optText]) => (
                   <div key={optKey} className="mb-4">
                     <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
@@ -466,6 +479,7 @@ export default function ContestTake() {
                         {optKey}. {optText}
                       </span>
                     </div>
+
                     <div className="flex gap-4 mt-1 px-2">
                       {["T", "F"].map((val) => (
                         <label
@@ -538,7 +552,7 @@ export default function ContestTake() {
                     {showExplanation ? "Hide Explanation" : "Show Explanation"}
                   </button>
                   {showExplanation && (
-                    <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-sm">
+                    <div className="mt-2 p-3 bg-gray-100 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 text-sm text-gray-900 dark:text-gray-100">
                       {q.explanation}
                     </div>
                   )}
@@ -557,13 +571,32 @@ export default function ContestTake() {
                 >
                   Back
                 </button>
-                <button
-                  onClick={handleNext}
-                  disabled={submitting}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {getNextButtonText()}
-                </button>
+
+                {mode === "exam" ? (
+                  <button
+                    onClick={handleNext}
+                    disabled={submitting}
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {current < questions.length - 1 ? "Next" : "Submit"}
+                  </button>
+                ) : mode === "review" ? (
+                  current < questions.length - 1 ? (
+                    <button
+                      onClick={handleNext}
+                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                      Next
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setMode("result")}
+                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                    >
+                      Finish Review
+                    </button>
+                  )
+                ) : null}
               </div>
             </>
           )}
