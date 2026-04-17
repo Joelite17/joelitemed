@@ -27,7 +27,17 @@ export default function ContestAnswers() {
           setError(data.detail || "The questions for this contest are no longer available.");
           setQuestions([]);
         } else {
-          setQuestions(data);
+          // Transform each question: convert options array to object { key: text }
+          const transformed = data.map((q) => ({
+            ...q,
+            optionsMap: Array.isArray(q.options)
+              ? q.options.reduce((acc, opt) => {
+                  acc[opt.key] = opt.text;
+                  return acc;
+                }, {})
+              : q.options,
+          }));
+          setQuestions(transformed);
         }
       } catch (err) {
         console.error("Error fetching answers:", err);
@@ -58,18 +68,21 @@ export default function ContestAnswers() {
     }
   };
 
-  const getCheckboxStyle = (optKey, val, correctAnswers, userAnswers) => {
-    const correctTF = correctAnswers?.[optKey] || "F";
-    const userTF = userAnswers?.[optKey];
-    if (userTF === val && val === correctTF) {
-      return "bg-green-100 dark:bg-green-800/40 border-green-600";
-    }
-    if (userTF === val && val !== correctTF) {
-      return "bg-red-100 dark:bg-red-800/40 border-red-600";
-    }
-    if (val === correctTF) {
-      return "bg-green-50 dark:bg-green-900/20 border-green-300";
-    }
+  // Styling for MC (radio) questions
+  const getOptionStyle = (q, optKey) => {
+    const isCorrect = q.correct_answers?.[optKey] === "T";
+    const userSelected = q.user_answers?.[optKey] === "T";
+    if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
+    if (userSelected && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
+    return "";
+  };
+
+  // Styling for TF (checkbox) questions
+  const getCheckboxStyle = (q, optKey, value) => {
+    const isCorrect = q.correct_answers?.[optKey] === value;
+    const userChoice = q.user_answers?.[optKey];
+    if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600";
+    if (userChoice === value && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600";
     return "";
   };
 
@@ -134,11 +147,10 @@ export default function ContestAnswers() {
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 space-y-6">
           <p className="text-base font-medium">{q.question}</p>
 
-          <div className="space-y-4">
-            {q.options?.map((opt) => {
-              const optKey = opt.key;
-              const optText = opt.text;
-              return (
+          {q.mcq_type === "TF" ? (
+            // True/False: per‑option checkboxes
+            <div className="space-y-4">
+              {Object.entries(q.optionsMap).map(([optKey, optText]) => (
                 <div key={optKey}>
                   <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
                     <span className="text-sm font-medium">
@@ -150,10 +162,9 @@ export default function ContestAnswers() {
                       <label
                         key={val}
                         className={`flex items-center gap-2 px-2 py-1 border rounded cursor-default ${getCheckboxStyle(
+                          q,
                           optKey,
-                          val,
-                          q.correct_answers,
-                          q.user_answers
+                          val
                         )}`}
                       >
                         <input
@@ -167,9 +178,39 @@ export default function ContestAnswers() {
                     ))}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          ) : (
+            // Multiple Choice: radio buttons
+            <div className="space-y-3">
+              {Object.entries(q.optionsMap).map(([optKey, optText]) => {
+                const isSelected = q.user_answers?.[optKey] === "T";
+                const reviewStyle = getOptionStyle(q, optKey);
+                return (
+                  <div
+                    key={optKey}
+                    className={`p-3 border rounded-lg transition-all ${
+                      reviewStyle || "border-gray-200 dark:border-gray-700"
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name={`q-${current}`}
+                        value={optKey}
+                        checked={isSelected}
+                        disabled
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <span className="ml-3 text-sm font-medium">
+                        {optKey}. {optText}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {q.explanation && (
             <div className="mt-4">

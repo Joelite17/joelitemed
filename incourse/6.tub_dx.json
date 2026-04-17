@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "TUBULAR DISORDERS AND INTERSTITIAL NEPHRITIS [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+    }
+  },
+  {
+    "1": {
+      "QUESTION": "A 45-year-old man on long-term lithium therapy for bipolar disorder presents with polyuria (4 L/day) and a urine specific gravity of 1.005. Plasma sodium is 142 mmol/L. Water deprivation test shows urine osmolality plateaus at 280 mOsm/kg with no significant increase after desmopressin. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Central diabetes insipidus",
+        "B": "Nephrogenic diabetes insipidus",
+        "C": "Primary polydipsia",
+        "D": "Osmotic diuresis from hyperglycemia",
+        "E": "Post-obstructive diuresis"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINE CONCENTRATION DEFECT",
+      "EXPLANATION": "Lithium is a classic cause of nephrogenic diabetes insipidus (NDI). The water deprivation test shows inability to concentrate urine (plateau <300 mOsm/kg) and no response to desmopressin, confirming renal resistance to ADH."
+    }
+  },
+  {
+    "2": {
+      "QUESTION": "A patient with a recent subarachnoid hemorrhage develops hyponatremia (serum Na⁺ 125 mmol/L) and is found to be hypovolemic. Urine sodium is 85 mmol/L. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "SIADH",
+        "B": "Cerebral salt wasting",
+        "C": "Adrenal insufficiency",
+        "D": "Psychogenic polydipsia",
+        "E": "Diuretic abuse"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "SALT-WASTING TUBULOPATHY",
+      "EXPLANATION": "Cerebral salt wasting occurs after subarachnoid hemorrhage or brain injury. It presents with hyponatremia, hypovolemia, and high urine sodium. SIADH is euvolemic/hypervolemic; adrenal insufficiency has hyperkalemia."
+    }
+  },
+  {
+    "3": {
+      "QUESTION": "A 25-year-old woman presents with recurrent calcium phosphate kidney stones, hypokalemia (K⁺ 3.1 mmol/L), and a urine pH consistently >6.0. Serum bicarbonate is 18 mmol/L. Which renal tubular acidosis is most likely?",
+      "OPTION": {
+        "A": "Type 1 (distal) RTA",
+        "B": "Type 2 (proximal) RTA",
+        "C": "Type 4 (hyperkalemic) RTA",
+        "D": "Mixed RTA",
+        "E": "Normal anion gap acidosis from diarrhea"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "Type 1 (distal) RTA presents with hypokalemia, urine pH >5.5 despite acidosis, hypercalciuria, and nephrolithiasis (calcium phosphate stones). Proximal RTA typically causes Fanconi syndrome; type 4 has hyperkalemia."
+    }
+  },
+  {
+    "4": {
+      "QUESTION": "A 60-year-old man with diabetic nephropathy and CKD stage 3 has a serum potassium of 5.8 mmol/L and a non‑anion gap metabolic acidosis (HCO₃⁻ 18 mmol/L). Urine pH is 5.2. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Type 1 distal RTA",
+        "B": "Type 2 proximal RTA",
+        "C": "Type 4 hyperkalemic RTA",
+        "D": "Diabetic ketoacidosis",
+        "E": "Lactic acidosis"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "Type 4 RTA (hyporeninemic hypoaldosteronism) is common in diabetic nephropathy. It presents with hyperkalemia, non‑anion gap metabolic acidosis, and urine pH can be <5.5 because distal acidification is intact."
+    }
+  },
+  {
+    "5": {
+      "QUESTION": "A 50-year-old woman with Sjögren's syndrome presents with non‑anion gap metabolic acidosis, hypokalemia, and a urine pH of 6.8. Fractional excretion of bicarbonate (FE HCO₃⁻) after alkali loading is 4%. What is the most likely RTA type?",
+      "OPTION": {
+        "A": "Type 1 (distal) RTA",
+        "B": "Type 2 (proximal) RTA",
+        "C": "Type 4 (hyperkalemic) RTA",
+        "D": "Mixed type 1 and 2",
+        "E": "Normal anion gap acidosis from diarrhea"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "Low FE HCO₃⁻ (<5%) indicates a distal (type 1) defect. Proximal RTA would show FE HCO₃⁻ >15%. Sjögren's is a common cause of distal RTA."
+    }
+  },
+  {
+    "6": {
+      "QUESTION": "A 35-year-old man presents with hypokalemia (K⁺ 2.8 mmol/L), metabolic alkalosis (HCO₃⁻ 32 mmol/L), hypomagnesemia (Mg²⁺ 1.2 mg/dL), and hypocalciuria (urine calcium <50 mg/day). He is normotensive. What is the most likely inherited disorder?",
+      "OPTION": {
+        "A": "Bartter syndrome type 1",
+        "B": "Bartter syndrome type 3",
+        "C": "Gitelman syndrome",
+        "D": "Liddle syndrome",
+        "E": "Apparent mineralocorticoid excess"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "SALT-WASTING TUBULOPATHY",
+      "EXPLANATION": "Gitelman syndrome (NCC mutation) presents in adolescents/adults with hypokalemic alkalosis, hypomagnesemia, and hypocalciuria. Bartter usually has hypercalciuria and normal magnesium (except type 3)."
+    }
+  },
+  {
+    "7": {
+      "QUESTION": "A 2‑year-old child is diagnosed with Bartter syndrome type 1. Which of the following laboratory findings is most characteristic?",
+      "OPTION": {
+        "A": "Hypocalciuria and hypomagnesemia",
+        "B": "Hypercalciuria and nephrocalcinosis",
+        "C": "Hypercalcemia and hypermagnesemia",
+        "D": "Normal urinary calcium and hypermagnesemia",
+        "E": "Hypercalciuria and hypermagnesemia"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "SALT-WASTING TUBULOPATHY",
+      "EXPLANATION": "Bartter type 1 (NKCC2 defect) causes hypercalciuria, leading to nephrocalcinosis. Hypocalciuria is typical of Gitelman. Hypomagnesemia is more common in Gitelman."
+    }
+  },
+  {
+    "8": {
+      "QUESTION": "A 65-year-old man presents with acute kidney injury, sterile pyuria, and mild proteinuria (0.5 g/day). He recently started omeprazole for dyspepsia. Urinalysis shows WBC casts. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Acute pyelonephritis",
+        "B": "Acute interstitial nephritis (AIN)",
+        "C": "Glomerulonephritis",
+        "D": "Acute tubular necrosis",
+        "E": "Post‑renal AKI"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "TUBULOINTERSTITIAL DISEASE",
+      "EXPLANATION": "PPIs are a common cause of acute interstitial nephritis. WBC casts are pathognomonic for tubulointerstitial inflammation. Sterile pyuria and mild proteinuria are classic. Acute pyelonephritis would have fever and positive urine culture."
+    }
+  },
+  {
+    "9": {
+      "QUESTION": "In a patient with suspected drug‑induced acute interstitial nephritis (AIN) who is not improving 5 days after stopping the culprit drug, what is the most appropriate next step?",
+      "OPTION": {
+        "A": "Start empiric antibiotics",
+        "B": "Renal biopsy and consider corticosteroids",
+        "C": "Initiate hemodialysis",
+        "D": "Increase fluid intake",
+        "E": "Start high‑dose loop diuretics"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "TUBULOINTERSTITIAL DISEASE",
+      "EXPLANATION": "If AKI does not improve 3‑7 days after drug withdrawal, renal biopsy is indicated to confirm AIN and guide corticosteroid therapy. Early steroids (within 14 days) improve renal outcomes."
+    }
+  },
+  {
+    "10": {
+      "QUESTION": "A patient with chronic tubulointerstitial nephritis from analgesic abuse presents with polyuria and nocturia. What is the earliest functional defect in this condition?",
+      "OPTION": {
+        "A": "Glomerular filtration rate decline",
+        "B": "Loss of urinary concentrating ability",
+        "C": "Nephrotic‑range proteinuria",
+        "D": "Hyperkalemic metabolic acidosis",
+        "E": "Hematuria with RBC casts"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "TUBULOINTERSTITIAL DISEASE",
+      "EXPLANATION": "Chronic tubulointerstitial nephritis initially affects the medulla, causing loss of concentrating ability (polyuria, nocturia) before GFR falls. Glomerular findings are late."
+    }
+  },
+  {
+    "11": {
+      "QUESTION": "Which of the following is a key distinguishing feature between cerebral salt wasting (CSW) and SIADH?",
+      "OPTION": {
+        "A": "Urine sodium level",
+        "B": "Serum sodium level",
+        "C": "Volume status (hypovolemia in CSW, euvolemia/hypervolemia in SIADH)",
+        "D": "Response to fluid restriction",
+        "E": "Plasma osmolality"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "SALT-WASTING TUBULOPATHY",
+      "EXPLANATION": "Volume status distinguishes CSW (hypovolemic) from SIADH (euvolemic or hypervolemic). Both can have hyponatremia and high urine sodium. CSW requires fluid repletion; SIADH requires fluid restriction."
+    }
+  },
+  {
+    "12": {
+      "QUESTION": "A patient with polyuria (5 L/day) and normal serum sodium undergoes a water deprivation test. Urine osmolality rises from 200 to 750 mOsm/kg after 8 hours of fluid restriction, with no further increase after desmopressin. What is the diagnosis?",
+      "OPTION": {
+        "A": "Central diabetes insipidus",
+        "B": "Nephrogenic diabetes insipidus",
+        "C": "Primary polydipsia",
+        "D": "Partial central DI",
+        "E": "Osmotic diuresis"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINE CONCENTRATION DEFECT",
+      "EXPLANATION": "In primary polydipsia, the patient can concentrate urine after water deprivation (normal ADH response), so desmopressin causes little further rise. Central DI would not concentrate well without desmopressin; NDI would not respond to desmopressin."
+    }
+  },
+  {
+    "13": {
+      "QUESTION": "A 55-year-old woman with multiple myeloma presents with non‑anion gap metabolic acidosis, hypokalemia, glucosuria (normal serum glucose), and hypophosphatemia. What is the most likely tubular defect?",
+      "OPTION": {
+        "A": "Distal RTA (type 1)",
+        "B": "Proximal RTA (type 2) with Fanconi syndrome",
+        "C": "Hyperkalemic RTA (type 4)",
+        "D": "Bartter syndrome",
+        "E": "Gitelman syndrome"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "Type 2 (proximal) RTA often occurs as part of Fanconi syndrome (glucosuria, phosphaturia, aminoaciduria, uricosuria). Multiple myeloma is a common cause due to light chain toxicity."
+    }
+  },
+  {
+    "14": {
+      "QUESTION": "According to the water deprivation test, which urine osmolality threshold indicates a normal concentrating ability after adequate fluid restriction?",
+      "OPTION": {
+        "A": ">300 mOsm/kg",
+        "B": ">500 mOsm/kg",
+        "C": ">800 mOsm/kg",
+        "D": ">1000 mOsm/kg",
+        "E": ">1200 mOsm/kg"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINE CONCENTRATION DEFECT",
+      "EXPLANATION": "After fluid deprivation, healthy adults can achieve urine osmolality >800 mOsm/kg (or specific gravity >1.020). Values below this indicate a concentration defect."
+    }
+  },
+  {
+    "15": {
+      "QUESTION": "Which of the following is a characteristic histologic finding in acute interstitial nephritis (AIN)?",
+      "OPTION": {
+        "A": "Glomerular hypercellularity",
+        "B": "Subepithelial immune deposits",
+        "C": "Interstitial lymphocytic infiltration with tubulitis",
+        "D": "Muddy brown granular casts",
+        "E": "Mesangial IgA deposition"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "TUBULOINTERSTITIAL DISEASE",
+      "EXPLANATION": "AIN histology shows interstitial edema, mononuclear (lymphocytic) infiltration, and tubulitis (lymphocytes invading tubular basement membrane). Glomerular changes are minimal."
+    }
+  },
+  {
+    "16": {
+      "QUESTION": "In the water deprivation test, what is the expected response to desmopressin (DDAVP) in a patient with complete central diabetes insipidus?",
+      "OPTION": {
+        "A": "Urine osmolality decreases by >50%",
+        "B": "Urine osmolality increases by >50% (or >150 mOsm/kg)",
+        "C": "No significant change in urine osmolality",
+        "D": "Plasma osmolality decreases by >10%",
+        "E": "Urine output doubles within 2 hours"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINE CONCENTRATION DEFECT",
+      "EXPLANATION": "In central diabetes insipidus, ADH is deficient. After desmopressin (DDAVP) administration, urine osmolality increases by >50% (or >150 mOsm/kg) within 1‑2 hours. Nephrogenic DI shows little or no response. Primary polydipsia shows a modest rise (usually <50%)."
+    }
+  },
+  {
+    "17": {
+      "QUESTION": "A patient with hypercalcemia (Ca²⁺ 13.5 mg/dL) from primary hyperparathyroidism presents with polyuria. Urine osmolality is 280 mOsm/kg. After correction of hypercalcemia, polyuria resolves. What is the mechanism of the concentration defect?",
+      "OPTION": {
+        "A": "Central diabetes insipidus",
+        "B": "Nephrogenic diabetes insipidus (ADH resistance)",
+        "C": "Primary polydipsia",
+        "D": "Osmotic diuresis from glucosuria",
+        "E": "Post‑obstructive diuresis"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINE CONCENTRATION DEFECT",
+      "EXPLANATION": "Hypercalcemia causes nephrogenic diabetes insipidus by impairing ADH action on collecting duct and downregulating aquaporin-2. Correcting calcium restores concentrating ability."
+    }
+  },
+  {
+    "18": {
+      "QUESTION": "A 30-year-old woman with SLE presents with normal‑anion gap metabolic acidosis, serum K⁺ 5.8 mmol/L, and urine pH 5.0. Plasma renin is low, aldosterone is low. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Type 1 RTA",
+        "B": "Type 2 RTA",
+        "C": "Type 4 RTA due to hypoaldosteronism",
+        "D": "Lupus nephritis class IV",
+        "E": "Addison's disease"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "Type 4 RTA from hypoaldosteronism (low renin, low aldosterone) presents with hyperkalemia, non‑anion gap acidosis, and urine pH <5.5. Addison's would have high renin and high ACTH."
+    }
+  },
+  {
+    "19": {
+      "QUESTION": "Which laboratory finding distinguishes Gitelman syndrome from classic Bartter syndrome (type 3)?",
+      "OPTION": {
+        "A": "Hypercalciuria and normal serum magnesium",
+        "B": "Hypocalciuria and hypomagnesemia",
+        "C": "Hypercalcemia and hypermagnesemia",
+        "D": "Normocalciuria and hypermagnesemia",
+        "E": "Hypercalciuria and hypermagnesemia"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "SALT-WASTING TUBULOPATHY",
+      "EXPLANATION": "Gitelman syndrome (NCC defect) typically presents with hypocalciuria and hypomagnesemia. Classic Bartter (type 3, CLCNKB) often has normo- or hypercalciuria and normal magnesium levels. Hypercalciuria is more common in Bartter types 1 and 2."
+    }
+  },
+  {
+    "20": {
+      "QUESTION": "In the diagnostic workup of a non‑anion gap metabolic acidosis, what does a fractional excretion of bicarbonate (FE HCO₃⁻) greater than 15% during alkali loading indicate?",
+      "OPTION": {
+        "A": "Distal (type 1) renal tubular acidosis",
+        "B": "Proximal (type 2) renal tubular acidosis",
+        "C": "Hyperkalemic (type 4) renal tubular acidosis",
+        "D": "Normal renal acidification",
+        "E": "Gastrointestinal bicarbonate loss"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL TUBULAR ACIDOSIS",
+      "EXPLANATION": "FE HCO₃⁻ >15% during alkali loading confirms a proximal (type 2) RTA, indicating impaired bicarbonate reabsorption in the proximal tubule. Distal RTA has FE HCO₃⁻ <5%. Type 4 RTA also has low FE HCO₃⁻."
+    }
+  }
+]

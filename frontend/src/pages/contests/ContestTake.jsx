@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ContestAPI } from "../../apis/contests";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 
 export default function ContestTake() {
   const { participationId } = useParams();
@@ -11,7 +12,7 @@ export default function ContestTake() {
   const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [mode, setMode] = useState("exam");
-  const [selectedOptions, setSelectedOptions] = useState({}); // { questionIdx: { optKey: "T"/"F"/null } }
+  const [selectedOptions, setSelectedOptions] = useState({});
   const [score, setScore] = useState(0);
   const [totalPossibleScore, setTotalPossibleScore] = useState(0);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -23,6 +24,8 @@ export default function ContestTake() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [pendingCompletion, setPendingCompletion] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const mounted = useRef(true);
   useEffect(() => {
@@ -30,7 +33,6 @@ export default function ContestTake() {
     return () => { mounted.current = false; };
   }, []);
 
-  // Loading timeout
   useEffect(() => {
     let timer;
     if (loading) {
@@ -48,6 +50,14 @@ export default function ContestTake() {
     fetchParticipation();
   }, [participationId]);
 
+  const tfMapToSelectedKey = (tfMap, optionsKeys) => {
+    if (!tfMap) return null;
+    for (let key of optionsKeys) {
+      if (tfMap[key] === "T") return key;
+    }
+    return null;
+  };
+
   const fetchParticipation = async () => {
     if (!mounted.current) return;
     setLoading(true);
@@ -60,28 +70,38 @@ export default function ContestTake() {
         return;
       }
 
-      // Format questions from snapshot
-      const formatted = (data.questions || []).map((q) => ({
-        id: q.id,
-        question: q.question,
-        options: q.options.reduce((acc, opt) => {
-          acc[opt.key] = opt.text;
-          return acc;
-        }, {}),
-        explanation: q.explanation || "",
-      }));
+      const formatted = (data.questions || []).map((q) => {
+        const opts = q.options || [];
+        const trueAnswers = opts.filter((opt) => opt.is_correct).map((opt) => opt.key);
+        return {
+          id: q.id,
+          question: q.question,
+          mcq_type: q.mcq_type || (trueAnswers.length === 1 ? "MC" : "TF"),
+          options: opts.reduce((acc, opt) => {
+            acc[opt.key] = opt.text;
+            return acc;
+          }, {}),
+          trueAnswers,
+          explanation: q.explanation || "",
+        };
+      });
       setQuestions(formatted);
 
-      // Load saved answers (per‑option)
-      const savedAnswers = data.answers || {}; // { questionId: { optKey: "T"/"F"/null } }
+      const savedAnswers = data.answers || {};
       const initialSelected = {};
       formatted.forEach((q, idx) => {
-        initialSelected[idx] = savedAnswers[q.id] || {};
+        const savedTfMap = savedAnswers[q.id];
+        if (q.mcq_type === "TF") {
+          initialSelected[idx] = savedTfMap || {};
+        } else {
+          const optionsKeys = Object.keys(q.options);
+          initialSelected[idx] = tfMapToSelectedKey(savedTfMap, optionsKeys);
+        }
       });
       setSelectedOptions(initialSelected);
 
-      // Total possible = sum of options
-      const totalPoints = formatted.reduce((sum, q) => sum + Object.keys(q.options).length, 0);
+      // NEW: total possible = number of questions (each worth 1 point)
+      const totalPoints = formatted.length;
       setTotalPossibleScore(totalPoints);
 
       if (data.end_time) {
@@ -111,7 +131,6 @@ export default function ContestTake() {
     }
   };
 
-  // Timer
   useEffect(() => {
     if (!timeLeft || mode !== "exam" || !endTime) return;
     const interval = setInterval(() => {
@@ -138,20 +157,34 @@ export default function ContestTake() {
     setTimeout(() => handleSubmitContest(true), 1000);
   };
 
-  // Save a single question's answers to backend
-  const saveAnswer = useCallback(async (questionIdx) => {
+  const getTfMapForSaving = (questionIdx) => {
     const q = questions[questionIdx];
-    if (!q) return;
-    const answerMap = selectedOptions[questionIdx] || {};
-    console.log(`Saving answer for question ${q.id}:`, answerMap); // DEBUG
-    try {
-      await ContestAPI.submitAnswer(participationId, q.id, answerMap);
-    } catch (err) {
-      console.error("Failed to save answer:", err);
+    const answer = selectedOptions[questionIdx];
+    if (q.mcq_type === "TF") {
+      return answer || {};
+    } else {
+      const map = {};
+      Object.keys(q.options).forEach((key) => {
+        map[key] = answer === key ? "T" : "F";
+      });
+      return map;
     }
-  }, [participationId, selectedOptions, questions]);
+  };
 
-  // Debounced auto‑save when user leaves a question
+  const saveAnswer = useCallback(
+    async (questionIdx) => {
+      const q = questions[questionIdx];
+      if (!q) return;
+      const tfMap = getTfMapForSaving(questionIdx);
+      try {
+        await ContestAPI.submitAnswer(participationId, q.id, tfMap);
+      } catch (err) {
+        console.error(`Failed to save answer for question ${questionIdx}:`, err);
+      }
+    },
+    [participationId, selectedOptions, questions]
+  );
+
   useEffect(() => {
     if (mode !== "exam" || !questions[current]) return;
     const timeout = setTimeout(() => {
@@ -160,23 +193,28 @@ export default function ContestTake() {
     return () => clearTimeout(timeout);
   }, [selectedOptions, current, mode, questions, saveAnswer]);
 
-  const handleTFChange = (questionIdx, optKey, value) => {
+  const handleOptionChange = (questionIdx, optKey, value = null) => {
     if (mode !== "exam") return;
-    setSelectedOptions((prev) => {
-      const currentQ = prev[questionIdx] || {};
-      const newVal = currentQ[optKey] === value ? null : value;
-      return {
+    const q = questions[questionIdx];
+    if (!q) return;
+
+    if (q.mcq_type === "TF") {
+      setSelectedOptions((prev) => ({
         ...prev,
         [questionIdx]: {
-          ...currentQ,
-          [optKey]: newVal,
+          ...prev[questionIdx],
+          [optKey]: prev[questionIdx]?.[optKey] === value ? null : value,
         },
-      };
-    });
+      }));
+    } else {
+      setSelectedOptions((prev) => ({
+        ...prev,
+        [questionIdx]: optKey,
+      }));
+    }
   };
 
   const handleNext = () => {
-    // Save current before moving
     if (mode === "exam") {
       saveAnswer(current);
     }
@@ -199,20 +237,53 @@ export default function ContestTake() {
     }
   };
 
-  const handleSubmitContest = async (isAuto = false) => {
-    if (mode !== "exam") return;
+  // NEW: per-question scoring (1 point per question, TF requires all statements correct)
+  const computeScore = () => {
+    let totalScore = 0;
+    const totalPossible = questions.length;
 
-    // Save all questions before final submission
-    console.log("Submitting contest – saving all answers...");
-    for (let i = 0; i < questions.length; i++) {
-      await saveAnswer(i);
-    }
+    questions.forEach((q, idx) => {
+      if (q.mcq_type === "MC") {
+        const selectedKey = selectedOptions[idx];
+        if (selectedKey && q.trueAnswers.includes(selectedKey)) {
+          totalScore += 1;
+        }
+      } else { // TF – all statements must be correct to earn the point
+        const selected = selectedOptions[idx] || {};
+        let allCorrect = true;
+        Object.keys(q.options).forEach((key) => {
+          const isCorrect = q.trueAnswers.includes(key);
+          const userAnswer = selected[key];
+          // No answer or wrong answer -> fail the whole question
+          if (!userAnswer || (userAnswer === "T" && !isCorrect) || (userAnswer === "F" && isCorrect)) {
+            allCorrect = false;
+          }
+        });
+        if (allCorrect) totalScore += 1;
+      }
+    });
+
+    return { score: totalScore, totalPossible };
+  };
+
+  const handleSubmitContest = async (isAuto = false) => {
+    if (mode !== "exam" || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    setSubmitting(true);
 
     try {
-      const result = await ContestAPI.submitContest(participationId);
+      await saveAnswer(current);
+    } catch (err) {
+      console.error("Failed to save current question before submit:", err);
+    }
+
+    const { score: finalScore, totalPossible } = computeScore();
+    setScore(finalScore);
+    setTotalPossibleScore(totalPossible);
+
+    try {
+      await ContestAPI.submitContest(participationId);
       if (!mounted.current) return;
-      setScore(result.score || 0);
-      setTotalPossibleScore(result.total_score || totalPossibleScore);
       setMode("result");
       setPendingCompletion(true);
       setSuccessMessage(
@@ -221,13 +292,15 @@ export default function ContestTake() {
           : "✅ Contest submitted successfully!"
       );
       setShowSuccess(true);
-
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 2000);
     } catch (err) {
       console.error("Error submitting contest:", err);
       setError("Failed to submit contest. Please try again.");
+    } finally {
+      isSubmittingRef.current = false;
+      setSubmitting(false);
     }
   };
 
@@ -248,12 +321,27 @@ export default function ContestTake() {
     navigate("/contest");
   };
 
-  const getCheckboxStyle = (questionIdx, optKey, value) => {
+  const getOptionStyle = (q, optKey) => {
     if (mode !== "review") return "";
-    const q = questions[questionIdx];
-    if (!q) return "";
-    const userAnswer = selectedOptions[questionIdx]?.[optKey];
-    if (userAnswer === value) return "bg-blue-100 dark:bg-blue-800/40 border-blue-600";
+    const selected = selectedOptions[current];
+    const isCorrect = q.trueAnswers.includes(optKey);
+    if (q.mcq_type === "TF") return "";
+    if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
+    if (selected === optKey && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
+    return "";
+  };
+
+  const getCheckboxStyle = (optKey, value, isCorrect) => {
+    if (mode !== "review") return "";
+    const selected = selectedOptions[current] || {};
+    const userAnswer = selected[optKey];
+    const correctValue = isCorrect ? "T" : "F";
+    if (value === correctValue) {
+      return "bg-green-100 dark:bg-green-800/40 border-green-600";
+    }
+    if (userAnswer === value && value !== correctValue) {
+      return "bg-red-100 dark:bg-red-800/40 border-red-600";
+    }
     return "";
   };
 
@@ -316,6 +404,13 @@ export default function ContestTake() {
       <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
         {mode !== "result" && (
           <div className="w-full lg:w-4/6 flex justify-between items-center mb-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              <ArrowLeftIcon className="w-5 h-5 mr-1" />
+              Back
+            </button>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Question {current + 1} of {questions.length}
             </p>
@@ -361,34 +456,78 @@ export default function ContestTake() {
           ) : (
             <>
               <p className="text-base font-medium mb-4">{q.question}</p>
-              {Object.entries(q.options).map(([optKey, optText]) => (
-                <div key={optKey} className="mb-4">
-                  <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
-                    <span className="text-sm font-medium">
-                      {optKey}. {optText}
-                    </span>
+
+              {q.mcq_type === "TF" ? (
+                Object.entries(q.options).map(([optKey, optText]) => (
+                  <div key={optKey} className="mb-4">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                      <span className="text-sm font-medium">
+                        {optKey}. {optText}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 mt-1 px-2">
+                      {["T", "F"].map((val) => (
+                        <label
+                          key={val}
+                          className={`flex items-center gap-2 px-2 py-1 border rounded ${
+                            mode === "review"
+                              ? getCheckboxStyle(optKey, val, q.trueAnswers.includes(optKey))
+                              : ""
+                          } ${mode === "exam" ? "cursor-pointer" : ""}`}
+                        >
+                          <input
+                            type="checkbox"
+                            disabled={mode !== "exam"}
+                            checked={selected[optKey] === val}
+                            onChange={() => handleOptionChange(current, optKey, val)}
+                            className="w-4 h-4 accent-blue-600"
+                          />
+                          <span className="text-sm">
+                            {val === "T" ? "True" : "False"}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex gap-4 mt-1 px-2">
-                    {["T", "F"].map((val) => (
-                      <label
-                        key={val}
-                        className={`flex items-center gap-2 px-2 py-1 border rounded ${
-                          mode === "review" ? getCheckboxStyle(current, optKey, val) : ""
-                        } ${mode === "exam" ? "cursor-pointer" : ""}`}
+                ))
+              ) : (
+                <div className="space-y-3">
+                  {Object.entries(q.options).map(([optKey, optText]) => {
+                    const isSelected = selected === optKey;
+                    const isCorrect = q.trueAnswers.includes(optKey);
+                    const reviewStyle = getOptionStyle(q, optKey);
+                    return (
+                      <div
+                        key={optKey}
+                        className={`p-3 border rounded-lg transition-all ${
+                          mode === "exam"
+                            ? isSelected
+                              ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                              : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 cursor-pointer"
+                            : reviewStyle || "border-gray-200 dark:border-gray-700"
+                        }`}
+                        onClick={() => mode === "exam" && handleOptionChange(current, optKey)}
                       >
-                        <input
-                          type="checkbox"
-                          disabled={mode !== "exam"}
-                          checked={selected[optKey] === val}
-                          onChange={() => handleTFChange(current, optKey, val)}
-                          className="w-4 h-4 accent-blue-600"
-                        />
-                        <span className="text-sm">{val === "T" ? "True" : "False"}</span>
-                      </label>
-                    ))}
-                  </div>
+                        <div className="flex items-center">
+                          <input
+                            type="radio"
+                            name={`q-${current}`}
+                            value={optKey}
+                            checked={isSelected}
+                            onChange={() => mode === "exam" && handleOptionChange(current, optKey)}
+                            disabled={mode !== "exam"}
+                            className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
+                          />
+                          <span className="ml-3 text-sm font-medium">
+                            {optKey}. {optText}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
+
               {mode === "review" && q.explanation && (
                 <div className="mt-4">
                   <button
@@ -404,6 +543,7 @@ export default function ContestTake() {
                   )}
                 </div>
               )}
+
               <div className="flex justify-between mt-4">
                 <button
                   onClick={handleBack}
@@ -418,7 +558,8 @@ export default function ContestTake() {
                 </button>
                 <button
                   onClick={handleNext}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  disabled={submitting}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {getNextButtonText()}
                 </button>

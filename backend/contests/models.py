@@ -169,34 +169,57 @@ class ContestParticipation(models.Model):
         return f"{self.user.username} - {self.contest.title}"
 
     def calculate_score(self):
-        """Calculate per‑option True/False score: +1 correct, –0.5 wrong, 0 unanswered."""
-        correct_count = 0
-        total_possible = 0
-
+        """
+        Calculate score based on per‑question scoring:
+        - Each question is worth 1 point.
+        - For MC questions: 1 point if the selected option is correct, else 0.
+        - For TF questions: 1 point if ALL statements are answered correctly, else 0.
+        """
         contest = self.contest
         snapshot = contest.questions_snapshot
+        if not snapshot:
+            self.score = 0
+            self.total_score = 0
+            return
+
+        total_possible = len(self.selected_question_ids)  # each question = 1 point
+        correct_count = 0
 
         for qid in self.selected_question_ids:
             qid_str = str(qid)
-            q_data = snapshot.get(qid_str) if snapshot else None
+            q_data = snapshot.get(qid_str)
             if not q_data:
                 continue
-            options = q_data['options']
-            total_possible += len(options)
 
+            mcq_type = q_data.get('mcq_type', 'MC')
+            options = q_data['options']
             user_answers = self.answers.get(qid_str, {})
 
-            for opt in options:
-                opt_key = opt['key']
-                correct_tf = "T" if opt['is_correct'] else "F"
-                user_tf = user_answers.get(opt_key)
-
-                if user_tf is None:
-                    continue
-                if user_tf == correct_tf:
+            if mcq_type == 'MC':
+                # Find which option key the user selected (the one with "T")
+                selected_key = None
+                for opt in options:
+                    if user_answers.get(opt['key']) == 'T':
+                        selected_key = opt['key']
+                        break
+                # Check if selected option is correct
+                if selected_key:
+                    for opt in options:
+                        if opt['key'] == selected_key and opt['is_correct']:
+                            correct_count += 1
+                            break
+            else:  # TF – all statements must be correct
+                all_correct = True
+                for opt in options:
+                    opt_key = opt['key']
+                    correct_tf = 'T' if opt['is_correct'] else 'F'
+                    user_tf = user_answers.get(opt_key)
+                    # If unanswered or wrong → question is wrong
+                    if user_tf != correct_tf:
+                        all_correct = False
+                        break
+                if all_correct:
                     correct_count += 1
-                else:
-                    correct_count -= 0.5
 
         self.score = correct_count
         self.total_score = total_possible

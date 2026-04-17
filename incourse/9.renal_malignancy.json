@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "RENAL MALIGNANCY [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+  }
+},
+{
+  "1": {
+    "QUESTION": "A 32-year-old man presents with a large abdominal mass, and imaging reveals bilateral Wilms tumor. He also has macroglossia, omphalocele, and neonatal hypoglycemia documented in his records. Which genetic syndrome is most likely?",
+    "OPTION": {
+      "A": "WAGR syndrome",
+      "B": "Denys-Drash syndrome",
+      "C": "Beckwith-Wiedemann syndrome",
+      "D": "Li-Fraumeni syndrome",
+      "E": "Neurofibromatosis type 1"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Beckwith-Wiedemann syndrome (11p15 abnormality) presents with macroglossia, omphalocele, hemihypertrophy, neonatal hypoglycemia, and an increased risk of Wilms tumor. WAGR syndrome (11p13 deletion) includes aniridia and genitourinary anomalies; Denys-Drash (WT1 mutation) includes pseudohermaphroditism and nephropathy."
+  }
+},
+{
+  "2": {
+    "QUESTION": "A 55-year-old woman presents with gross hematuria, dull left flank pain, and a palpable left abdominal mass. Which of the following is the most likely diagnosis?",
+    "OPTION": {
+      "A": "Urothelial carcinoma of the renal pelvis",
+      "B": "Wilms tumor",
+      "C": "Renal cell carcinoma",
+      "D": "Angiomyolipoma",
+      "E": "Oncocytoma"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "The classic triad of hematuria, flank pain, and palpable abdominal mass occurs in <10% of renal cell carcinoma (RCC) patients, but when present, it strongly suggests RCC. Urothelial carcinoma typically presents with hematuria and flank pain due to obstruction, but rarely a mass. Wilms tumor presents in children."
+  }
+},
+{
+  "3": {
+    "QUESTION": "A 50-year-old man is diagnosed with renal cell carcinoma. The tumor is 6 cm, confined to the kidney, with no venous invasion or perinephric fat extension. What is the correct TNM stage?",
+    "OPTION": {
+      "A": "T1a",
+      "B": "T1b",
+      "C": "T2a",
+      "D": "T2b",
+      "E": "T3a"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "T1a = ≤4 cm, T1b = >4 cm but ≤7 cm. T2 = >7 cm confined to kidney. Since the tumor is 6 cm and confined, it is T1b. There is no perinephric fat or venous invasion, so not T3."
+  }
+},
+{
+  "4": {
+    "QUESTION": "A 60-year-old woman with a renal mass is found to have erythrocytosis (Hct 54%) and hypercalcemia. Which paraneoplastic syndrome is most likely associated with her renal tumor?",
+    "OPTION": {
+      "A": "Stauffer syndrome",
+      "B": "Ectopic ACTH production",
+      "C": "Erythrocytosis from ectopic erythropoietin and hypercalcemia from PTH-related protein",
+      "D": "SIADH",
+      "E": "Carcinoid syndrome"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Renal cell carcinoma (especially clear cell) can produce erythropoietin (causing erythrocytosis) and PTH-related protein (causing hypercalcemia). Stauffer syndrome is non-metastatic hepatic dysfunction."
+  }
+},
+{
+  "5": {
+    "QUESTION": "A 45-year-old man is found to have multiple bilateral papillary renal tumors. Genetic testing reveals a germline MET mutation. Which hereditary syndrome does he have?",
+    "OPTION": {
+      "A": "Von Hippel-Lindau disease",
+      "B": "Hereditary papillary renal cell carcinoma",
+      "C": "Birt-Hogg-Dubé syndrome",
+      "D": "Tuberous sclerosis",
+      "E": "Beckwith-Wiedemann syndrome"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Hereditary papillary renal cell carcinoma is caused by activating mutations in the MET proto-oncogene (7q31) and predisposes to bilateral, multifocal type 1 papillary RCC. VHL causes clear cell RCC; Birt-Hogg-Dubé causes chromophobe/oncocytoma; tuberous sclerosis causes angiomyolipomas."
+  }
+},
+{
+  "6": {
+    "QUESTION": "A 35-year-old man with a family history of renal cancer is found to have bilateral, multifocal clear cell renal cell carcinoma. Which hereditary syndrome is most likely?",
+    "OPTION": {
+      "A": "Hereditary papillary RCC",
+      "B": "Von Hippel-Lindau (VHL) disease",
+      "C": "Birt-Hogg-Dubé syndrome",
+      "D": "Tuberous sclerosis",
+      "E": "Beckwith-Wiedemann syndrome"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Von Hippel-Lindau syndrome (VHL gene mutation) predisposes to bilateral, multifocal clear cell RCC at an early age, along with hemangioblastomas, pheochromocytomas, and pancreatic cysts."
+  }
+},
+{
+  "7": {
+    "QUESTION": "A CT scan shows a 5 cm solid enhancing renal mass with invasion into the perinephric fat but no venous involvement. What is the TNM stage?",
+    "OPTION": {
+      "A": "T1a",
+      "B": "T1b",
+      "C": "T2",
+      "D": "T3a",
+      "E": "T3b"
+    },
+    "CORRECT": "D",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "T3a indicates tumor extension into perinephric fat or renal vein. T1 is ≤7 cm confined to kidney; T2 is >7 cm confined; T3b is tumor in IVC below diaphragm."
+  }
+},
+{
+  "8": {
+    "QUESTION": "A 68-year-old man with metastatic clear cell RCC (intermediate risk) has a good performance status. According to current first-line guidelines, which systemic therapy is recommended?",
+    "OPTION": {
+      "A": "Sunitinib alone",
+      "B": "Pazopanib alone",
+      "C": "Ipilimumab + nivolumab",
+      "D": "Everolimus alone",
+      "E": "Gemcitabine + cisplatin"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "For first-line treatment of intermediate/poor risk metastatic clear cell RCC, ipilimumab (anti-CTLA-4) plus nivolumab (anti-PD-1) is now a preferred regimen. TKIs (sunitinib, pazopanib) are also options, but immunotherapy combinations have improved outcomes."
+  }
+},
+{
+  "9": {
+    "QUESTION": "A 3-year-old child presents with Wilms tumor, ambiguous genitalia, and progressive nephropathy. Which syndrome is most likely?",
+    "OPTION": {
+      "A": "WAGR syndrome",
+      "B": "Beckwith-Wiedemann syndrome",
+      "C": "Denys-Drash syndrome",
+      "D": "Tuberous sclerosis",
+      "E": "Li-Fraumeni syndrome"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Denys-Drash syndrome (WT1 mutation) is characterized by pseudohermaphroditism (ambiguous genitalia), progressive nephropathy (mesangial sclerosis), and high risk of Wilms tumor. WAGR includes aniridia and intellectual disability; Beckwith-Wiedemann has macroglossia, omphalocele, and hemihypertrophy."
+  }
+},
+{
+  "10": {
+    "QUESTION": "A 4-year-old child with macroglossia, omphalocele, and neonatal hypoglycemia is found to have a large abdominal mass. Which tumor is most likely, and what genetic abnormality is associated?",
+    "OPTION": {
+      "A": "Neuroblastoma; MYCN amplification",
+      "B": "Wilms tumor; 11p15 abnormality",
+      "C": "Hepatoblastoma; CTNNB1 mutation",
+      "D": "Rhabdomyosarcoma; PAX3/PAX7 fusion",
+      "E": "Lymphoma; MYC translocation"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Beckwith-Wiedemann syndrome is caused by abnormalities at 11p15 (WT2 region) and presents with macroglossia, omphalocele, hemihypertrophy, and neonatal hypoglycemia. It predisposes to Wilms tumor, hepatoblastoma, and others. The most common renal tumor in this syndrome is Wilms."
+  }
+},
+{
+  "11": {
+    "QUESTION": "A 5-year-old child is diagnosed with Wilms tumor. Which of the following is true regarding Wilms tumor?",
+    "OPTION": {
+      "A": "It is associated with activating MET gene mutations",
+      "B": "It is the most common renal malignancy in children, peaking at age 2-5 years",
+      "C": "It is strongly associated with tuberous sclerosis",
+      "D": "It has the worst prognosis among pediatric renal tumors",
+      "E": "It is rarely bilateral"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Wilms tumor is the most common primary renal malignancy in children, with peak incidence at 2-5 years. MET mutations are associated with hereditary papillary RCC, not Wilms. Tuberous sclerosis is associated with angiomyolipomas, not Wilms. Wilms has an excellent prognosis (>90% survival). Bilateral disease occurs in about 5% (stage V)."
+  }
+},
+{
+  "12": {
+    "QUESTION": "A 4-year-old child is brought to the clinic because the mother felt a large abdominal mass while bathing the child. The child has no other symptoms. What is the most likely diagnosis, and what should be avoided on physical examination?",
+    "OPTION": {
+      "A": "Neuroblastoma; avoid palpation of the liver",
+      "B": "Wilms tumor; avoid vigorous palpation of the mass",
+      "C": "Polycystic kidney disease; avoid palpation of the spleen",
+      "D": "Hydronephrosis; avoid palpation of the bladder",
+      "E": "Renal cell carcinoma; avoid palpation of the contralateral kidney"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Wilms tumor is the most common renal malignancy in children (peak age 2-5 years). Vigorous palpation of the abdominal mass can cause tumor rupture and dissemination; imaging should be obtained first."
+  }
+},
+{
+  "13": {
+    "QUESTION": "A 3-year-old child with Wilms tumor is found to have aniridia, genitourinary anomalies, and intellectual disability. Which syndrome is most likely?",
+    "OPTION": {
+      "A": "Denys-Drash syndrome",
+      "B": "Beckwith-Wiedemann syndrome",
+      "C": "WAGR syndrome",
+      "D": "Tuberous sclerosis",
+      "E": "VHL syndrome"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "WAGR syndrome (Wilms tumor, Aniridia, Genitourinary anomalies, intellectual disability) is caused by deletion of the WT1 gene at 11p13. Denys-Drash has pseudohermaphroditism and nephropathy; Beckwith-Wiedemann has macroglossia, omphalocele, and hemihypertrophy."
+  }
+},
+{
+  "14": {
+    "QUESTION": "A child is diagnosed with bilateral Wilms tumor (stage V). What is the recommended initial treatment approach?",
+    "OPTION": {
+      "A": "Bilateral radical nephrectomy",
+      "B": "Unilateral nephrectomy followed by observation",
+      "C": "Neoadjuvant chemotherapy followed by bilateral partial nephrectomy",
+      "D": "Radiotherapy to both kidneys",
+      "E": "Immediate bilateral partial nephrectomy"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "For bilateral Wilms tumor, neoadjuvant chemotherapy (vincristine + dactinomycin) is given to shrink tumors, followed by bilateral partial nephrectomy to preserve as much renal parenchyma as possible and avoid end-stage kidney disease."
+  }
+},
+{
+  "15": {
+    "QUESTION": "Which subtype of renal cell carcinoma has the best prognosis, with a 5-year survival of approximately 90%?",
+    "OPTION": {
+      "A": "Clear cell RCC",
+      "B": "Papillary RCC type 1",
+      "C": "Chromophobe RCC",
+      "D": "Collecting duct carcinoma",
+      "E": "Renal medullary carcinoma"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Chromophobe RCC has the best prognosis among RCC subtypes, with a 5-year survival of about 90%. Clear cell and papillary have intermediate prognosis; collecting duct and medullary carcinoma are very aggressive."
+  }
+},
+{
+  "16": {
+    "QUESTION": "A 30-year-old woman with tuberous sclerosis is found to have multiple bilateral renal tumors. Which tumor is most likely?",
+    "OPTION": {
+      "A": "Clear cell RCC",
+      "B": "Papillary RCC",
+      "C": "Angiomyolipoma",
+      "D": "Oncocytoma",
+      "E": "Urothelial carcinoma"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Tuberous sclerosis is strongly associated with renal angiomyolipomas (benign mesenchymal tumors containing fat, smooth muscle, and vessels). It also carries a small increased risk of RCC, but AML is the most common renal finding."
+  }
+},
+{
+  "17": {
+    "QUESTION": "A 25-year-old African American man presents with a large, aggressive renal tumor, hematuria, and flank pain. He is found to have sickle cell trait. What is the most likely diagnosis?",
+    "OPTION": {
+      "A": "Clear cell RCC",
+      "B": "Papillary RCC",
+      "C": "Renal medullary carcinoma",
+      "D": "Collecting duct carcinoma",
+      "E": "Urothelial carcinoma"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Renal medullary carcinoma is a rare, highly aggressive tumor almost exclusively seen in young patients with sickle cell trait (or disease). It has a very poor prognosis."
+  }
+},
+{
+  "18": {
+    "QUESTION": "A 58-year-old woman with a history of heavy smoking presents with gross hematuria and flank pain. CT urography shows an irregular filling defect in the left renal pelvis with associated hydronephrosis. What is the most likely diagnosis?",
+    "OPTION": {
+      "A": "Clear cell RCC",
+      "B": "Urothelial carcinoma",
+      "C": "Wilms tumor",
+      "D": "Oncocytoma",
+      "E": "Angiomyolipoma"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Filling defect in the renal pelvis on CT urography is classic for urothelial carcinoma. Risk factors include smoking. RCC is usually an enhancing solid mass in the renal parenchyma."
+  }
+},
+{
+  "19": {
+    "QUESTION": "A 6-year-old child is diagnosed with Wilms tumor. Genetic testing reveals an 11p15 abnormality. Which associated syndrome is most likely?",
+    "OPTION": {
+      "A": "WAGR syndrome",
+      "B": "Denys-Drash syndrome",
+      "C": "Beckwith-Wiedemann syndrome",
+      "D": "VHL syndrome",
+      "E": "Tuberous sclerosis"
+    },
+    "CORRECT": "C",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Beckwith-Wiedemann syndrome is associated with abnormalities at 11p15 (WT2 region) and presents with macroglossia, omphalocele, hemihypertrophy, and neonatal hypoglycemia. WAGR and Denys-Drash involve WT1 at 11p13."
+  }
+},
+{
+  "20": {
+    "QUESTION": "What is the male-to-female ratio for renal cell carcinoma?",
+    "OPTION": {
+      "A": "1:1 (equal)",
+      "B": "2:1 (male predominance)",
+      "C": "1:2 (female predominance)",
+      "D": "4:1 (male predominance)",
+      "E": "1:4 (female predominance)"
+    },
+    "CORRECT": "B",
+    "TOPIC_CATEGORY": "RENAL MALIGNANCY",
+    "EXPLANATION": "Renal cell carcinoma is more common in men, with a male-to-female ratio of approximately 2:1. It typically presents in the 6th-7th decades."
+  }
+}
+]

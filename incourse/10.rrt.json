@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "RENAL REPLACEMENT THERAPY [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+    }
+  },
+  {
+    "1": {
+      "QUESTION": "A patient with acute kidney injury has a serum potassium of 6.8 mEq/L with peaked T waves and wide QRS on ECG. Which of the following is the most appropriate indication for emergent renal replacement therapy?",
+      "OPTION": {
+        "A": "Acidosis",
+        "B": "Electrolytes (severe hyperkalemia with ECG changes)",
+        "C": "Intoxication",
+        "D": "Overload",
+        "E": "Uremia"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "The AEIOU mnemonic: Electrolytes (E) refers to severe hyperkalemia >6.5 mEq/L with ECG changes. This is an absolute indication for emergent RRT regardless of BUN level."
+    }
+  },
+  {
+    "2": {
+      "QUESTION": "A 60-year-old patient with end-stage kidney disease is scheduled to start hemodialysis. Which vascular access has the longest survival and lowest infection rate?",
+      "OPTION": {
+        "A": "Arteriovenous fistula (AVF)",
+        "B": "Arteriovenous graft (AVG)",
+        "C": "Tunneled central venous catheter",
+        "D": "Non-tunneled central venous catheter",
+        "E": "PermCath"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "AV fistula has the longest survival, lowest infection rate, and is the first choice for chronic HD. AV grafts have higher infection/thrombosis; catheters have highest infection and mortality."
+    }
+  },
+  {
+    "3": {
+      "QUESTION": "A patient undergoing his first hemodialysis session for severe uremia (BUN 180 mg/dL) develops headache, confusion, and nausea. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Air embolism",
+        "B": "Anaphylaxis",
+        "C": "Disequilibrium syndrome",
+        "D": "Hemolysis",
+        "E": "Steal syndrome"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Disequilibrium syndrome is caused by rapid urea removal leading to cerebral edema, most common in first dialysis of very uremic patients (BUN >150). Prevention: short, low-blood flow, small surface area dialyzer."
+    }
+  },
+  {
+    "4": {
+      "QUESTION": "A diabetic patient with an arteriovenous fistula in the left arm complains of cool, painful, pale fingers. What complication is most likely?",
+      "OPTION": {
+        "A": "Air embolism",
+        "B": "Steal syndrome",
+        "C": "Disequilibrium syndrome",
+        "D": "Hemolysis",
+        "E": "Catheter-related bacteremia"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Steal syndrome results from distal ischemia due to blood diversion by the AVF, presenting with cool, painful, pale fingers. Risk factors: elderly, diabetes, peripheral artery disease."
+    }
+  },
+  {
+    "5": {
+      "QUESTION": "A patient on peritoneal dialysis notices cloudy effluent with abdominal pain and fever. What is the most appropriate immediate management?",
+      "OPTION": {
+        "A": "Wait for culture results before starting antibiotics",
+        "B": "Start oral ciprofloxacin",
+        "C": "Start empiric intraperitoneal antibiotics immediately",
+        "D": "Remove the Tenckhoff catheter immediately",
+        "E": "Switch to hemodialysis permanently"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Cloudy PD effluent is peritonitis until proven otherwise. Empiric intraperitoneal antibiotics (e.g., vancomycin + ceftazidime) should be started immediately; do not wait for culture."
+    }
+  },
+  {
+    "6": {
+      "QUESTION": "Which of the following is an absolute contraindication to kidney transplantation?",
+      "OPTION": {
+        "A": "Age 72 years",
+        "B": "BMI 38",
+        "C": "Active malignancy",
+        "D": "Well-controlled diabetes mellitus",
+        "E": "Previous transplant failure"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Absolute contraindications include active malignancy, untreated infection, severe non-adherence, active substance abuse, and irreversible extra-renal organ failure. Age >70 and BMI >40 are relative contraindications."
+    }
+  },
+  {
+    "7": {
+      "QUESTION": "What is the most common cause of poor catheter drainage in peritoneal dialysis?",
+      "OPTION": {
+        "A": "Fibrin clots",
+        "B": "Omental wrap",
+        "C": "Constipation",
+        "D": "Catheter migration",
+        "E": "Exit site infection"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Constipation is the most common cause of poor catheter drainage. Treat aggressively with laxatives and stool softeners before considering mechanical causes like fibrin or omental wrap."
+    }
+  },
+  {
+    "8": {
+      "QUESTION": "A patient on hemodialysis develops sudden hypotension during treatment. Which intervention is most appropriate?",
+      "OPTION": {
+        "A": "Increase dialysate temperature",
+        "B": "Increase ultrafiltration rate",
+        "C": "Place patient in Trendelenburg position and give saline bolus",
+        "D": "Stop heparin infusion",
+        "E": "Increase blood flow rate"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Hypotension is the most common complication. Management includes Trendelenburg position, saline bolus, holding ultrafiltration, and reducing dry weight. Cool dialysate can help; increasing temperature worsens hypotension."
+    }
+  },
+  {
+    "9": {
+      "QUESTION": "Which RRT modality is associated with best preservation of residual renal function and offers a survival advantage in the first 1-2 years compared to hemodialysis?",
+      "OPTION": {
+        "A": "In-center hemodialysis",
+        "B": "Peritoneal dialysis",
+        "C": "Home hemodialysis",
+        "D": "Kidney transplantation",
+        "E": "Continuous renal replacement therapy"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Peritoneal dialysis better preserves residual renal function and has a survival advantage in the first 1-2 years compared to HD. However, kidney transplantation is superior overall."
+    }
+  },
+  {
+    "10": {
+      "QUESTION": "A patient with a deceased donor kidney transplant has a rise in creatinine on day 5 post-transplant requiring dialysis. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Acute rejection",
+        "B": "Calcineurin inhibitor toxicity",
+        "C": "Delayed graft function",
+        "D": "BK polyomavirus nephropathy",
+        "E": "Post-transplant lymphoproliferative disorder"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Delayed graft function (DGF) occurs in the first week, often requiring dialysis. It usually resolves spontaneously. Acute rejection typically occurs later (days to years)."
+    }
+  },
+  {
+    "11": {
+      "QUESTION": "A patient with end-stage kidney disease has eGFR of 22 mL/min/1.73m². What action is recommended regarding renal replacement therapy?",
+      "OPTION": {
+        "A": "Immediate hemodialysis",
+        "B": "Immediate peritoneal dialysis",
+        "C": "Start preparing for RRT (e.g., create AV fistula)",
+        "D": "No action until eGFR <10",
+        "E": "Refer for kidney transplantation only"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Start preparing for RRT when eGFR is 20-25 mL/min because AV fistulas take 2-6 months to mature. Chronic dialysis is typically indicated when eGFR <15 with symptoms or <6-8 even asymptomatic."
+    }
+  },
+  {
+    "12": {
+      "QUESTION": "Which immunosuppressive agent is the cornerstone of maintenance therapy after kidney transplantation and is associated with new-onset diabetes after transplant?",
+      "OPTION": {
+        "A": "Basiliximab",
+        "B": "Mycophenolate mofetil",
+        "C": "Tacrolimus",
+        "D": "Prednisone",
+        "E": "Belatacept"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Tacrolimus is a calcineurin inhibitor and the mainstay of maintenance immunosuppression. It commonly causes new-onset diabetes after transplantation (NODAT). Basiliximab is induction; mycophenolate is an antimetabolite."
+    }
+  },
+  {
+    "13": {
+      "QUESTION": "A patient on peritoneal dialysis develops a right-sided pleural effusion after a long dwell. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Peritonitis",
+        "B": "Hydrothorax",
+        "C": "Catheter malfunction",
+        "D": "Ultrafiltration failure",
+        "E": "Hernia"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Hydrothorax (pleuroperitoneal leak) presents as a pleural effusion, usually right-sided, due to dialysate tracking into the chest. Requires stopping PD and switching to HD."
+    }
+  },
+  {
+    "14": {
+      "QUESTION": "Which of the following is an absolute indication for chronic dialysis regardless of BUN level?",
+      "OPTION": {
+        "A": "Serum creatinine 8 mg/dL",
+        "B": "eGFR 12 mL/min/1.73m² with nausea",
+        "C": "Uremic pericarditis",
+        "D": "Pruritus",
+        "E": "Restless legs syndrome"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Uremic pericarditis and uremic encephalopathy are absolute indications for dialysis regardless of BUN or eGFR level. Symptoms like nausea, pruritus, restless legs are relative indications when eGFR <15."
+    }
+  },
+  {
+    "15": {
+      "QUESTION": "A patient with a central venous catheter for hemodialysis develops fever and chills during dialysis. What is the most likely complication?",
+      "OPTION": {
+        "A": "Air embolism",
+        "B": "Hemolysis",
+        "C": "Catheter-related bacteremia",
+        "D": "Steal syndrome",
+        "E": "Disequilibrium syndrome"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Central venous catheters have the highest infection rate; fever and chills during dialysis suggest catheter-related bloodstream infection. Requires blood cultures and antibiotics, often catheter removal."
+    }
+  },
+  {
+    "16": {
+      "QUESTION": "Which of the following is a characteristic of the arteriovenous graft (AVG) compared to AV fistula?",
+      "OPTION": {
+        "A": "Longer survival",
+        "B": "Lower infection rate",
+        "C": "Faster maturation (2-4 weeks)",
+        "D": "Lower thrombosis rate",
+        "E": "Preferred first choice for chronic HD"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "AVG matures faster (2-4 weeks) and is easier to cannulate, but has higher infection and thrombosis rates. AV fistula is the first choice due to longer survival and lowest infection."
+    }
+  },
+  {
+    "17": {
+      "QUESTION": "A kidney transplant recipient has decoy cells on urine microscopy and a rising creatinine. What is the most likely cause?",
+      "OPTION": {
+        "A": "Acute rejection",
+        "B": "BK polyomavirus nephropathy",
+        "C": "Calcineurin inhibitor toxicity",
+        "D": "CMV infection",
+        "E": "Post-transplant lymphoproliferative disorder"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "BK polyomavirus nephropathy presents with unexplained creatinine rise and decoy cells in urine. Management is reduction of immunosuppression; no specific antiviral therapy. Surveillance BK PCR is recommended."
+    }
+  },
+  {
+    "18": {
+      "QUESTION": "What is the preferred RRT modality for a patient with severe COPD who also has abdominal adhesions from prior surgery?",
+      "OPTION": {
+        "A": "Peritoneal dialysis (CAPD)",
+        "B": "Peritoneal dialysis (APD)",
+        "C": "Hemodialysis",
+        "D": "Kidney transplantation",
+        "E": "Continuous renal replacement therapy"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "Abdominal adhesions are an absolute contraindication to PD. Severe COPD is a relative contraindication because PD can worsen respiratory mechanics. Hemodialysis is preferred."
+    }
+  },
+  {
+    "19": {
+      "QUESTION": "Which of the following best describes the principle of fluid removal in peritoneal dialysis?",
+      "OPTION": {
+        "A": "Convection through a synthetic membrane",
+        "B": "Diffusion using a glucose or icodextrin osmotic gradient",
+        "C": "Ultrafiltration driven by hydrostatic pressure",
+        "D": "Adsorption to activated charcoal",
+        "E": "Hemofiltration with replacement fluid"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "In PD, fluid is removed via osmotic gradient using dextrose or icodextrin. Diffusion removes solutes. Convection/hydrostatic pressure is used in hemodialysis."
+    }
+  },
+  {
+    "20": {
+      "QUESTION": "A patient with end-stage kidney disease is deciding between hemodialysis and peritoneal dialysis. Which statement is true regarding their comparison?",
+      "OPTION": {
+        "A": "Hemodialysis offers more flexible lifestyle than PD",
+        "B": "PD has stricter dietary restrictions than HD",
+        "C": "PD preserves residual renal function better than HD",
+        "D": "HD has lower risk of hemodynamic instability than PD",
+        "E": "5-year survival is significantly higher with PD than with transplant"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "RENAL REPLACEMENT THERAPY",
+      "EXPLANATION": "PD better preserves residual renal function. HD has stricter dietary/fluid restrictions; PD offers more lifestyle flexibility; HD has more hemodynamic instability; kidney transplant has best survival."
+    }
+  }
+]

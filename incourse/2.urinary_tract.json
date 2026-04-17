@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "CLINICAL FEATURES OF URINARY TRACT DISEASES AND INVESTIGATIONS [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+    }
+  },
+  {
+    "1": {
+      "QUESTION": "A patient presents with intermittent, severe flank pain occurring in waves every 5–20 minutes, peaking at around 3 hours. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Renal cyst rupture",
+        "B": "Chronic pyelonephritis",
+        "C": "Ureteric stone (passing)",
+        "D": "Renal tumor",
+        "E": "Acute pyelonephritis"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Renal colic is classically intermittent, severe pain in waves every 5–20 minutes, peaking around 3 hours, caused by a passing ureteric stone. Dull flank pain suggests non-obstructing stone or tumor; sharp sudden pain suggests cyst rupture or infarct."
+    }
+  },
+  {
+    "2": {
+      "QUESTION": "Which of the following is a storage symptom of the lower urinary tract?",
+      "OPTION": {
+        "A": "Hesitancy",
+        "B": "Poor stream",
+        "C": "Intermittency",
+        "D": "Nocturia",
+        "E": "Straining to void"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Storage symptoms (bladder filling) include frequency, urgency, nocturia, and incontinence. Voiding symptoms include hesitancy, poor stream, intermittency, straining, and terminal dribble. Nocturia is a storage symptom."
+    }
+  },
+  {
+    "3": {
+      "QUESTION": "A 35-year-old woman presents with sudden onset of sharp, severe flank pain radiating to the groin. She is afebrile and has microscopic hematuria. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Renal cyst rupture",
+        "B": "Acute pyelonephritis",
+        "C": "Ureteric colic due to stone",
+        "D": "Renal artery thrombosis",
+        "E": "Chronic pyelonephritis"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Ureteric colic (renal colic) presents with sudden, severe, sharp flank pain that often radiates to the groin, and is commonly associated with microscopic hematuria. Renal cyst rupture causes acute pain but is less common and typically occurs in ADPKD. Acute pyelonephritis would have fever and CVA tenderness. Renal artery thrombosis is rare and usually presents with acute, severe pain but often with other vascular risk factors."
+    }
+  },
+  {
+    "4": {
+      "QUESTION": "A patient leaks urine when coughing or laughing. Which type of incontinence is this?",
+      "OPTION": {
+        "A": "Urge incontinence",
+        "B": "Overflow incontinence",
+        "C": "Stress incontinence",
+        "D": "Mixed incontinence",
+        "E": "Total incontinence"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Stress incontinence is leakage on effort (cough, laugh, exercise) due to pelvic floor weakness or sphincter deficiency. Urge incontinence is leakage with sudden urgency; overflow is continuous dribbling with retention; mixed is both stress and urge."
+    }
+  },
+  {
+    "5": {
+      "QUESTION": "A 55-year-old man presents with painless macroscopic hematuria. What is the most important diagnosis to exclude?",
+      "OPTION": {
+        "A": "Urinary tract infection",
+        "B": "Nephrolithiasis",
+        "C": "Malignancy (renal cell, bladder, or prostate cancer)",
+        "D": "Benign prostatic hyperplasia",
+        "E": "Glomerulonephritis"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Painless macroscopic hematuria is a red flag for malignancy (renal cell carcinoma, bladder cancer, prostate cancer) until proven otherwise. Hematuria with colic suggests stones; with dysuria suggests infection; with hypertension/edema suggests glomerulonephritis."
+    }
+  },
+  {
+    "6": {
+      "QUESTION": "Which of the following findings on urinalysis microscopy is most suggestive of glomerular bleeding?",
+      "OPTION": {
+        "A": "Isomorphic RBCs",
+        "B": "Dysmorphic RBCs and RBC casts",
+        "C": "WBC casts",
+        "D": "Fatty casts",
+        "E": "Granular casts"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Glomerular hematuria is characterized by dysmorphic RBCs and RBC casts. Isomorphic RBCs suggest lower tract or collecting system bleeding. WBC casts indicate pyelonephritis/interstitial nephritis; fatty casts indicate nephrotic syndrome; granular casts indicate acute tubular necrosis."
+    }
+  },
+  {
+    "7": {
+      "QUESTION": "A patient has oliguria (urine output <400 mL/24h). Which of the following is a post‑renal cause?",
+      "OPTION": {
+        "A": "Dehydration",
+        "B": "Acute tubular necrosis",
+        "C": "Urinary tract obstruction",
+        "D": "Glomerulonephritis",
+        "E": "Cardiogenic shock"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Post‑renal causes of oliguria/anuria include urinary tract obstruction (e.g., stones, BPH, stricture). Prerenal causes include dehydration and shock; intrinsic renal causes include ATN and glomerulonephritis."
+    }
+  },
+  {
+    "8": {
+      "QUESTION": "A patient has a urine dipstick positive for blood, but microscopy shows no RBCs. What is the most likely explanation?",
+      "OPTION": {
+        "A": "Glomerulonephritis with RBC casts",
+        "B": "Hemoglobinuria or myoglobinuria",
+        "C": "Ureteric stone",
+        "D": "Urinary tract infection with leukocytes",
+        "E": "Contamination with vaginal blood"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Dipstick detects hemoglobin, so a positive result without RBCs suggests hemoglobinuria (e.g., hemolysis) or myoglobinuria (e.g., rhabdomyolysis). Glomerulonephritis would have RBCs. Ureteric stone would have RBCs. UTI with leukocytes would not explain isolated blood. Contamination would show RBCs on microscopy."
+    }
+  },
+  {
+    "9": {
+      "QUESTION": "Which dipstick finding is most specific for a Gram‑negative urinary tract infection?",
+      "OPTION": {
+        "A": "Leukocyte esterase",
+        "B": "Nitrite",
+        "C": "Protein",
+        "D": "Blood",
+        "E": "Glucose"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Nitrite is produced by Gram‑negative bacteria (e.g., E. coli, Proteus) converting dietary nitrate to nitrite; it is highly specific for UTI. Leukocyte esterase is sensitive but less specific. Protein and blood are non‑specific."
+    }
+  },
+  {
+    "10": {
+      "QUESTION": "What is the gold standard imaging modality for detecting urinary tract stones?",
+      "OPTION": {
+        "A": "KUB X‑ray",
+        "B": "Ultrasound",
+        "C": "Non‑contrast CT (NCCT)",
+        "D": "CT urography with contrast",
+        "E": "Intravenous urography (IVU)"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Non‑contrast CT (NCCT) is the gold standard for urinary tract stones; it detects all stone types (including radiolucent uric acid stones) and provides information on stone burden and obstruction. KUB only detects radiopaque stones."
+    }
+  },
+  {
+    "11": {
+      "QUESTION": "A patient with suspected renal tumor requires imaging. Which study is most appropriate?",
+      "OPTION": {
+        "A": "KUB X‑ray",
+        "B": "Non‑contrast CT",
+        "C": "CT urography with contrast",
+        "D": "Renal ultrasound alone",
+        "E": "Intravenous urography"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "CT urography with contrast is the preferred imaging for renal tumors (renal cell carcinoma, transitional cell carcinoma) because it shows enhancement, vascularity, and local invasion. Non‑contrast CT is for stones; ultrasound is first‑line but less sensitive for small masses."
+    }
+  },
+  {
+    "12": {
+      "QUESTION": "All of the following are glomerular causes of hematuria EXCEPT:",
+      "OPTION": {
+        "A": "IgA nephropathy",
+        "B": "Post‑streptococcal glomerulonephritis",
+        "C": "Alport syndrome",
+        "D": "Nephrolithiasis",
+        "E": "Thin basement membrane disease"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Nephrolithiasis (kidney stones) causes non‑glomerular hematuria (isomorphic RBCs, no casts). IgA nephropathy, post‑streptococcal GN, Alport syndrome, and thin basement membrane disease all cause glomerular hematuria (dysmorphic RBCs, RBC casts)."
+    }
+  },
+  {
+    "13": {
+      "QUESTION": "All of the following are non‑glomerular causes of hematuria EXCEPT:",
+      "OPTION": {
+        "A": "Urinary tract infection",
+        "B": "Nephrolithiasis",
+        "C": "Renal cell carcinoma",
+        "D": "Acute tubular necrosis",
+        "E": "IgA nephropathy"
+      },
+      "CORRECT": "E",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "IgA nephropathy is a glomerular cause of hematuria (dysmorphic RBCs, RBC casts). UTI, nephrolithiasis, renal cell carcinoma, and acute tubular necrosis typically cause non‑glomerular hematuria (isomorphic RBCs, no casts)."
+    }
+  },
+  {
+    "14": {
+      "QUESTION": "Which urinary cast is most characteristic of acute tubular necrosis (ATN)?",
+      "OPTION": {
+        "A": "RBC casts",
+        "B": "WBC casts",
+        "C": "Fatty casts",
+        "D": "Granular casts",
+        "E": "Hyaline casts"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Granular (muddy brown) casts are characteristic of acute tubular necrosis (ATN). RBC casts indicate glomerulonephritis; WBC casts indicate pyelonephritis or interstitial nephritis; fatty casts indicate nephrotic syndrome; hyaline casts are non‑specific."
+    }
+  },
+  {
+    "15": {
+      "QUESTION": "A 25-year-old man has polyuria (4 L/day) and polydipsia with a normal serum glucose. Water deprivation test shows inability to concentrate urine, which corrects after desmopressin. What is the diagnosis?",
+      "OPTION": {
+        "A": "Diabetes mellitus",
+        "B": "Psychogenic polydipsia",
+        "C": "Central diabetes insipidus",
+        "D": "Nephrogenic diabetes insipidus",
+        "E": "Chronic kidney disease"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Polyuria with normal glucose suggests diabetes insipidus. Correction with desmopressin (ADH analogue) indicates central DI (lack of ADH). Nephrogenic DI (ADH resistance) would not correct. Psychogenic polydipsia would show normal or dilute urine but no response to desmopressin."
+    }
+  },
+  {
+    "16": {
+      "QUESTION": "Which investigation is indicated for a patient with suspected glomerulonephritis (hypertension, edema, hematuria with RBC casts)?",
+      "OPTION": {
+        "A": "Cystoscopy",
+        "B": "Non‑contrast CT",
+        "C": "Renal biopsy",
+        "D": "KUB X‑ray",
+        "E": "Urodynamics"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Renal biopsy is indicated for unexplained glomerular disease (nephrotic or nephritic syndrome) to establish the diagnosis and guide therapy. Cystoscopy is for lower tract lesions; non‑contrast CT for stones; urodynamics for incontinence/obstruction."
+    }
+  },
+  {
+    "17": {
+      "QUESTION": "A patient presents with hematuria, hypertension, and RBC casts on urinalysis. Which of the following is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Nephrolithiasis",
+        "B": "Urinary tract infection",
+        "C": "Glomerulonephritis",
+        "D": "Renal cell carcinoma",
+        "E": "Benign prostatic hyperplasia"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Hematuria with RBC casts is pathognomonic for glomerulonephritis. Hypertension is also a common feature of glomerular disease. Nephrolithiasis and UTI cause non‑glomerular hematuria without RBC casts. Renal cell carcinoma causes painless hematuria without casts. BPH causes lower tract symptoms but not RBC casts."
+    }
+  },
+  {
+    "18": {
+      "QUESTION": "Which of the following is a radiolucent urinary stone that would NOT be visible on KUB X‑ray?",
+      "OPTION": {
+        "A": "Calcium oxalate stone",
+        "B": "Calcium phosphate stone",
+        "C": "Struvite stone",
+        "D": "Uric acid stone",
+        "E": "Cystine stone"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "Uric acid stones are radiolucent on KUB X‑ray (they do not contain calcium). Calcium oxalate, calcium phosphate, struvite (magnesium ammonium phosphate), and cystine stones are radiopaque."
+    }
+  },
+  {
+    "19": {
+      "QUESTION": "A 28-year-old man with no prior medical history has polyuria (4.5 L/day), polydipsia, and nocturia. Serum glucose is normal. Water deprivation test shows concentrated urine after 8 hours of fluid restriction, and no change with desmopressin. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Central diabetes insipidus",
+        "B": "Nephrogenic diabetes insipidus",
+        "C": "Primary polydipsia (psychogenic)",
+        "D": "Diabetes mellitus",
+        "E": "Hypercalcemia‑induced polyuria"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "In primary polydipsia, water deprivation leads to urine concentration (normal ADH response), and desmopressin has no further effect because the pituitary is functioning. Central DI would show dilute urine after water deprivation but correction with desmopressin. Nephrogenic DI shows dilute urine after water deprivation and no response to desmopressin. Normal glucose excludes DM. Hypercalcemia is not suggested."
+    }
+  },
+  {
+    "20": {
+      "QUESTION": "Which of the following urinary casts is most characteristic of acute pyelonephritis?",
+      "OPTION": {
+        "A": "RBC casts",
+        "B": "WBC casts",
+        "C": "Granular casts",
+        "D": "Fatty casts",
+        "E": "Hyaline casts"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "URINARY TRACT CLINICAL FEATURES AND INVESTIGATIONS",
+      "EXPLANATION": "WBC (leukocyte) casts are characteristic of acute pyelonephritis or interstitial nephritis, indicating inflammation within the renal tubules. RBC casts indicate glomerulonephritis; granular casts indicate acute tubular necrosis; fatty casts indicate nephrotic syndrome; hyaline casts are non‑specific."
+    }
+  }
+]

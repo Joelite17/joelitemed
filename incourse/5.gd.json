@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "GLOMERULAR DISEASE [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+    }
+  },
+  {
+    "1": {
+      "QUESTION": "A 6-year-old child presents with periorbital edema, frothy urine, and hypoalbuminemia. Urinalysis shows 4+ protein and no RBCs. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Post-streptococcal glomerulonephritis",
+        "B": "IgA nephropathy",
+        "C": "Minimal change disease",
+        "D": "Membranous nephropathy",
+        "E": "Alport syndrome"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Child with nephrotic syndrome (heavy proteinuria, edema, hypoalbuminemia) and no hematuria is classic for minimal change disease, which accounts for 80% of childhood nephrotic syndrome. It shows foot process effacement on EM and excellent steroid response."
+    }
+  },
+  {
+    "2": {
+      "QUESTION": "Which of the following findings is characteristic of nephrotic syndrome rather than nephritic syndrome?",
+      "OPTION": {
+        "A": "Hematuria with RBC casts",
+        "B": "Hypertension",
+        "C": "Proteinuria >3.5 g/day",
+        "D": "Acute kidney injury",
+        "E": "Low C3 complement"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Nephrotic syndrome is defined by proteinuria >3.5 g/day, hypoalbuminemia, edema, and hyperlipidemia. Hematuria, hypertension, and acute renal decline are typical of nephritic syndrome. Low C3 can occur in some nephritic diseases (e.g., PSGN, MPGN)."
+    }
+  },
+  {
+    "3": {
+      "QUESTION": "A 35-year-old man presents with nephrotic syndrome. Laboratory tests show positive anti‑PLA2R antibodies. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Minimal change disease",
+        "B": "Focal segmental glomerulosclerosis",
+        "C": "Membranous nephropathy",
+        "D": "IgA nephropathy",
+        "E": "Diabetic nephropathy"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Anti‑PLA2R antibodies are highly specific for primary membranous nephropathy (present in ~70% of cases). They can be used for diagnosis and monitoring response without repeat biopsy."
+    }
+  },
+  {
+    "4": {
+      "QUESTION": "A 25-year-old woman presents with acute nephritic syndrome, hemoptysis, and anemia. Labs show linear IgG along the glomerular basement membrane on immunofluorescence. What is the most appropriate initial treatment?",
+      "OPTION": {
+        "A": "High-dose steroids alone",
+        "B": "Plasma exchange, cyclophosphamide, and steroids",
+        "C": "Rituximab alone",
+        "D": "Supportive care with ACE inhibitors",
+        "E": "Intravenous immunoglobulin"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Anti-GBM disease (Goodpasture's syndrome) presents with RPGN and diffuse alveolar hemorrhage. It is a medical emergency requiring plasma exchange to remove antibodies, plus cyclophosphamide and steroids to stop further antibody production."
+    }
+  },
+  {
+    "5": {
+      "QUESTION": "Synpharyngitic hematuria (gross hematuria occurring 24‑48 hours after an upper respiratory infection) is classically associated with which glomerular disease?",
+      "OPTION": {
+        "A": "Post-streptococcal glomerulonephritis",
+        "B": "IgA nephropathy",
+        "C": "Thin basement membrane disease",
+        "D": "Alport syndrome",
+        "E": "Membranoproliferative GN"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Synpharyngitic hematuria (within 24‑48 hours of infection) is classic for IgA nephropathy (Berger's disease). Post-streptococcal GN occurs 1‑2 weeks after infection, not hours."
+    }
+  },
+  {
+    "6": {
+      "QUESTION": "A 10-year-old boy presents with gross hematuria, periorbital edema, and hypertension 2 weeks after a sore throat. C3 is low. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "IgA nephropathy",
+        "B": "Post-streptococcal glomerulonephritis",
+        "C": "Anti-GBM disease",
+        "D": "Membranoproliferative GN",
+        "E": "Alport syndrome"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Post-streptococcal GN typically occurs 1-2 weeks after pharyngitis (or 3-6 weeks after skin infection), presents with acute nephritic syndrome, and causes transient low C3 that returns to normal by 6-8 weeks."
+    }
+  },
+  {
+    "7": {
+      "QUESTION": "A patient with nephrotic syndrome has a renal biopsy showing subepithelial immune deposits and GBM thickening with a \"spike and dome\" appearance. What is the diagnosis?",
+      "OPTION": {
+        "A": "Minimal change disease",
+        "B": "Membranous nephropathy",
+        "C": "FSGS",
+        "D": "IgA nephropathy",
+        "E": "C3 glomerulopathy"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Membranous nephropathy is characterized by subepithelial immune deposits and GBM thickening. On silver stain, spikes form between deposits, giving a 'spike and dome' appearance."
+    }
+  },
+  {
+    "8": {
+      "QUESTION": "Which group of glomerular diseases typically presents with isolated low C3 and normal C4?",
+      "OPTION": {
+        "A": "Anti-GBM disease and IgA nephropathy",
+        "B": "Post-streptococcal GN, C3 glomerulopathy, and dense deposit disease",
+        "C": "Lupus nephritis and cryoglobulinemia",
+        "D": "Membranous nephropathy and minimal change disease",
+        "E": "Diabetic nephropathy and FSGS"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Isolated low C3 with normal C4 is characteristic of post-streptococcal GN, C3 glomerulopathy (including dense deposit disease), and some cases of MPGN. Low C3 + low C4 suggests immune complex diseases like lupus or cryoglobulinemia. Complements are normal in anti-GBM, IgA, and most podocytopathies."
+    }
+  },
+  {
+    "9": {
+      "QUESTION": "A patient presents with episodic gross hematuria occurring 24-48 hours after an upper respiratory infection. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Post-streptococcal GN",
+        "B": "IgA nephropathy",
+        "C": "Thin basement membrane disease",
+        "D": "Alport syndrome",
+        "E": "Membranoproliferative GN"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Synpharyngitic hematuria (within 24-48 hours of infection) is classic for IgA nephropathy. Post-streptococcal GN occurs 1-2 weeks after infection, not hours."
+    }
+  },
+  {
+    "10": {
+      "QUESTION": "A child presents with acute nephritic syndrome after a streptococcal pharyngitis. Serum C3 is low and C4 is normal. Which of the following is the most likely diagnosis?",
+      "OPTION": {
+        "A": "IgA nephropathy",
+        "B": "Lupus nephritis",
+        "C": "Cryoglobulinemic GN",
+        "D": "Post-streptococcal GN",
+        "E": "Anti-GBM disease"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Post-streptococcal GN causes isolated low C3 with normal C4. Low C3 + low C4 would suggest lupus or cryoglobulinemia. Complements are normal in IgA, anti-GBM, and most other nephritides."
+    }
+  },
+  {
+    "11": {
+      "QUESTION": "A 55-year-old man presents with nephrotic syndrome, enlarged kidneys, and orthostatic hypotension. Tissue biopsy with Congo red shows apple-green birefringence. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Diabetic nephropathy",
+        "B": "HIVAN",
+        "C": "Amyloidosis",
+        "D": "Multiple myeloma",
+        "E": "Membranous nephropathy"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Congo red positivity with apple-green birefringence under polarized light is diagnostic of amyloidosis. Nephrotic syndrome with enlarged kidneys and autonomic dysfunction (orthostatic hypotension) is classic for amyloid."
+    }
+  },
+  {
+    "12": {
+      "QUESTION": "Which of the following is a contraindication to corticosteroid therapy in a patient with nephrotic syndrome?",
+      "OPTION": {
+        "A": "Minimal change disease",
+        "B": "FSGS",
+        "C": "HIV-associated nephropathy (HIVAN)",
+        "D": "Membranous nephropathy",
+        "E": "Lupus nephritis class IV"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Corticosteroids are contraindicated in HIVAN because they worsen outcomes. The cornerstone of HIVAN treatment is antiretroviral therapy (ART) plus ACE inhibitors."
+    }
+  },
+  {
+    "13": {
+      "QUESTION": "A 40-year-old African American man presents with nephrotic syndrome, rapidly rising creatinine (from 1.0 to 3.5 mg/dL over 4 months), and large echogenic kidneys on ultrasound. HIV test is positive. What is the most appropriate treatment?",
+      "OPTION": {
+        "A": "High-dose prednisone",
+        "B": "Cyclophosphamide",
+        "C": "Antiretroviral therapy (ART) and ACE inhibitor",
+        "D": "Rituximab",
+        "E": "Plasma exchange"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "HIVAN presents with collapsing FSGS, rapid CKD progression, and large echogenic kidneys. ART is the cornerstone and can stabilize or reverse disease. Steroids are contraindicated."
+    }
+  },
+  {
+    "14": {
+      "QUESTION": "Which of the following glomerular diseases is most strongly associated with renal vein thrombosis?",
+      "OPTION": {
+        "A": "Minimal change disease",
+        "B": "Membranous nephropathy",
+        "C": "IgA nephropathy",
+        "D": "Post-streptococcal GN",
+        "E": "C3 glomerulopathy"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Membranous nephropathy has the highest thrombotic risk (renal vein thrombosis) due to loss of antithrombin III in urine. Prophylactic anticoagulation is considered if albumin <2 g/dL."
+    }
+  },
+  {
+    "15": {
+      "QUESTION": "A 30-year-old woman presents with acute nephritic syndrome, palpable purpura, and arthralgias. C3 and C4 are low. Hepatitis C serology is positive. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "IgA nephropathy",
+        "B": "Anti-GBM disease",
+        "C": "Cryoglobulinemic glomerulonephritis",
+        "D": "C3 glomerulopathy",
+        "E": "Thin basement membrane disease"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Hepatitis C-associated cryoglobulinemia presents with nephritic syndrome, low C3 + low C4, and extrarenal features (purpura, arthralgias). MPGN is the typical pathology."
+    }
+  },
+  {
+    "16": {
+      "QUESTION": "Which glomerular disease is classically associated with heroin use, HIV infection, and obesity?",
+      "OPTION": {
+        "A": "Minimal change disease",
+        "B": "Membranous nephropathy",
+        "C": "Focal segmental glomerulosclerosis (FSGS)",
+        "D": "IgA nephropathy",
+        "E": "Post-streptococcal GN"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "Secondary (adaptive) FSGS is associated with conditions that increase glomerular stress, including heroin nephropathy, HIV-associated nephropathy (collapsing variant), and obesity-related glomerulopathy. Primary FSGS is idiopathic."
+    }
+  },
+  {
+    "17": {
+      "QUESTION": "Which of the following is an indication for renal biopsy in a patient with suspected glomerular disease?",
+      "OPTION": {
+        "A": "Classic post-streptococcal GN in a 7-year-old child",
+        "B": "Long-standing diabetes with retinopathy and microalbuminuria",
+        "C": "Rapidly progressive glomerulonephritis (RPGN)",
+        "D": "PLA2R-positive membranous nephropathy without atypical features",
+        "E": "Asymptomatic microscopic hematuria with normal renal function and no proteinuria"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "RPGN is a medical emergency and requires urgent biopsy to guide therapy. The other options are situations where biopsy is often not needed (classic PSGN in child, typical diabetic nephropathy, PLA2R-positive MN, isolated microscopic hematuria with normal kidney function)."
+    }
+  },
+  {
+    "18": {
+      "QUESTION": "A 25-year-old man presents with rapidly progressive glomerulonephritis and pulmonary hemorrhage. He is found to be c-ANCA/PR3 positive. What is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Goodpasture's syndrome",
+        "B": "Granulomatosis with polyangiitis (GPA)",
+        "C": "Microscopic polyangiitis (MPA)",
+        "D": "Eosinophilic granulomatosis with polyangiitis (EGPA)",
+        "E": "IgA vasculitis"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "c-ANCA (cytoplasmic) with specificity for PR3 is classic for granulomatosis with polyangiitis (Wegener's). p-ANCA/MPO is more common in MPA and EGPA. Anti-GBM disease has linear IgG on biopsy, not ANCA (though overlap can occur)."
+    }
+  },
+  {
+    "19": {
+      "QUESTION": "A patient with diabetic nephropathy and proteinuria of 2 g/day has an eGFR of 35 mL/min/1.73m². Which medication class has been shown to reduce proteinuria and slow eGFR decline in this setting, even when added to ACE inhibitors?",
+      "OPTION": {
+        "A": "Thiazide diuretics",
+        "B": "SGLT2 inhibitors",
+        "C": "Loop diuretics",
+        "D": "Calcium channel blockers (dihydropyridine)",
+        "E": "Beta-blockers"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "SGLT2 inhibitors (empagliflozin, dapagliflozin) reduce proteinuria and slow eGFR decline in diabetic and non-diabetic proteinuric CKD, even when added to ACE inhibitors. They are now standard of care."
+    }
+  },
+  {
+    "20": {
+      "QUESTION": "A renal biopsy shows a \"tram-track\" appearance on silver stain with double contours of the GBM. Which of the following is the most likely diagnosis?",
+      "OPTION": {
+        "A": "Membranous nephropathy",
+        "B": "Minimal change disease",
+        "C": "Membranoproliferative GN (MPGN)",
+        "D": "IgA nephropathy",
+        "E": "Thin basement membrane disease"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "GLOMERULAR DISEASES",
+      "EXPLANATION": "The 'tram-track' or double-contour appearance on silver stain is characteristic of membranoproliferative GN (MPGN), caused by interposition of mesangial cells and new GBM formation. Membranous nephropathy shows spikes; MCD has normal light microscopy; IgA shows mesangial proliferation; thin basement membrane disease shows GBM thinning on EM."
+    }
+  }
+]

@@ -971,10 +971,10 @@ def get_user_progress(user, set_obj, item_queryset, items_per_set=10):
     }
 
 
+from django.utils import timezone
+from datetime import timedelta
+
 def increment_attempt_count(user, set_obj):
-    """
-    Increment attempt count ONLY when the user completes a batch.
-    """
     if not user or not user.is_authenticated:
         return 0
 
@@ -988,8 +988,17 @@ def increment_attempt_count(user, set_obj):
             object_id=set_obj.id,
             defaults={'attempt_count': 0}
         )
+
+        # For free users, prevent incrementing if they already have a batch completed within 24h
+        if not user.has_active_subscription and not created:
+            if attempt.attempt_count >= 1 and attempt.last_attempted:
+                if (timezone.now() - attempt.last_attempted) < timedelta(days=1):
+                    # Still within cooldown – do not increment
+                    return attempt.attempt_count
+
+        # Allowed to increment
         attempt.attempt_count += 1
-        attempt.last_attempted = datetime.now()
+        attempt.last_attempted = timezone.now()
         attempt.save()
 
     return attempt.attempt_count
@@ -2670,20 +2679,20 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# import dj_database_url
-
 # DATABASES = {
-#     "default": dj_database_url.config(
-#         default=config("DATABASE_URL")
-#     )
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
 # }
+
+import dj_database_url
+
+DATABASES = {
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL")
+    )
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -10563,8 +10572,16 @@ export default function MCQDetailPage() {
             "You've used your 60 minutes of free access today. " +
             "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
           );
-        } else {
-          // Generic subscription message for other 403 errors
+        }
+        // Check for daily batch limit
+        else if (errorCode === 'daily_batch_limit' || errorDetail.includes('one batch')) {
+          setTrialExpiredMessage(
+            "You have already completed one batch of this MCQ set today. " +
+            "Please subscribe to continue now, or wait 24 hours."
+          );
+        }
+        // Generic subscription message for other 403 errors
+        else {
           setTrialExpiredMessage(
             "You've reached a limit for free access. " +
             "Please subscribe to continue."
@@ -10576,7 +10593,7 @@ export default function MCQDetailPage() {
         return; // Exit early – no further processing
       }
 
-      // For other errors, just set empty questions (but keep showTrialExpired false)
+      // For other errors, just set empty questions
       if (mounted.current) setQuestions([]);
     } finally {
       if (mounted.current && !showTrialExpired) setLoading(false);

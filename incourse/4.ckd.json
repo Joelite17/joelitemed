@@ -1,0 +1,309 @@
+[
+  {
+    "META_DATA": {
+      "COURSE": "MEDICINE",
+      "TITLE": "CHRONIC KIDNEY DISEASE [BEST OPTION]",
+      "TYPE": "BEST OPTION"
+    }
+  },
+  {
+    "1": {
+      "QUESTION": "According to KDIGO, which of the following defines chronic kidney disease (CKD)?",
+      "OPTION": {
+        "A": "eGFR <60 mL/min/1.73m² for more than 3 months, with or without markers of kidney damage",
+        "B": "eGFR <90 mL/min/1.73m² for more than 6 months",
+        "C": "Persistent microalbuminuria for more than 2 weeks",
+        "D": "Any abnormality on renal ultrasound regardless of duration",
+        "E": "Serum creatinine >1.5 mg/dL for more than 1 month"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "KDIGO defines CKD as kidney damage (structural, histological, albuminuria, or transplant) OR GFR <60 mL/min/1.73m² for >3 months. Duration of >3 months distinguishes CKD from AKI."
+    }
+  },
+  {
+    "2": {
+      "QUESTION": "A 60-year-old man with hypertension has an eGFR of 55 mL/min/1.73m² and urine albumin-to-creatinine ratio (UACR) of 45 mg/g. According to KDIGO staging, what is his CKD stage and albuminuria category?",
+      "OPTION": {
+        "A": "Stage 3a, A1",
+        "B": "Stage 3a, A2",
+        "C": "Stage 3b, A2",
+        "D": "Stage 3b, A1",
+        "E": "Stage 2, A2"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "GFR 45–59 is stage 3a (mild to moderate). UACR 30–300 mg/g is category A2 (moderately increased, formerly microalbuminuria)."
+    }
+  },
+  {
+    "3": {
+      "QUESTION": "Which of the following is the most common cause of CKD worldwide?",
+      "OPTION": {
+        "A": "Diabetic nephropathy",
+        "B": "Hypertension",
+        "C": "Chronic glomerulonephritis",
+        "D": "HIV nephropathy",
+        "E": "Autosomal dominant polycystic kidney disease"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Hypertension is the most common cause of CKD worldwide, especially in developing countries. Diabetic nephropathy is the leading cause in developed nations. The question specifies worldwide, so hypertension is correct."
+    }
+  },
+  {
+    "4": {
+      "QUESTION": "A patient with CKD has a GFR of 28 mL/min/1.73m². What is the recommended target blood pressure according to KDIGO guidelines?",
+      "OPTION": {
+        "A": "<140/90 mmHg",
+        "B": "<130/80 mmHg",
+        "C": "<120/70 mmHg",
+        "D": "<125/75 mmHg",
+        "E": "<150/90 mmHg"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "KDIGO recommends a blood pressure target of <130/80 mmHg for all patients with CKD. Some guidelines suggest SBP <120 mmHg if heavy proteinuria and tolerated, but standard target is <130/80."
+    }
+  },
+  {
+    "5": {
+      "QUESTION": "Which class of antihypertensive drugs is first‑line to slow progression of proteinuric CKD?",
+      "OPTION": {
+        "A": "Calcium channel blockers (dihydropyridine)",
+        "B": "Thiazide diuretics",
+        "C": "Beta‑blockers",
+        "D": "ACE inhibitors or ARBs",
+        "E": "Alpha‑blockers"
+      },
+      "CORRECT": "D",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "ACE inhibitors and ARBs reduce intraglomerular pressure, decrease proteinuria, and slow CKD progression. They are first‑line in diabetic and non‑diabetic proteinuric CKD."
+    }
+  },
+  {
+    "6": {
+      "QUESTION": "A 55-year-old with diabetic nephropathy has an eGFR of 40 mL/min/1.73m² and UACR of 500 mg/g. Which medication class has been shown to reduce progression of CKD and heart failure hospitalization in this setting?",
+      "OPTION": {
+        "A": "GLP‑1 receptor agonists",
+        "B": "SGLT2 inhibitors",
+        "C": "Loop diuretics",
+        "D": "Mineralocorticoid receptor antagonists",
+        "E": "Phosphate binders"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "SGLT2 inhibitors (empagliflozin, dapagliflozin) slow CKD progression and reduce cardiovascular events in patients with diabetic and non‑diabetic CKD, even when eGFR is as low as 20–25 mL/min."
+    }
+  },
+  {
+    "7": {
+      "QUESTION": "A patient with stage 4 CKD (eGFR 20 mL/min) has a serum phosphate of 6.2 mg/dL, calcium 8.5 mg/dL, and PTH 400 pg/mL. Which of the following is the most appropriate first‑line treatment for hyperphosphatemia?",
+      "OPTION": {
+        "A": "Calcitriol",
+        "B": "Sevelamer carbonate",
+        "C": "Calcium acetate",
+        "D": "Cinacalcet",
+        "E": "Dietary phosphate restriction only"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Sevelamer is a non‑calcium phosphate binder that lowers phosphate without increasing calcium load. Calcium acetate is also effective but may cause hypercalcemia. Dietary restriction alone is insufficient at this level. Calcitriol treats secondary hyperparathyroidism but can raise calcium and phosphate."
+    }
+  },
+  {
+    "8": {
+      "QUESTION": "In a patient with CKD and anemia, what is the target hemoglobin level recommended by KDIGO when using erythropoiesis‑stimulating agents (ESAs)?",
+      "OPTION": {
+        "A": "10–12 g/dL",
+        "B": "12–14 g/dL",
+        "C": "13–15 g/dL",
+        "D": ">15 g/dL",
+        "E": "9–10 g/dL"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "KDIGO recommends a target hemoglobin of 10–12 g/dL (some sources say 10–11.5). Levels >13 g/dL increase cardiovascular risk. ESA therapy is usually initiated when Hb <10 g/dL after iron repletion."
+    }
+  },
+  {
+    "9": {
+      "QUESTION": "A patient with stage 4 CKD has a serum bicarbonate of 18 mmol/L. What intervention has been shown to slow CKD progression?",
+      "OPTION": {
+        "A": "Intravenous sodium bicarbonate",
+        "B": "Oral sodium bicarbonate to target bicarbonate ≥22 mmol/L",
+        "C": "Acetazolamide",
+        "D": "Low‑dose prednisone",
+        "E": "High‑dose loop diuretics"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Oral sodium bicarbonate (0.5–1.0 mEq/kg/day) to achieve serum bicarbonate ≥22 mmol/L has been shown to slow CKD progression and improve nutritional status. IV bicarbonate is not routine; acetazolamide worsens acidosis."
+    }
+  },
+  {
+    "10": {
+      "QUESTION": "At what eGFR range should a patient with progressive CKD be referred for vascular access (arteriovenous fistula) creation?",
+      "OPTION": {
+        "A": "eGFR <10 mL/min/1.73m²",
+        "B": "eGFR 15–20 mL/min/1.73m²",
+        "C": "eGFR 30–40 mL/min/1.73m²",
+        "D": "eGFR 45–50 mL/min/1.73m²",
+        "E": "eGFR <60 mL/min/1.73m² regardless of progression"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "AV fistulas take 2–6 months to mature. Creation is recommended when eGFR is 15–20 mL/min/1.73m² to ensure readiness before dialysis initiation. Waiting until eGFR <10 often leads to catheter use."
+    }
+  },
+  {
+    "11": {
+      "QUESTION": "A 30-year-old woman with CKD is planning pregnancy. Which antihypertensive medications are considered safe?",
+      "OPTION": {
+        "A": "Lisinopril and valsartan",
+        "B": "Methyldopa and labetalol",
+        "C": "Hydrochlorothiazide and spironolactone",
+        "D": "Amlodipine and metoprolol",
+        "E": "Doxazosin and clonidine"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Methyldopa, labetalol, hydralazine, and metoprolol are considered safe in pregnancy. ACE inhibitors and ARBs are teratogenic and contraindicated. Thiazides and spironolactone are not first‑line."
+    }
+  },
+  {
+    "12": {
+      "QUESTION": "Which of the following is a marker of kidney damage that qualifies for CKD diagnosis even with normal GFR?",
+      "OPTION": {
+        "A": "Isolated microscopic hematuria without casts",
+        "B": "Persistent albuminuria (UACR ≥30 mg/g)",
+        "C": "A single episode of pyelonephritis",
+        "D": "Renal cyst on ultrasound without other features",
+        "E": "Serum creatinine within normal range"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Persistent albuminuria (UACR ≥30 mg/g) for >3 months is a marker of kidney damage, even if GFR is ≥90 mL/min/1.73m² (stage 1 CKD). Isolated hematuria without casts is not sufficient without other evidence."
+    }
+  },
+  {
+    "13": {
+      "QUESTION": "A 65-year-old with CKD stage 3b and coronary artery disease has stable angina. Which antihypertensive class is preferred to reduce myocardial oxygen demand?",
+      "OPTION": {
+        "A": "Dihydropyridine calcium channel blockers",
+        "B": "Beta‑blockers",
+        "C": "Thiazide diuretics",
+        "D": "Alpha‑blockers",
+        "E": "Loop diuretics"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Beta‑blockers (e.g., metoprolol, carvedilol) reduce heart rate and contractility, decreasing myocardial oxygen demand, and are preferred in stable angina. Non‑DHP CCBs (verapamil, diltiazem) are alternatives, but beta‑blockers are first‑line."
+    }
+  },
+  {
+    "14": {
+      "QUESTION": "Which of the following laboratory findings is characteristic of CKD‑mineral bone disorder (CKD‑MBD) in advanced CKD?",
+      "OPTION": {
+        "A": "Hypercalcemia, hyperphosphatemia, low PTH",
+        "B": "Hypocalcemia, hyperphosphatemia, elevated PTH",
+        "C": "Hypocalcemia, hypophosphatemia, elevated PTH",
+        "D": "Hypercalcemia, hypophosphatemia, low PTH",
+        "E": "Normocalcemia, normophosphatemia, normal PTH"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "CKD‑MBD is characterized by hypocalcemia, hyperphosphatemia, and secondary hyperparathyroidism (elevated PTH) due to decreased calcitriol production and phosphate retention."
+    }
+  },
+  {
+    "15": {
+      "QUESTION": "According to KDIGO guidelines, what is the recommended target hemoglobin level when using erythropoiesis‑stimulating agents (ESAs) in patients with CKD?",
+      "OPTION": {
+        "A": "8–10 g/dL",
+        "B": "10–12 g/dL",
+        "C": "12–14 g/dL",
+        "D": "13–15 g/dL",
+        "E": ">15 g/dL"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "KDIGO recommends a target hemoglobin of 10–12 g/dL (some sources say 10–11.5). Higher targets (>13 g/dL) increase cardiovascular risk without additional benefit."
+    }
+  },
+  {
+    "16": {
+      "QUESTION": "According to KDIGO, which of the following GFR ranges (mL/min/1.73m²) corresponds to CKD stage 3b?",
+      "OPTION": {
+        "A": "45–59",
+        "B": "30–44",
+        "C": "15–29",
+        "D": "60–89",
+        "E": "<15"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "CKD stage 3a is GFR 45–59 mL/min/1.73m² (mild to moderate). Stage 3b is GFR 30–44 mL/min/1.73m² (moderate to severe). Stage 4 is 15–29, stage 5 <15, stage 2 is 60–89."
+    }
+  },
+  {
+    "17": {
+      "QUESTION": "Which of the following statements about the pathogenesis of CKD progression is correct?",
+      "OPTION": {
+        "A": "Angiotensin II constricts the afferent arteriole, reducing glomerular pressure",
+        "B": "ACE inhibitors work by dilating the afferent arteriole",
+        "C": "Loss of nephrons leads to compensatory hyperfiltration, which accelerates glomerulosclerosis",
+        "D": "Protein restriction has no effect on CKD progression",
+        "E": "Aldosterone antagonists are first‑line for slowing progression"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Loss of nephrons causes compensatory hyperfiltration and glomerular capillary hypertension (mediated by angiotensin II constricting efferent arteriole), leading to progressive glomerulosclerosis. ACE inhibitors dilate efferent, reducing pressure. Protein restriction may slow progression in selected patients."
+    }
+  },
+  {
+    "18": {
+      "QUESTION": "A patient with CKD stage 4 and metabolic acidosis is started on sodium bicarbonate. What is the target serum bicarbonate level to slow progression?",
+      "OPTION": {
+        "A": "≥18 mmol/L",
+        "B": "≥20 mmol/L",
+        "C": "≥22 mmol/L",
+        "D": "≥24 mmol/L",
+        "E": "≥26 mmol/L"
+      },
+      "CORRECT": "C",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "KDIGO suggests targeting serum bicarbonate ≥22 mmol/L to slow CKD progression and improve outcomes. Lower levels are associated with faster decline."
+    }
+  },
+  {
+    "19": {
+      "QUESTION": "Which of the following is a contraindication to the use of ACE inhibitors or ARBs in CKD?",
+      "OPTION": {
+        "A": "Bilateral renal artery stenosis",
+        "B": "Proteinuria >1 g/day",
+        "C": "Diabetes mellitus",
+        "D": "Heart failure with reduced ejection fraction",
+        "E": "Hypertensive nephrosclerosis"
+      },
+      "CORRECT": "A",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "Bilateral renal artery stenosis is a contraindication to ACEi/ARB because they reduce efferent arteriolar tone, decreasing GFR and can cause acute kidney injury. Proteinuria, diabetes, heart failure, and hypertensive nephrosclerosis are indications."
+    }
+  },
+  {
+    "20": {
+      "QUESTION": "A 45-year-old man with type 2 diabetes and CKD stage 3b (eGFR 35 mL/min) has hypertension. His current medications include metformin and lisinopril. Which additional medication class has been shown to reduce cardiovascular events and slow CKD progression in this setting?",
+      "OPTION": {
+        "A": "Thiazide diuretic",
+        "B": "SGLT2 inhibitor",
+        "C": "Calcium channel blocker (amlodipine)",
+        "D": "Beta‑blocker (atenolol)",
+        "E": "Alpha‑blocker (doxazosin)"
+      },
+      "CORRECT": "B",
+      "TOPIC_CATEGORY": "CHRONIC KIDNEY DISEASE",
+      "EXPLANATION": "SGLT2 inhibitors (empagliflozin, dapagliflozin) reduce progression of CKD and cardiovascular events in patients with diabetic and non‑diabetic CKD, even when eGFR is as low as 20‑25 mL/min. They are now standard add‑on therapy after ACEi/ARB."
+    }
+  }
+]
