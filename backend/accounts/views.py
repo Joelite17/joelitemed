@@ -120,7 +120,7 @@ class PasswordResetRequestView(APIView):
             serializer.is_valid(raise_exception=True)
             email = serializer.validated_data["email"]
             
-            try:
+            try: 
                 user = User.objects.get(email=email)
                 token = default_token_generator.make_token(user)
                 send_password_reset_email(user, token)  # uses React link now

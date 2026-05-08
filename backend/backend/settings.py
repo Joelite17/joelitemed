@@ -170,8 +170,8 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Simple JWT config
 from datetime import timedelta
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(hours=7),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ACCESS_TOKEN_LIFETIME": timedelta(weeks=4),
+    "REFRESH_TOKEN_LIFETIME": timedelta(weeks=12),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
