@@ -27,7 +27,7 @@ def send_email_via_gmail(to_email, subject, plain_message, html_message=None):
     Reads TOKEN_PICKLE and DEFAULT_FROM_EMAIL from .env or Railway.
     """
     token_env = config("TOKEN_PICKLE")
-    default_from = settings.DEFAULT_FROM_EMAIL 
+    default_from = config("DEFAULT_FROM_EMAIL")
 
     creds = pickle.loads(base64.b64decode(token_env))
 
