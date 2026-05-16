@@ -41,7 +41,7 @@
       width: auto;
       margin-right: 8px;
     }
-    .example {
+    .json-example {
       background: #f8f9fa;
       border: 1px solid #dee2e6;
       padding: 15px;
@@ -62,11 +62,13 @@
 
 {% block content %}
   <div class="upload-form">
-    <h1>{% trans "Upload Note from Document" %}</h1>
+    <h1>{% trans "Upload Notes" %}</h1>
 
     <div class="help">
-      <p>Upload a plain text (.txt), Word document (.docx), or <strong>JSON</strong> file. JSON files should follow this format:</p>
-      <div class="example">
+      <p>Upload one or more files – JSON, plain text (.txt), or Word (.docx).</p>
+
+      <h3>JSON format (recommended)</h3>
+      <div class="json-example">
 [
   {
     "META_DATA": {
@@ -78,73 +80,71 @@
   },
   {
     "1": {
-      "HEADING": "REQUIREMENTS TO BE SATISFIED BY HEALTH INFORMATION SYSTEM(HIS)",
+      "HEADING": "REQUIREMENTS TO BE SATISFIED BY HEALTH INFORMATION SYSTEM",
       "LISTING": [
         "Population based",
         "Avoid clustering of data",
         "Problem oriented",
-        "Express information briefly and imaginatively",
-        "Employ operational and functional terms",
-        "Make provision for feedback of data"
+        "Express information briefly and imaginatively"
       ]
     }
   },
   {
     "2": {
-      "HEADING": "COMPONENTS OF HEALTH INFORMATION SYSTEM(HIS)",
+      "HEADING": "COMPONENTS OF HEALTH INFORMATION SYSTEM",
       "LISTING": [
         "Demography and vital statistics",
         "Environmental health statistics",
-        "Health status",
-        "Health resources",
-        "Utilization and non-utilization of health services",
-        "Indices of outcome of medical care",
-        "Financial statistics"
+        "Health status"
       ]
     }
   }
 ]
       </div>
-      <p><strong>Notes:</strong></p>
+      <p><strong>Notes for JSON:</strong></p>
       <ul>
-        <li>The <code>COURSE</code> field is mapped to Medicine, Surgery, or Community Medicine.</li>
-        <li><code>HEADING_STYLING</code> can include <code>"BOLD"</code> and/or <code>"UNDERLINE"</code> to style all headings.</li>
-        <li>Each numbered section must have a <code>HEADING</code> and a <code>LISTING</code> array.</li>
-        <li>The <code>VISIBILITY</code> in metadata (public/private/subscriber) will be used if you leave the visibility field below blank.</li>
+        <li><code>COURSE</code> → Medicine, Surgery, or CommEd.</li>
+        <li><code>HEADING_STYLING</code> can include <code>"BOLD"</code> and/or <code>"UNDERLINE"</code>.</li>
+        <li><code>VISIBILITY</code> can be <code>public</code>, <code>private</code>, or <code>subscriber</code>.</li>
+        <li><strong>Title and visibility from JSON override the form fields below.</strong></li>
       </ul>
+
+      <h3>Plain text / Word documents</h3>
+      <p>For <code>.txt</code> and <code>.docx</code> files, the <strong>default title</strong> and <strong>default visibility</strong> from the form are used. If you leave the title blank, it will be auto‑extracted from the first line of the document.</p>
     </div>
 
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
 
       <div class="form-row">
-        {{ form.document.errors }}
-        <label for="id_document">Document File:</label>
-        {{ form.document }}
-        <div class="help">{{ form.document.help_text }}</div>
+        {{ form.files.errors }}
+        <label for="id_files">Files:</label>
+        {{ form.files }}
+        <div class="help">{{ form.files.help_text }}</div>
       </div>
 
       <div class="form-row">
         {{ form.title.errors }}
-        <label for="id_title">Title (optional):</label>
+        <label for="id_title">Default Title:</label>
         {{ form.title }}
         <div class="help">{{ form.title.help_text }}</div>
       </div>
 
       <div class="form-row">
         {{ form.visibility.errors }}
-        <label for="id_visibility">Visibility:</label>
+        <label for="id_visibility">Default Visibility:</label>
         {{ form.visibility }}
+        <div class="help">{{ form.visibility.help_text }}</div>
       </div>
 
       <div class="form-row checkbox-row">
         {{ form.overwrite }}
-        <label for="id_overwrite">Overwrite existing note with same title</label>
+        <label for="id_overwrite">Overwrite existing notes with same title</label>
         <div class="help" style="margin-left:20px;">{{ form.overwrite.help_text }}</div>
       </div>
 
       <div class="submit-row">
-        <input type="submit" value="Upload and Create Note" class="default">
+        <input type="submit" value="Upload and Create Notes" class="default">
         <a href="{% url 'admin:notes_note_changelist' %}" class="button">Cancel</a>
       </div>
     </form>

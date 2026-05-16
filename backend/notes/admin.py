@@ -12,7 +12,26 @@ from docx import Document
 from .models import Note
 
 # ----------------------------------------------------------------------
-#  Helper: Convert a docx paragraph to HTML with formatting
+# Custom multiple file field and widget (Django 3.2+)
+# ----------------------------------------------------------------------
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = [single_file_clean(data, initial)]
+        return result
+
+# ----------------------------------------------------------------------
+# Helper: Convert a docx paragraph to HTML with formatting
 # ----------------------------------------------------------------------
 def paragraph_to_html(paragraph):
     html_parts = []
@@ -158,18 +177,10 @@ def extract_title_from_text(text, default="Untitled Note"):
             return stripped[:255]
     return default
 
-# ----------------------------------------------------------------------
-#  JSON to HTML with heading styling
-# ----------------------------------------------------------------------
 def json_to_note_html(json_data):
-    """
-    Convert JSON array to HTML.
-    First element is META_DATA with optional HEADING_STYLING.
-    Subsequent elements are sections with HEADING and LISTING.
-    """
+    """Convert JSON array to HTML."""
     meta = json_data[0]['META_DATA']
     heading_styles = meta.get('HEADING_STYLING', [])
-    # Build inline style for headings
     style_parts = []
     if 'BOLD' in heading_styles:
         style_parts.append('font-weight: bold')
@@ -196,22 +207,34 @@ def json_to_note_html(json_data):
     return '\n'.join(html_parts)
 
 # ----------------------------------------------------------------------
-#  Upload Form – updated help text
+# Upload Form – uses custom MultipleFileField
 # ----------------------------------------------------------------------
 class NoteDocumentUploadForm(forms.Form):
-    document = forms.FileField(
-        label='JSON File',
-        help_text='Upload a JSON file (format with metadata). .txt and .docx are also supported but require manual title/visibility.'
+    files = MultipleFileField(
+        label='Document Files',
+        help_text='Upload one or more files (.json, .txt, .docx)'
+    )
+    title = forms.CharField(
+        required=False,
+        label='Default Title',
+        help_text='Used only for .txt/.docx files (ignored for JSON)'
+    )
+    visibility = forms.ChoiceField(
+        choices=[('public', 'Public'), ('private', 'Private'), ('subscriber', 'Subscriber')],
+        required=False,
+        initial='private',
+        label='Default Visibility',
+        help_text='Used only for .txt/.docx files (ignored for JSON)'
     )
     overwrite = forms.BooleanField(
         required=False,
         initial=False,
-        label='Overwrite existing note with same title',
-        help_text='If checked, any existing note with the same title will have its content replaced (the note ID stays the same).'
+        label='Overwrite existing notes with same title',
+        help_text='If checked, any existing note with the same title will have its content replaced.'
     )
 
 # ----------------------------------------------------------------------
-#  Note Admin – MODIFIED process_document_data
+# Note Admin
 # ----------------------------------------------------------------------
 class NoteAdmin(admin.ModelAdmin):
     list_display = ('title', 'user', 'visibility', 'created_at', 'likes_count')
@@ -243,56 +266,99 @@ class NoteAdmin(admin.ModelAdmin):
         if request.method == 'POST':
             form = NoteDocumentUploadForm(request.POST, request.FILES)
             if form.is_valid():
-                try:
-                    uploaded_file = request.FILES['document']
-                    file_extension = os.path.splitext(uploaded_file.name)[1].lower()
+                files = request.FILES.getlist('files')
+                if not files:
+                    messages.error(request, "No files selected.")
+                else:
                     overwrite = form.cleaned_data['overwrite']
+                    default_title = form.cleaned_data['title']
+                    default_visibility = form.cleaned_data['visibility']
+                    results = []
 
-                    if file_extension == '.json':
-                        # JSON upload – all metadata inside file
-                        json_data = json.load(uploaded_file)
-                        if not isinstance(json_data, list) or len(json_data) == 0:
-                            raise ValueError("JSON must be a non‑empty array.")
-                        meta = json_data[0].get('META_DATA', {})
-                        title = meta.get('TOPIC', 'Untitled Note')
-                        visibility = meta.get('VISIBILITY', 'private').lower()
-                        html_content = json_to_note_html(json_data)
-                        course_map = {
-                            'MEDICINE': 'medicine',
-                            'SURGERY': 'surgery',
-                            'COMMED': 'commed',
-                        }
-                        course_mode = course_map.get(meta.get('COURSE', '').upper(), 'commed')
-                    else:
-                        # For .txt/.docx, we still need a way to provide title/visibility,
-                        # but since the form no longer has those fields, we'll show an error
-                        messages.error(request, "Only JSON files are supported. Please upload a JSON file with metadata.")
-                        return HttpResponseRedirect(request.path_info)
+                    for f in files:
+                        file_extension = os.path.splitext(f.name)[1].lower()
+                        try:
+                            # ----- JSON file -----
+                            if file_extension == '.json':
+                                json_data = json.load(f)
+                                if not isinstance(json_data, list) or len(json_data) == 0:
+                                    raise ValueError("JSON must be a non‑empty array.")
+                                meta = json_data[0].get('META_DATA', {})
+                                title = meta.get('TOPIC', 'Untitled Note')
+                                visibility = meta.get('VISIBILITY', 'private').lower()
+                                html_content = json_to_note_html(json_data)
+                                course_map = {
+                                    'MEDICINE': 'medicine',
+                                    'SURGERY': 'surgery',
+                                    'COMMED': 'commed',
+                                }
+                                course_mode = course_map.get(meta.get('COURSE', '').upper(), 'commed')
 
-                    result = self.process_document_data(
-                        html_content,
-                        title,
-                        visibility,
-                        overwrite,
-                        request.user,
-                        course_mode
-                    )
+                                result = self.process_document_data(
+                                    html_content, title, visibility,
+                                    overwrite, request.user, course_mode
+                                )
 
-                    if result['success']:
-                        messages.success(request, f"Successfully created note '{title}'.")
-                        return HttpResponseRedirect('..')
-                    else:
-                        messages.error(request, result['message'])
-                except json.JSONDecodeError as e:
-                    messages.error(request, f"Invalid JSON file: {str(e)}")
-                except Exception as e:
-                    messages.error(request, f"Error processing file: {str(e)}")
+                            # ----- Plain text file -----
+                            elif file_extension == '.txt':
+                                content_text = f.read().decode('utf-8')
+                                title = default_title if default_title else extract_title_from_text(content_text)
+                                visibility = default_visibility
+                                html_content = text_to_note_html(content_text)
+                                result = self.process_document_data(
+                                    html_content, title, visibility,
+                                    overwrite, request.user, 'commed'
+                                )
+
+                            # ----- Word document -----
+                            elif file_extension == '.docx':
+                                html_content = docx_to_html(f)
+                                title = default_title if default_title else extract_title_from_text(html_content)
+                                visibility = default_visibility
+                                result = self.process_document_data(
+                                    html_content, title, visibility,
+                                    overwrite, request.user, 'commed'
+                                )
+                            else:
+                                result = {'success': False, 'message': f"Unsupported file type: {file_extension}"}
+
+                            results.append({
+                                'success': result['success'],
+                                'filename': f.name,
+                                'title': title if 'title' in locals() else '?',
+                                'message': result.get('message', 'Success')
+                            })
+
+                        except Exception as e:
+                            results.append({
+                                'success': False,
+                                'filename': f.name,
+                                'title': '',
+                                'message': str(e)
+                            })
+
+                    # Show aggregated messages
+                    successes = [r for r in results if r['success']]
+                    errors = [r for r in results if not r['success']]
+
+                    if successes:
+                        msg_lines = [f"✅ Successfully processed {len(successes)} file(s):"]
+                        for s in successes:
+                            msg_lines.append(f"  • {s['filename']} → '{s['title']}'")
+                        messages.success(request, "\n".join(msg_lines))
+                    if errors:
+                        for err in errors:
+                            messages.error(request, f"❌ {err['filename']}: {err['message']}")
+
+                    return HttpResponseRedirect('..')
+            else:
+                messages.error(request, "Invalid form submission.")
         else:
             form = NoteDocumentUploadForm()
 
         context = {
             'form': form,
-            'title': 'Upload Note from Document',
+            'title': 'Upload Notes',
             'opts': self.model._meta,
             'media': self.media,
             'has_permission': True,
@@ -303,7 +369,6 @@ class NoteAdmin(admin.ModelAdmin):
         try:
             with transaction.atomic():
                 if overwrite:
-                    # Try to get existing note with same title
                     note, created = Note.objects.get_or_create(
                         title=title,
                         defaults={
@@ -314,14 +379,12 @@ class NoteAdmin(admin.ModelAdmin):
                         }
                     )
                     if not created:
-                        # Note existed – update its fields
                         note.content = html_content
                         note.user = user
                         note.visibility = visibility
                         note.course_mode = course_mode
                         note.save()
                 else:
-                    # Always create a new note
                     note = Note.objects.create(
                         title=title,
                         content=html_content,
@@ -331,9 +394,9 @@ class NoteAdmin(admin.ModelAdmin):
                     )
                 return {'success': True, 'note_id': note.id}
         except Exception as e:
-            return {'success': False, 'message': f"Failed to create note: {str(e)}"}
+            return {'success': False, 'message': f"Database error: {str(e)}"}
 
-# Safely register NoteAdmin
+# Register the admin
 try:
     admin.site.unregister(Note)
 except admin.sites.NotRegistered:
