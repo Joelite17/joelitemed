@@ -9,10 +9,10 @@ from django.contrib.contenttypes.models import ContentType
 from accounts.permissions import HasFreeAccessOrSubscription   # <-- new
 
 class OSCESetViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = OSCESet.objects.all()
+    queryset = OSCESet.objects.all().order_by("-created_at")
     serializer_class = OSCESetSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
+ 
     def get_permissions(self):
         if self.action == 'retrieve':
             return [HasFreeAccessOrSubscription()]
