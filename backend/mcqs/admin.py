@@ -115,7 +115,8 @@ class MCQAdmin(admin.ModelAdmin):
                     messages.info(request, f"There are {siblings.count()} sibling question(s) with the same content. They will be updated automatically.")
                 else:
                     messages.info(request, "No sibling questions found.")
-        return super().change_view(request, object_id, form_url, extra_context)
+        return redirect(request.path)   # stay on the same page after saving
+        # return super().change_view(request, object_id, form_url, extra_context)
 
 
 # ===========================
