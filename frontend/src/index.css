@@ -185,3 +185,11 @@
 .dark .animate-joelitemed {
   /* Glow is already visible, but you could enhance it */
 }
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

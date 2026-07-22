@@ -4,15 +4,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import Spinner from "../../components/Spinner";
 import SuccessCheck from "../../components/SuccessCheck";
 import SubscriptionBlock from "../../components/SubscriptionBlock";
-import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, FlagIcon } from "@heroicons/react/24/outline";
 
 export default function MCQDetailPage() {
   const { id: mcqSetId } = useParams();
   const navigate = useNavigate();
 
+  // Main states
   const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
-  const [mode, setMode] = useState("exam");
+  const [mode, setMode] = useState("exam"); // "exam" | "result" | "review"
   const [selectedOptions, setSelectedOptions] = useState({});
   const [score, setScore] = useState(0);
   const [totalPossibleScore, setTotalPossibleScore] = useState(0);
@@ -23,7 +24,14 @@ export default function MCQDetailPage() {
   const [submitting, setSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
 
-  // Trial expired state
+  // Report states
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportComment, setReportComment] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState(null);
+  const [reportSuccess, setReportSuccess] = useState(false);
+
+  // Trial expired states
   const [showTrialExpired, setShowTrialExpired] = useState(false);
   const [trialExpiredMessage, setTrialExpiredMessage] = useState("");
 
@@ -39,6 +47,7 @@ export default function MCQDetailPage() {
     return () => { mounted.current = false; };
   }, []);
 
+  // Loading timeout fallback
   useEffect(() => {
     let timer;
     if (loading) {
@@ -52,10 +61,12 @@ export default function MCQDetailPage() {
     return () => clearTimeout(timer);
   }, [loading]);
 
+  // Fetch set on mount or id change
   useEffect(() => {
     fetchSet();
   }, [mcqSetId]);
 
+  // --- Fetch data ---
   const fetchSet = async () => {
     if (!mounted.current) return;
     setLoading(true);
@@ -63,6 +74,7 @@ export default function MCQDetailPage() {
       const data = await MCQAPI.fetchMCQSet(mcqSetId);
       if (!mounted.current) return;
 
+      // If set is already fully completed
       if ((!data || !data.mcqs || data.mcqs.length === 0) && data?.progress?.has_completed) {
         setShowCompletedPage(true);
         setProgress(data.progress);
@@ -77,6 +89,7 @@ export default function MCQDetailPage() {
         return;
       }
 
+      // Format questions
       const formatted = data.mcqs.map((q) => ({
         id: q.id,
         question: q.question,
@@ -95,6 +108,7 @@ export default function MCQDetailPage() {
       setShowExplanation(false);
       setShowCompletedPage(false);
 
+      // Set progress
       if (data.progress) {
         setProgress(data.progress);
       } else {
@@ -119,34 +133,22 @@ export default function MCQDetailPage() {
     } catch (err) {
       console.error("Error fetching MCQ set:", err);
 
-      // Log detailed error information for debugging
-      if (err.response) {
-        console.log("Error status:", err.response.status);
-        console.log("Error data:", err.response.data);
-      }
-
-      // Handle permission errors (403)
+      // Handle 403 permission errors (free trial limits)
       if (err.response?.status === 403) {
         const errorData = err.response.data || {};
         const errorCode = errorData.code;
         const errorDetail = errorData.detail || errorData.message || "";
-
-        // Check for free trial expired
         if (errorCode === 'free_trial_expired' || errorDetail.includes('free trial')) {
           setTrialExpiredMessage(
             "You've used your 60 minutes of free access today. " +
             "Please wait 24 hours for your trial to reset, or subscribe now for unlimited access."
           );
-        }
-        // Check for daily batch limit
-        else if (errorCode === 'daily_batch_limit' || errorDetail.includes('one batch')) {
+        } else if (errorCode === 'daily_batch_limit' || errorDetail.includes('one batch')) {
           setTrialExpiredMessage(
             "You have already completed one batch of this MCQ set today. " +
             "Please subscribe to continue now, or wait 24 hours."
           );
-        }
-        // Generic subscription message for other 403 errors
-        else {
+        } else {
           setTrialExpiredMessage(
             "You've reached a limit for free access. " +
             "Please subscribe to continue."
@@ -155,16 +157,17 @@ export default function MCQDetailPage() {
         setShowTrialExpired(true);
         setQuestions([]);
         setLoading(false);
-        return; // Exit early – no further processing
+        return;
       }
 
-      // For other errors, just set empty questions
+      // Other errors: just empty questions
       if (mounted.current) setQuestions([]);
     } finally {
       if (mounted.current && !showTrialExpired) setLoading(false);
     }
   };
 
+  // --- Handlers ---
   const handleOptionChange = (questionIndex, optKey, value = null) => {
     if (mode !== "exam") return;
     const q = questions[questionIndex];
@@ -297,18 +300,35 @@ export default function MCQDetailPage() {
     setShowExplanation(false);
   };
 
+  // --- Report handler ---
+  const handleReportSubmit = async () => {
+    setReportLoading(true);
+    setReportError(null);
+    try {
+      const q = questions[current];
+      await MCQAPI.reportMCQ(q.id, reportComment);
+      setReportSuccess(true);
+      setReportComment("");
+      setTimeout(() => {
+        setShowReportModal(false);
+        setReportSuccess(false);
+      }, 2000);
+    } catch (err) {
+      setReportError(err.response?.data?.error || err.message || "Failed to submit report.");
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  // --- Helper styles ---
   const getOptionStyle = (q, optKey) => {
     if (mode !== "review") return "";
     const selected = selectedOptions[current];
     const isCorrect = q.trueAnswers.includes(optKey);
-    
-    if (q.mcq_type === 'TF') {
-      return "";
-    } else {
-      if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
-      if (selected === optKey && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
-      return "";
-    }
+    if (q.mcq_type === 'TF') return "";
+    if (isCorrect) return "bg-green-100 dark:bg-green-800/40 border-green-600 ring-2 ring-green-500";
+    if (selected === optKey && !isCorrect) return "bg-red-100 dark:bg-red-800/40 border-red-600 ring-2 ring-red-500";
+    return "";
   };
 
   const getCheckboxStyle = (optKey, value, isCorrect) => {
@@ -316,21 +336,17 @@ export default function MCQDetailPage() {
     const selected = selectedOptions[current] || {};
     const userAnswer = selected[optKey];
     const correctValue = isCorrect ? "T" : "F";
-    
-    if (value === correctValue) {
-      return "bg-green-100 dark:bg-green-800/40 border-green-600";
-    }
-    if (userAnswer === value && value !== correctValue) {
-      return "bg-red-100 dark:bg-red-800/40 border-red-600";
-    }
+    if (value === correctValue) return "bg-green-100 dark:bg-green-800/40 border-green-600";
+    if (userAnswer === value && value !== correctValue) return "bg-red-100 dark:bg-red-800/40 border-red-600";
     return "";
   };
 
+  // --- Loading ---
   if (loading) {
     return <Spinner fullScreen text="Loading Questions..." />;
   }
 
-  // Trial expired view – shown instead of the content
+  // --- Trial expired ---
   if (showTrialExpired) {
     return (
       <div className="flex justify-center w-full min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 py-10 px-4">
@@ -352,43 +368,24 @@ export default function MCQDetailPage() {
     );
   }
 
+  // --- Completed page ---
   if (showCompletedPage) {
     return (
       <div className="flex justify-center bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-[calc(100vh-64px)] p-4">
         <div className="w-full lg:w-4/6">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 text-center max-w-md mx-auto">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-12 h-12 text-green-600 dark:text-green-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-5m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg className="w-12 h-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-5m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              🎉 Congratulations!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              You have completed all MCQ questions in this set.
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">🎉 Congratulations!</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">You have completed all MCQ questions in this set.</p>
             <div className="flex justify-center gap-4">
-              <button
-                onClick={handleRestart}
-                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
-              >
+              <button onClick={handleRestart} className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
                 Restart Set
               </button>
-              <button
-                onClick={() => navigate(-1)}
-                className="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors"
-              >
+              <button onClick={() => navigate(-1)} className="px-6 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors">
                 Go Back
               </button>
             </div>
@@ -398,15 +395,13 @@ export default function MCQDetailPage() {
     );
   }
 
+  // --- Empty questions ---
   if (questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 p-4">
         <div className="text-center">
           <p className="text-gray-600 dark:text-gray-300">No questions available for this set.</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-          >
+          <button onClick={() => navigate(-1)} className="mt-4 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
             Go Back
           </button>
         </div>
@@ -414,17 +409,16 @@ export default function MCQDetailPage() {
     );
   }
 
+  // --- Main render ---
   const q = questions[current] || {};
   const selected = selectedOptions[current] || {};
 
   return (
     <>
-      <SuccessCheck
-        show={showSuccess}
-        message={successMessage}
-        onClose={handleSuccessClose}
-      />
+      {/* Success Check */}
+      <SuccessCheck show={showSuccess} message={successMessage} onClose={handleSuccessClose} />
 
+      {/* Main content */}
       <div className="flex flex-col items-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
         {mode !== "result" && (
           <div className="flex items-center justify-between w-full lg:w-4/6 mb-4">
@@ -438,24 +432,26 @@ export default function MCQDetailPage() {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Question {current + 1} of {questions.length}
             </p>
-            <div className="w-20"></div>
+            <button
+              onClick={() => setShowReportModal(true)}
+              className="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-red-100 dark:hover:bg-red-900/30 hover:border-red-500 dark:hover:border-red-500 transition-all duration-200 hover:scale-105"
+              aria-label="Report Issue"
+            >
+              <FlagIcon className="w-4 h-4 text-red-500 dark:text-red-400" />
+            </button>
           </div>
         )}
 
         <div className="w-full lg:w-4/6 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 space-y-6">
           {mode === "result" ? (
+            // ----- Result Mode -----
             <div className="text-center space-y-6 py-12">
-              <h2 className="text-2xl font-bold">
-                Your Score: {score} / {totalPossibleScore}
-              </h2>
+              <h2 className="text-2xl font-bold">Your Score: {score} / {totalPossibleScore}</h2>
               <div className="text-6xl animate-bounce">
                 {score >= totalPossibleScore / 2 ? "🎉" : "😢"}
               </div>
               <div className="flex justify-center gap-4 mt-6">
-                <button
-                  onClick={handleReview}
-                  className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                >
+                <button onClick={handleReview} className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600">
                   Review
                 </button>
                 <button
@@ -468,6 +464,7 @@ export default function MCQDetailPage() {
               </div>
             </div>
           ) : (
+            // ----- Exam / Review Mode -----
             <>
               <p className="text-sm font-semibold mb-4">{q.question}</p>
 
@@ -475,19 +472,14 @@ export default function MCQDetailPage() {
                 Object.entries(q.options).map(([optKey, optText]) => (
                   <div key={optKey} className="mb-4">
                     <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
-                      <span className="text-sm font-medium">
-                        {optKey}. {optText}
-                      </span>
+                      <span className="text-sm font-medium">{optKey}. {optText}</span>
                     </div>
-
                     <div className="flex gap-4 mt-1 px-2">
                       {["T", "F"].map((val) => (
                         <label
                           key={val}
                           className={`flex items-center gap-2 px-2 py-1 border rounded ${
-                            mode === "review"
-                              ? getCheckboxStyle(optKey, val, q.trueAnswers.includes(optKey))
-                              : ""
+                            mode === "review" ? getCheckboxStyle(optKey, val, q.trueAnswers.includes(optKey)) : ""
                           } ${mode === "exam" ? "cursor-pointer" : ""}`}
                         >
                           <input
@@ -497,9 +489,7 @@ export default function MCQDetailPage() {
                             onChange={() => handleOptionChange(current, optKey, val)}
                             className="w-4 h-4 accent-blue-600"
                           />
-                          <span className="text-sm">
-                            {val === "T" ? "True" : "False"}
-                          </span>
+                          <span className="text-sm">{val === "T" ? "True" : "False"}</span>
                         </label>
                       ))}
                     </div>
@@ -533,9 +523,7 @@ export default function MCQDetailPage() {
                             disabled={mode !== "exam"}
                             className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300"
                           />
-                          <span className="ml-3 text-sm font-medium">
-                            {optKey}. {optText}
-                          </span>
+                          <span className="ml-3 text-sm font-medium">{optKey}. {optText}</span>
                         </div>
                       </div>
                     );
@@ -582,17 +570,11 @@ export default function MCQDetailPage() {
                   </button>
                 ) : mode === "review" ? (
                   current < questions.length - 1 ? (
-                    <button
-                      onClick={handleNext}
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                    >
+                    <button onClick={handleNext} className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
                       Next
                     </button>
                   ) : (
-                    <button
-                      onClick={() => setMode("result")}
-                      className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-                    >
+                    <button onClick={() => setMode("result")} className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
                       Finish Review
                     </button>
                   )
@@ -602,6 +584,47 @@ export default function MCQDetailPage() {
           )}
         </div>
       </div>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Report Question</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              Help us improve by letting us know what's wrong with this question.
+            </p>
+            <textarea
+              value={reportComment}
+              onChange={(e) => setReportComment(e.target.value)}
+              placeholder="Describe the issue (optional)"
+              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              rows="3"
+            />
+            {reportError && <p className="text-red-500 text-sm mt-2">{reportError}</p>}
+            {reportSuccess && <p className="text-green-500 text-sm mt-2">Thank you! Your report has been submitted.</p>}
+            <div className="flex justify-end gap-3 mt-4">
+              <button
+                onClick={() => {
+                  setShowReportModal(false);
+                  setReportComment("");
+                  setReportError(null);
+                  setReportSuccess(false);
+                }}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReportSubmit}
+                disabled={reportLoading || reportSuccess}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+              >
+                {reportLoading ? "Submitting..." : reportSuccess ? "Submitted ✓" : "Submit Report"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

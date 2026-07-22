@@ -17,6 +17,7 @@ def send_gmail_api_email(to_email, subject, message_text):
     # Refresh token if expired
     if creds and creds.expired and creds.refresh_token:
         creds.refresh(Request())
+        
         with open("token.pickle", "wb") as token:
             pickle.dump(creds, token)
 

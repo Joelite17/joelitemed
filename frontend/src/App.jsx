@@ -44,6 +44,14 @@ import Subscription from "./pages/Subscription";
 import { AccountsProvider } from "./context/AccountsContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 
+// review report
+import ReviewedReports from "./pages/accounts/ReviewedReports";
+
+// single view
+import SingleMCQPage from "./pages/resources/SingleMCQPage";
+
+
+
 // Layout wrapper
 function Layout({ children, sidebarOpen, setSidebarOpen, darkMode, setDarkMode }) {
   const location = useLocation();
@@ -189,6 +197,11 @@ function AppContent({ sidebarOpen, setSidebarOpen }) {
                 <Route path="/contest" element={<Contest />} />
                 <Route path="/contest/take/:participationId" element={<ContestTake />} />
                 <Route path="/contest/answers/:participationId" element={<ContestAnswers />} />
+
+                <Route path="/profile/reviewed" element={<ReviewedReports />} />
+
+                
+                <Route path="/mcq-question/:id" element={<SingleMCQPage />} />
               </Routes>
             </ProtectedRoute>
           }

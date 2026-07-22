@@ -1,12 +1,18 @@
 import json
-from django.contrib import admin
+import logging
+from django.contrib import admin, messages
 from django import forms
-from django.shortcuts import render
-from django.contrib import messages
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.db import transaction
 from django.urls import path, reverse
-from .models import MCQSet, MCQ, Option, UserScore
+from django.utils import timezone
+from django.utils.html import format_html
+from django.template.loader import get_template
+from django.template.exceptions import TemplateDoesNotExist
+from .models import MCQSet, MCQ, Option, UserScore, ReportedQuestion
+
+logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------
 #  JSON Upload Form
@@ -51,8 +57,311 @@ class MCQAdmin(admin.ModelAdmin):
         return ", ".join([f"{opt.key}" for opt in correct])
     correct_options.short_description = "Correct Answer(s)"
 
+    def save_model(self, request, obj, form, change):
+        if change and obj.pk:
+            self._captured_siblings = list(obj.get_siblings())
+        else:
+            self._captured_siblings = []
+        super().save_model(request, obj, form, change)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        obj = form.instance
+
+        obj.update_fingerprint()
+        obj.save(update_fields=['fingerprint'])
+
+        if change and hasattr(self, '_captured_siblings') and self._captured_siblings:
+            options_data = []
+            for opt in obj.options.order_by('key'):
+                options_data.append({
+                    'key': opt.key,
+                    'text': opt.text,
+                    'is_correct': opt.is_correct,
+                })
+
+            for sibling in self._captured_siblings:
+                sibling.question = obj.question
+                sibling.mcq_type = obj.mcq_type
+                sibling.explanation = obj.explanation
+                sibling.topic = obj.topic
+                sibling.options.all().delete()
+                Option.objects.bulk_create([
+                    Option(
+                        mcq=sibling,
+                        key=d['key'],
+                        text=d['text'],
+                        is_correct=d['is_correct']
+                    )
+                    for d in options_data
+                ])
+                sibling.update_fingerprint()
+                sibling.save(update_fields=[
+                    'question', 'mcq_type', 'explanation', 'topic', 'fingerprint'
+                ])
+
+            messages.info(
+                request,
+                f"Updated {len(self._captured_siblings)} sibling question(s) with the new content."
+            )
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        if request.GET.get('from_report'):
+            messages.info(request, "You are editing a reported question. Changes will propagate to all siblings.")
+            mcq = self.get_object(request, object_id)
+            if mcq:
+                siblings = mcq.get_siblings()
+                if siblings.exists():
+                    messages.info(request, f"There are {siblings.count()} sibling question(s) with the same content. They will be updated automatically.")
+                else:
+                    messages.info(request, "No sibling questions found.")
+        return super().change_view(request, object_id, form_url, extra_context)
+
+
 # ===========================
-# MCQSet Admin (with JSON upload)
+# ReportedQuestion Admin
+# ===========================
+@admin.register(ReportedQuestion)
+class ReportedQuestionAdmin(admin.ModelAdmin):
+    list_display = (
+        'mcq_short',
+        'mcq_set_title',
+        'course_mode',
+        'status',
+        'report_count',
+        'sibling_count',
+        'created_at'
+    )
+    list_filter = ('status', 'created_at')
+    search_fields = ('mcq__question', 'mcq__mcq_set__title')
+    actions = ['mark_reviewed', 'mark_resolved']
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('mcq', 'mcq__mcq_set', 'user')
+
+    def mcq_short(self, obj):
+        return obj.mcq.question[:50] + '...' if len(obj.mcq.question) > 50 else obj.mcq.question
+    mcq_short.short_description = 'Question'
+
+    def mcq_set_title(self, obj):
+        return obj.mcq.mcq_set.title
+    mcq_set_title.short_description = 'Set'
+
+    def course_mode(self, obj):
+        return obj.mcq.mcq_set.course_mode
+    course_mode.short_description = 'Course'
+
+    def report_count(self, obj):
+        return ReportedQuestion.objects.filter(mcq=obj.mcq).count()
+    report_count.short_description = 'Reports'
+
+    def sibling_count(self, obj):
+        course_mode = obj.mcq.mcq_set.course_mode
+        count = obj.mcq.get_siblings(course_mode=course_mode).count()
+        if count:
+            url = reverse('admin:mcqs_mcq_changelist') + f'?fingerprint={obj.mcq.fingerprint}'
+            return format_html('<a href="{}">{}</a>', url, count)
+        return '0'
+    sibling_count.short_description = 'Siblings (same course)'
+
+    def mark_reviewed(self, request, queryset):
+        queryset.update(status='reviewed')
+    mark_reviewed.short_description = "Mark selected as Reviewed"
+
+    def mark_resolved(self, request, queryset):
+        now = timezone.now()
+        updated = queryset.update(status='resolved', resolved_at=now, resolved_by=request.user)
+        self.message_user(request, f"{updated} report(s) marked as resolved.")
+    mark_resolved.short_description = "Mark selected as Resolved"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:report_id>/mark-reviewed/',
+                self.admin_site.admin_view(self.mark_reviewed_view),
+                name='mcqs_reportedquestion_mark_reviewed'
+            ),
+        ]
+        return custom_urls + urls
+
+    def mark_reviewed_view(self, request, report_id):
+        report = self.get_object(request, report_id)
+        if report:
+            report.status = 'reviewed'
+            report.save(update_fields=['status'])
+            messages.success(request, f"Report #{report.id} marked as reviewed.")
+        return redirect('admin:mcqs_reportedquestion_change', object_id=report_id)
+
+    # ----- Custom JSON edit view -----
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        try:
+            report = self.get_object(request, object_id)
+            if not report:
+                return super().change_view(request, object_id, form_url, extra_context)
+
+            # Handle POST (save edited JSON)
+            if request.method == 'POST':
+                json_data = request.POST.get('json_data', '')
+                try:
+                    data = json.loads(json_data)
+                    # If JSON has a numeric key, unwrap
+                    if len(data) == 1:
+                        key = next(iter(data))
+                        if key.isdigit():
+                            data = data[key]
+
+                    if 'QUESTION' not in data or 'OPTION' not in data:
+                        raise ValueError("Missing required keys: QUESTION and OPTION")
+                    has_true_false = 'TRUE' in data and 'FALSE' in data
+                    has_correct = 'CORRECT' in data
+                    if not has_true_false and not has_correct:
+                        raise ValueError("Missing either 'TRUE'/'FALSE' arrays or 'CORRECT' key")
+
+                    # Pass the specific report to update its snapshot
+                    self._update_mcq_from_json(report.mcq, data, request, report=report)
+                    messages.success(request, "Question updated successfully. Changes propagated to all siblings.")
+                    return redirect(reverse('admin:mcqs_reportedquestion_change', args=[report.id]))
+
+                except json.JSONDecodeError as e:
+                    messages.error(request, f"Invalid JSON: {e}")
+                except ValueError as e:
+                    messages.error(request, f"Validation error: {e}")
+                except Exception as e:
+                    messages.error(request, f"Error updating question: {e}")
+
+            # GET – build snapshot from the MCQ (force rebuild to always show current data)
+            snapshot = self._build_snapshot_from_mcq(report.mcq)
+            json_str = json.dumps(snapshot, indent=2)
+
+            course_mode = report.mcq.mcq_set.course_mode if report.mcq and report.mcq.mcq_set else 'unknown'
+            siblings = report.mcq.get_siblings(course_mode=course_mode) if report.mcq else []
+
+            context = {
+                'report': report,
+                'snapshot_json': json_str,
+                'siblings': siblings,
+                'opts': self.model._meta,
+                'original': report,
+                'is_popup': request.GET.get('_popup', False),
+                'media': self.media,
+                'has_change_permission': self.has_change_permission(request, report),
+                'has_delete_permission': self.has_delete_permission(request, report),
+            }
+
+            # Use custom template; fallback to default admin if missing
+            try:
+                get_template('admin/mcqs/reportedquestion/change_form.html')
+                return render(request, 'admin/mcqs/reportedquestion/change_form.html', context)
+            except TemplateDoesNotExist:
+                logger.warning("Custom template not found; using default admin change view.")
+                return super().change_view(request, object_id, form_url, extra_context)
+
+        except Exception as e:
+            logger.error(f"Error in ReportedQuestionAdmin.change_view: {e}", exc_info=True)
+            return super().change_view(request, object_id, form_url, extra_context)
+
+    # ----- Helper methods -----
+    def _build_snapshot_from_mcq(self, mcq):
+        if not mcq:
+            return {}
+        return {
+            str(mcq.id): {
+                "QUESTION": mcq.question or "",
+                "OPTION": {
+                    opt.key: opt.text
+                    for opt in mcq.options.order_by('key')
+                },
+                "TRUE": [opt.key for opt in mcq.options.filter(is_correct=True).order_by('key')],
+                "FALSE": [opt.key for opt in mcq.options.filter(is_correct=False).order_by('key')],
+                "TOPIC_CATEGORY": mcq.topic or "",
+                "EXPLANATION": mcq.explanation or "",
+            }
+        }
+
+    def _update_mcq_from_json(self, mcq, data, request, report=None):
+        with transaction.atomic():
+            siblings = list(mcq.get_siblings())
+
+            mcq.question = data.get('QUESTION', mcq.question)
+            mcq.topic = data.get('TOPIC_CATEGORY', mcq.topic)
+            mcq.explanation = data.get('EXPLANATION', mcq.explanation)
+
+            options_data = data.get('OPTION', {})
+            has_true_false = 'TRUE' in data and 'FALSE' in data
+            has_correct = 'CORRECT' in data
+
+            if has_true_false:
+                mcq.mcq_type = 'TF'
+                true_keys = data.get('TRUE', [])
+            elif has_correct:
+                mcq.mcq_type = 'MCQ'
+                correct_key = data.get('CORRECT', '')
+                true_keys = [correct_key] if correct_key else []
+            else:
+                raise ValueError("Unsupported format")
+
+            mcq.options.all().delete()
+            for key, text in options_data.items():
+                is_correct = key in true_keys
+                Option.objects.create(
+                    mcq=mcq,
+                    key=key,
+                    text=text,
+                    is_correct=is_correct
+                )
+
+            mcq.update_fingerprint()
+            mcq.save(update_fields=['question', 'topic', 'explanation', 'mcq_type', 'fingerprint'])
+
+            if siblings:
+                options_data = []
+                for opt in mcq.options.order_by('key'):
+                    options_data.append({
+                        'key': opt.key,
+                        'text': opt.text,
+                        'is_correct': opt.is_correct,
+                    })
+
+                for sibling in siblings:
+                    sibling.question = mcq.question
+                    sibling.mcq_type = mcq.mcq_type
+                    sibling.explanation = mcq.explanation
+                    sibling.topic = mcq.topic
+                    sibling.options.all().delete()
+                    Option.objects.bulk_create([
+                        Option(
+                            mcq=sibling,
+                            key=d['key'],
+                            text=d['text'],
+                            is_correct=d['is_correct']
+                        )
+                        for d in options_data
+                    ])
+                    sibling.update_fingerprint()
+                    sibling.save(update_fields=[
+                        'question', 'mcq_type', 'explanation', 'topic', 'fingerprint'
+                    ])
+
+                messages.info(request, f"Updated {len(siblings)} sibling question(s).")
+
+            # Update the snapshot of the specific report
+            if report:
+                new_snapshot = self._build_snapshot_from_mcq(mcq)
+                report.snapshot = new_snapshot
+                report.save(update_fields=['snapshot'])
+            else:
+                # Fallback (should not happen): try to find one report for this MCQ
+                # but avoid MultipleObjectsReturned by using filter().first()
+                report_qs = ReportedQuestion.objects.filter(mcq=mcq)
+                if report_qs.exists():
+                    first_report = report_qs.first()
+                    first_report.snapshot = self._build_snapshot_from_mcq(mcq)
+                    first_report.save(update_fields=['snapshot'])
+
+
+# ===========================
+# MCQSet Admin
 # ===========================
 @admin.register(MCQSet)
 class MCQSetAdmin(admin.ModelAdmin):
@@ -65,9 +374,6 @@ class MCQSetAdmin(admin.ModelAdmin):
         return obj.mcqs.count()
     mcq_count.short_description = "Number of Questions"
 
-    # ------------------------------------------------------------------
-    #  Custom URLs
-    # ------------------------------------------------------------------
     def get_urls(self):
         urls = super().get_urls()
         custom_urls = [
@@ -84,9 +390,6 @@ class MCQSetAdmin(admin.ModelAdmin):
         extra_context['upload_json_url'] = reverse('admin:mcqs_mcqset_upload_json')
         return super().changelist_view(request, extra_context=extra_context)
 
-    # ------------------------------------------------------------------
-    #  JSON Upload Handler (Multiple Files)
-    # ------------------------------------------------------------------
     def upload_json(self, request):
         if request.method == 'POST':
             form = MCQUploadForm(request.POST)
@@ -143,15 +446,7 @@ class MCQSetAdmin(admin.ModelAdmin):
         }
         return render(request, 'admin/mcq_upload_json.html', context)
 
-    # ------------------------------------------------------------------
-    #  Core processing logic (detects format)
-    # ------------------------------------------------------------------
     def process_json_data(self, json_data, overwrite, user, filename=None):
-        """
-        Convert JSON to MCQ set(s). Handles both old format (dict of questions)
-        and new format (list with metadata).
-        Returns dict with success, message, title, etc.
-        """
         try:
             with transaction.atomic():
                 if isinstance(json_data, list) and len(json_data) >= 2 and 'META_DATA' in json_data[0]:
@@ -163,9 +458,6 @@ class MCQSetAdmin(admin.ModelAdmin):
         except Exception as e:
             return {'success': False, 'message': f"Failed: {str(e)}"}
 
-    # ------------------------------------------------------------------
-    #  New format processor (array with metadata) – MODIFIED
-    # ------------------------------------------------------------------
     def _process_new_format(self, json_list, overwrite, user, filename):
         meta = json_list[0]['META_DATA']
 
@@ -184,15 +476,12 @@ class MCQSetAdmin(admin.ModelAdmin):
         file_mcq_type = 'TF' if ('TRUE FALSE' in type_raw or 'TF' in type_raw) else 'MCQ'
 
         if overwrite:
-            # Find or create set with same title
             mcq_set, created = MCQSet.objects.get_or_create(
                 title=final_title,
                 defaults={'user': user, 'course_mode': course_mode}
             )
             if not created:
-                # Set existed – delete its MCQs (cascades to options)
                 mcq_set.mcqs.all().delete()
-                # Update metadata
                 mcq_set.user = user
                 mcq_set.course_mode = course_mode
                 mcq_set.save()
@@ -245,6 +534,8 @@ class MCQSetAdmin(admin.ModelAdmin):
                             is_correct=is_correct
                         )
 
+                mcq.update_fingerprint()
+                mcq.save(update_fields=['fingerprint'])
                 questions_created += 1
 
         return {
@@ -256,9 +547,6 @@ class MCQSetAdmin(admin.ModelAdmin):
             'questions_created': questions_created,
         }
 
-    # ------------------------------------------------------------------
-    #  Old format processor (backward compatibility) – MODIFIED
-    # ------------------------------------------------------------------
     def _process_old_format(self, json_dict, overwrite, user, filename):
         title = filename.rsplit('.', 1)[0] if filename else 'Untitled Set'
 
@@ -304,6 +592,8 @@ class MCQSetAdmin(admin.ModelAdmin):
                     is_correct=is_correct
                 )
 
+            mcq.update_fingerprint()
+            mcq.save(update_fields=['fingerprint'])
             questions_created += 1
 
         return {
@@ -314,6 +604,7 @@ class MCQSetAdmin(admin.ModelAdmin):
             'mcq_type': 'TF',
             'questions_created': questions_created,
         }
+
 
 # ===========================
 # Option Admin

@@ -1,18 +1,23 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import FeedItem from "../../components/FeedItem";
 import ProfileInfo from "../../components/ProfileInfo";
-import FilterTabs from "../../components/FilterTabs";
 import Pagination from "../../components/Pagination";
 import { AccountsContext } from "../../context/AccountsContext";
 import { feedAPI } from "../../apis/feed";
 import { AccountsAPI } from "../../apis/accounts";
+import { MCQAPI } from "../../apis/mcqs";
 import Spinner from "../../components/Spinner";
 import { PencilIcon } from "@heroicons/react/24/outline";
+import ReviewedReports from "./ReviewedReports";
 
 export default function MyProfilePage() {
-  const [activeTab, setActiveTab] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+  const initialTab = searchParams.get('tab') || 'all';
+
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [posts, setPosts] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
@@ -22,11 +27,11 @@ export default function MyProfilePage() {
   const { user, updateUser } = useContext(AccountsContext);
 
   const [courseMode, setCourseMode] = useState(user?.course_mode || "");
+  const [reviewCount, setReviewCount] = useState(0);
+  const [showReviewed, setShowReviewed] = useState(activeTab === 'reviewed');
 
   const userData = {
-    name:
-      `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
-      user?.username,
+    name: `${user?.first_name || ""} ${user?.last_name || ""}`.trim() || user?.username,
     username: `@${user?.username}`,
     avatar: "https://i.pravatar.cc/100?img=3",
   };
@@ -38,6 +43,22 @@ export default function MyProfilePage() {
     { value: "commed", label: "Community Medicine" },
   ];
 
+  // Fetch review count
+  useEffect(() => {
+    if (user) {
+      const fetchReviewCount = async () => {
+        try {
+          const reports = await MCQAPI.getMyReports();
+          setReviewCount(reports.length);
+        } catch (err) {
+          console.error("Failed to fetch review count:", err);
+          setReviewCount(0);
+        }
+      };
+      fetchReviewCount();
+    }
+  }, [user]);
+
   const handleCourseChange = async (e) => {
     const newMode = e.target.value;
     setCourseMode(newMode);
@@ -45,7 +66,8 @@ export default function MyProfilePage() {
     try {
       const updatedUser = await AccountsAPI.updateProfile({ course_mode: newMode });
       updateUser(updatedUser);
-      setCurrentPage(1); // Reset to first page after changing course mode
+      setCurrentPage(1);
+      setSearchParams({ page: 1, tab: activeTab });
     } catch (err) {
       console.error("Failed to update course mode:", err);
       setCourseMode(user?.course_mode || "");
@@ -65,34 +87,43 @@ export default function MyProfilePage() {
     return tabMap[tab.toLowerCase()] || null;
   };
 
+  const handleTabChange = (tab) => {
+    const isReviewed = tab === 'reviewed';
+    setShowReviewed(isReviewed);
+    setActiveTab(tab);
+    setCurrentPage(1);
+    setSearchParams({ page: 1, tab: tab });
+  };
+
+  // Sync with URL changes (browser back/forward)
   useEffect(() => {
+    const page = parseInt(searchParams.get('page')) || 1;
+    const tab = searchParams.get('tab') || 'all';
+    if (page !== currentPage) setCurrentPage(page);
+    if (tab !== activeTab) {
+      setActiveTab(tab);
+      setShowReviewed(tab === 'reviewed');
+    }
+  }, [searchParams]);
+
+  // Fetch posts when tab/page changes
+  useEffect(() => {
+    if (showReviewed) return;
     const fetchLikedPosts = async () => {
       if (!user) return;
-
       setFeedLoading(true);
       setError(null);
-
       try {
         const contentType = getContentTypeFromTab(activeTab);
         const feedData = await feedAPI.userLikedPosts(currentPage, contentType);
-
         const transformed = feedData.results.map(item => {
           let type;
           switch (item.content_type) {
-            case 'flashcard_set':
-              type = "Flashcard";
-              break;
-            case 'mcq_set':
-              type = "MCQ";
-              break;
-            case 'osce_set':
-              type = "OSCE";
-              break;
-            case 'note':
-              type = "Note";
-              break;
-            default:
-              type = "Unknown";
+            case 'flashcard_set': type = "Flashcard"; break;
+            case 'mcq_set': type = "MCQ"; break;
+            case 'osce_set': type = "OSCE"; break;
+            case 'note': type = "Note"; break;
+            default: type = "Unknown";
           }
           return {
             id: item.content_id,
@@ -103,86 +134,39 @@ export default function MyProfilePage() {
             created_at: item.created_at || new Date().toISOString(),
           };
         });
-
         setPosts(transformed);
         setTotalCount(feedData.count);
         setTotalPages(feedData.totalPages);
-
       } catch (err) {
         console.error("Failed to load user liked posts:", err);
-        // Fallback: filter from general feed
-        try {
-          const contentType = getContentTypeFromTab(activeTab);
-          const params = { page: currentPage, page_size: 5 };
-          if (contentType) params.content_type = contentType;
-          const feedData = await feedAPI.getFeed(currentPage, params);
-          const likedItems = feedData.results.filter(item => item.user_liked === true);
-          const transformed = likedItems.map(item => {
-            let type;
-            switch (item.content_type) {
-              case 'flashcard_set':
-                type = "Flashcard";
-                break;
-              case 'mcq_set':
-                type = "MCQ";
-                break;
-              case 'osce_set':
-                type = "OSCE";
-                break;
-              case 'note':
-                type = "Note";
-                break;
-              default:
-                type = "Unknown";
-            }
-            return {
-              id: item.content_id,
-              type: type,
-              title: item.content_data?.title || 'No Title',
-              total_likes: item.likes_count || 0,
-              user_liked: item.user_liked || false,
-              created_at: item.created_at || new Date().toISOString(),
-            };
-          });
-          setPosts(transformed);
-          setTotalCount(likedItems.length);
-          setTotalPages(Math.ceil(likedItems.length / 5));
-        } catch (fallbackErr) {
-          setError("Failed to load your liked posts. Please try again.");
-          setPosts([]);
-          setTotalCount(0);
-          setTotalPages(1);
-        }
+        setError("Failed to load your liked posts. Please try again.");
+        setPosts([]);
+        setTotalCount(0);
+        setTotalPages(1);
       } finally {
         setFeedLoading(false);
       }
     };
-
-    fetchLikedPosts();
-  }, [user, activeTab, currentPage, user?.course_mode]); // Added course_mode dependency
+    if (!showReviewed) fetchLikedPosts();
+  }, [user, activeTab, currentPage, user?.course_mode, showReviewed]);
 
   const handleLikeChange = (id, liked, likes_count, type) => {
     if (!liked) {
       setPosts(prev => prev.filter(p => !(p.id === id && p.type === type)));
       setTotalCount(prev => Math.max(0, prev - 1));
     } else {
-      setPosts(prev =>
-        prev.map(p =>
-          p.id === id && p.type === type
-            ? { ...p, user_liked: liked, total_likes: likes_count }
-            : p
-        )
-      );
+      setPosts(prev => prev.map(p =>
+        p.id === id && p.type === type
+          ? { ...p, user_liked: liked, total_likes: likes_count }
+          : p
+      ));
     }
   };
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [activeTab]);
 
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
+    setSearchParams({ page: page, tab: activeTab });
     window.scrollTo(0, 0);
   };
 
@@ -191,13 +175,20 @@ export default function MyProfilePage() {
     else return `Loading your liked ${activeTab} posts...`;
   };
 
+  const tabs = [
+    { id: 'reviewed', label: 'Reviewed', badge: reviewCount > 0 ? reviewCount : null },
+    { id: 'all', label: 'All' },
+    { id: 'flashcard', label: 'Flashcards' },
+    { id: 'mcq', label: 'MCQs' },
+    { id: 'osce', label: 'OSCE' },
+    { id: 'note', label: 'Notes' },
+  ];
+
   return (
     <div className="flex flex-col items-center w-full min-h-screen text-gray-900 dark:text-gray-100">
       <div className="w-full lg:w-4/6 space-y-4 py-8 px-4">
         <div className="relative">
           <ProfileInfo user={userData} />
-
-          {/* Course Mode Dropdown */}
           <div className="mt-4 flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
             <label htmlFor="courseMode" className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Course Mode:
@@ -215,7 +206,6 @@ export default function MyProfilePage() {
             </select>
             {updatingCourse && <Spinner size="small" />}
           </div>
-
           <Link
             to="/edit-profile"
             className="absolute top-4 right-4 flex items-center gap-2 bg-white dark:bg-gray-800 text-green-600 hover:text-green-700 hover:bg-green-50 dark:hover:bg-green-900/20 px-4 py-2 rounded-lg shadow-sm border border-green-200 dark:border-green-800 transition-all duration-200 z-10"
@@ -224,7 +214,29 @@ export default function MyProfilePage() {
           </Link>
         </div>
 
-        <FilterTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="flex overflow-x-auto pb-2 -mb-2 scrollbar-hide space-x-2 border-b border-gray-200 dark:border-gray-700">
+          {tabs.map((tab) => {
+            const isActive = (showReviewed && tab.id === 'reviewed') || (!showReviewed && activeTab === tab.id);
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 relative ${
+                  isActive
+                    ? 'text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                {tab.label}
+                {tab.badge && (
+                  <span className="ml-1 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-green-600 rounded-full">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -233,7 +245,9 @@ export default function MyProfilePage() {
         )}
 
         <div className="min-h-[300px] relative">
-          {feedLoading ? (
+          {showReviewed ? (
+            <ReviewedReports />
+          ) : feedLoading ? (
             <div className="min-h-[400px]">
               <Spinner fullContainer text={getLoadingText()} />
             </div>
@@ -249,7 +263,6 @@ export default function MyProfilePage() {
                   />
                 ))}
               </div>
-
               {totalPages > 1 && (
                 <div className="mt-8">
                   <Pagination

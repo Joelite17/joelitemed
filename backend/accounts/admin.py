@@ -180,3 +180,4 @@ class FreeTrialUsageAdmin(admin.ModelAdmin):
     list_display = ['user', 'date', 'first_access']
     list_filter = ['date']
     search_fields = ['user__username']
+

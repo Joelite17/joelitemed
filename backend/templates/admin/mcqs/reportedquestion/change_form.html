@@ -1,0 +1,98 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}{{ block.super }}
+<script src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .json-container {
+    margin: 20px 0;
+  }
+  .json-container textarea {
+    width: 100%;
+    min-height: 400px;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fafafa;
+  }
+  .sibling-list {
+    margin: 20px 0;
+  }
+  .sibling-list ul {
+    list-style: none;
+    padding: 0;
+  }
+  .sibling-list li {
+    padding: 6px 10px;
+    background: #f1f3f5;
+    margin-bottom: 4px;
+    border-radius: 3px;
+  }
+  .sibling-list li a {
+    font-weight: bold;
+  }
+  .status-info {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+  <div class="module">
+    <h1>Edit Question – Report #{{ report.id }}</h1>
+
+    <div class="status-info">
+      <strong>Status:</strong> {{ report.get_status_display }}<br>
+      <strong>Reported by:</strong> {{ report.user.username }}<br>
+      <strong>Reported at:</strong> {{ report.created_at }}<br>
+      <strong>Comment:</strong> {{ report.comment|default:"(no comment)" }}<br>
+      <strong>Course:</strong> {{ report.mcq.mcq_set.get_course_mode_display }}
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="json-container">
+        <label for="json_data"><strong>JSON (edit the question):</strong></label>
+        <textarea id="json_data" name="json_data" rows="20">{{ snapshot_json }}</textarea>
+      </div>
+      <div class="submit-row">
+        <input type="submit" value="Save Changes" class="default" style="background: #79aec8; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+        <a href="{% url 'admin:mcqs_reportedquestion_changelist' %}" class="button" style="background: #f0f0f0; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Cancel</a>
+        {% if report.status == 'pending' %}
+          <a href="{% url 'admin:mcqs_reportedquestion_mark_reviewed' report.id %}" class="button" style="background: #17a2b8; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Mark as Reviewed</a>
+        {% endif %}
+      </div>
+    </form>
+
+    <div class="sibling-list">
+      <h2>Sibling Questions (same course: {{ report.mcq.mcq_set.get_course_mode_display }})</h2>
+      {% if siblings %}
+        <ul>
+          {% for sibling in siblings %}
+            <li>
+              <a href="{% url 'admin:mcqs_mcq_change' sibling.id %}" target="_blank">
+                #{{ sibling.id }}
+              </a>
+              – <strong>{{ sibling.mcq_set.title }}</strong>
+              – {{ sibling.question|truncatechars:60 }}
+            </li>
+          {% endfor %}
+        </ul>
+        <p><em>Total siblings: {{ siblings|length }}</em></p>
+      {% else %}
+        <p>No siblings in this course.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

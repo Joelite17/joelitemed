@@ -11,11 +11,13 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from accounts.utils import get_next_items_for_user, increment_attempt_count, get_user_progress
-from .models import MCQSet, UserScore
+from .models import *
 from .serializers import MCQSetSerializer, UserScoreSerializer, MCQSerializer
 from accounts.models import UserSetAttempt
 from django.contrib.contenttypes.models import ContentType
 from accounts.permissions import HasFreeAccessOrSubscription   # <-- new
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 class MCQSetViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = MCQSet.objects.all().order_by("-created_at")
@@ -148,3 +150,132 @@ class UserScoreViewSet(viewsets.ModelViewSet):
         score_instance = serializer.save(user=self.request.user)
         mcq_set = score_instance.mcq_set
         increment_attempt_count(self.request.user, mcq_set)
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import MCQ, ReportedQuestion
+import json
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import MCQ, ReportedQuestion
+
+def make_json_safe(obj):
+    """Recursively convert any set to list and ensure all values are JSON serializable."""
+    if isinstance(obj, set):
+        return list(obj)
+    if isinstance(obj, dict):
+        return {k: make_json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [make_json_safe(item) for item in obj]
+    if isinstance(obj, tuple):
+        return [make_json_safe(item) for item in obj]
+    # If it's a Django model, convert to str (avoid recursion)
+    if hasattr(obj, '__class__') and obj.__class__.__module__.startswith('django.db.models'):
+        return str(obj)
+    return obj
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import MCQ, ReportedQuestion
+import json
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def report_mcq(request, mcq_id):
+    mcq = get_object_or_404(MCQ, id=mcq_id)
+    comment = request.data.get('comment', '')
+
+    # Check for pending report
+    pending_report = ReportedQuestion.objects.filter(
+        mcq=mcq,
+        user=request.user,
+        status='pending'
+    ).first()
+    if pending_report:
+        return Response({'error': 'You already have a pending report for this question.'}, status=400)
+
+    # Archive any existing reviewed/resolved reports for this MCQ and user
+    old_reports = ReportedQuestion.objects.filter(
+        mcq=mcq,
+        user=request.user
+    ).exclude(status='pending')
+    old_reports.update(status='archived')  # Mark them as archived so they don't show in "Reviewed"
+
+    # Build snapshot safely
+    try:
+        options = mcq.options.all().order_by('key')
+        snapshot = {
+            str(mcq.id): {
+                "QUESTION": str(mcq.question) if mcq.question else "",
+                "OPTION": {str(opt.key): str(opt.text) for opt in options},
+                "TRUE": [str(opt.key) for opt in options if opt.is_correct],
+                "FALSE": [str(opt.key) for opt in options if not opt.is_correct],
+                "TOPIC_CATEGORY": str(mcq.topic) if mcq.topic else "",
+                "EXPLANATION": str(mcq.explanation) if mcq.explanation else "",
+            }
+        }
+        json.dumps(snapshot)  # validate
+    except Exception as e:
+        return Response({'error': f'Failed to build question snapshot: {str(e)}'}, status=500)
+
+    report = ReportedQuestion.objects.create(
+        mcq=mcq,
+        user=request.user,
+        comment=comment,
+        snapshot=snapshot
+    )
+    return Response({'message': 'Report submitted successfully.'}, status=201)
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .models import ReportedQuestion
+class UserReportedQuestionsView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        reports = ReportedQuestion.objects.filter(
+            user=request.user,
+            status='reviewed'
+        ).order_by('-updated_at')
+        data = []
+        for r in reports:
+            data.append({
+                'id': r.id,
+                'mcq_id': r.mcq.id,
+                'mcq_set_id': r.mcq.mcq_set.id,   # <-- add this
+                'question': r.mcq.question,
+                'set_title': r.mcq.mcq_set.title,
+                'course_mode': r.mcq.mcq_set.course_mode,
+                'snapshot': r.snapshot,
+                'status': r.status,
+                'user_satisfied': r.user_satisfied,
+                'resolved_at': r.resolved_at,
+                'updated_at': r.updated_at,
+            })
+        return Response(data)
+
+class ReportFeedbackView(APIView):
+    permission_classes = [IsAuthenticated]
+    def post(self, request, report_id):
+        try:
+            report = ReportedQuestion.objects.get(id=report_id, user=request.user)
+        except ReportedQuestion.DoesNotExist:
+            return Response({'error': 'Report not found'}, status=404)
+        satisfied = request.data.get('satisfied')
+        if satisfied is None:
+            return Response({'error': 'Missing satisfied field'}, status=400)
+        report.user_satisfied = satisfied
+        report.save(update_fields=['user_satisfied'])
+        return Response({'success': True})
+from rest_framework.generics import RetrieveAPIView
+
+class SingleMCQView(RetrieveAPIView):
+    queryset = MCQ.objects.all()
+    serializer_class = MCQSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

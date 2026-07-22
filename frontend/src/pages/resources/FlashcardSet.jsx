@@ -1,30 +1,27 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { FlashcardsAPI } from "../../apis/flashcards";
-import { feedAPI } from "../../apis/feed";
 import FeedItem from "../../components/FeedItem";
 import Pagination from "../../components/Pagination";
 import Spinner from "../../components/Spinner";
 
 export default function FlashcardSet() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
   const pageSize = 10;
 
   const loadPosts = async (page = 1) => {
     setLoading(true);
     setError(null);
-    
     try {
-      const flashcardData = await FlashcardsAPI.fetchFlashcardSets(page, pageSize);
-
-      console.log(`Flashcard API Response for page ${page}:`, flashcardData);
-
-      // Transform flashcard set data to match FeedItem structure
-      const transformedSets = (flashcardData.results || []).map(item => ({
+      const data = await FlashcardsAPI.fetchFlashcardSets(page, pageSize);
+      const transformed = (data.results || []).map(item => ({
         id: item.id,
         type: "Flashcard",
         title: item.title || 'No Title',
@@ -32,24 +29,10 @@ export default function FlashcardSet() {
         user_liked: item.user_liked || false,
         created_at: new Date().toISOString(),
       }));
-
-      console.log(`Transformed ${transformedSets.length} flashcard sets for page ${page}`);
-
-      // If we're on page 2+ and get no results, go back to page 1
-      if (page > 1 && transformedSets.length === 0) {
-        console.log(`No flashcard sets found on page ${page}, returning to page 1`);
-        setCurrentPage(1);
-        return;
-      }
-
-      setPosts(transformedSets);
-      setTotalCount(flashcardData.count || 0);
-      
-      // Calculate total pages from count
-      const calculatedTotalPages = Math.max(1, Math.ceil((flashcardData.count || 0) / pageSize));
+      setPosts(transformed);
+      const calculatedTotalPages = Math.max(1, Math.ceil((data.count || 0) / pageSize));
       setTotalPages(calculatedTotalPages);
-      
-      console.log(`Total pages calculated: ${calculatedTotalPages} (total count: ${flashcardData.count})`);
+      setSearchParams({ page: page });
     } catch (err) {
       console.error("Failed to load flashcard sets:", err);
       setError("Failed to load flashcard sets. Please try again.");
@@ -59,23 +42,10 @@ export default function FlashcardSet() {
     }
   };
 
-  // Handle like changes in the feed
-  const handleLikeChange = (postId, liked, likesCount, postType) => {
-    console.log(`Like updated: ${postType} ${postId}, liked: ${liked}, count: ${likesCount}`);
-    
-    setPosts(prevPosts => 
-      prevPosts.map(post => {
-        if (post.id === postId && post.type === postType) {
-          return {
-            ...post,
-            total_likes: likesCount,
-            user_liked: liked
-          };
-        }
-        return post;
-      })
-    );
-  };
+  useEffect(() => {
+    const page = parseInt(searchParams.get('page')) || 1;
+    if (page !== currentPage) setCurrentPage(page);
+  }, [searchParams]);
 
   useEffect(() => {
     loadPosts(currentPage);
@@ -84,12 +54,19 @@ export default function FlashcardSet() {
   const handlePageChange = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
+    setSearchParams({ page: page });
     window.scrollTo(0, 0);
   };
 
-  if (loading) {
-    return <Spinner fullScreen text="Loading flashcard sets..." />;
-  }
+  const handleLikeChange = (postId, liked, likesCount, postType) => {
+    setPosts(prev => prev.map(p =>
+      p.id === postId && p.type === postType
+        ? { ...p, total_likes: likesCount, user_liked: liked }
+        : p
+    ));
+  };
+
+  if (loading) return <Spinner fullScreen text="Loading flashcard sets..." />;
 
   return (
     <div className="flex flex-col items-center w-full text-gray-900 dark:text-gray-100">
@@ -99,38 +76,18 @@ export default function FlashcardSet() {
             {error}
           </div>
         )}
-
         {posts.length > 0 ? (
           posts.map((post) => (
-            <FeedItem 
-              key={`${post.type}-${post.id}`} 
-              post={post} 
-              onLikeChange={handleLikeChange}
-            />
+            <FeedItem key={`${post.type}-${post.id}`} post={post} onLikeChange={handleLikeChange} />
           ))
         ) : (
           <div className="text-center py-6">
-            <p className="text-gray-500 mb-4">No flashcard sets found.</p>
-            {currentPage > 1 && (
-              <button
-                onClick={() => handlePageChange(1)}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Go to First Page
-              </button>
-            )}
+            <p className="text-gray-500">No flashcard sets found.</p>
           </div>
         )}
-
-        {/* Pagination Component */}
         {totalPages > 1 && (
-          <div className="mt-8">
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              className="py-4"
-            />
+          <div className="mt-4">
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
           </div>
         )}
       </div>

@@ -185,6 +185,45 @@ export const MCQAPI = {
       throw err;
     }
   },
+  reportMCQ: async (mcqId, comment) => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/mcqsets/report/${mcqId}/`,
+        { comment },
+        { headers: getAuthHeaders() }
+      );
+      return res.data;
+    } catch (err) {
+      console.error("Failed to report MCQ:", err);
+      throw err;
+    }
+  },
+
+  getMyReports: async () => {
+    try {
+      const res = await axios.get(`${BASE_URL}/mcqsets/my-reports/`, {
+        headers: getAuthHeaders(),
+      });
+      return res.data;
+    } catch (err) {
+      console.error("Failed to fetch my reports:", err);
+      throw err;
+    }
+  },
+
+  submitFeedback: async (reportId, satisfied) => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/mcqsets/report-feedback/${reportId}/`,
+        { satisfied },
+        { headers: getAuthHeaders() }
+      );
+      return res.data;
+    } catch (err) {
+      console.error("Failed to submit feedback:", err);
+      throw err;
+    }
+},
 };
 
 export const ScoreAPI = {
@@ -265,4 +304,5 @@ export const ScoreAPI = {
       throw err;
     }
   },
+  
 };

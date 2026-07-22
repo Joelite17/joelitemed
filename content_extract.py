@@ -17,6 +17,7 @@ FILES_TO_COLLECT = [
     "frontend/src/pages/accounts/Login.jsx",
     "frontend/src/App.jsx",
     
+    
     "backend/backend/settings.py",
     "backend/backend/urls.py"
 
@@ -90,6 +91,7 @@ FILES_TO_COLLECT = [
     "frontend/src/pages/resources/MCQDetail.jsx",
     "frontend/src/pages/resources/NoteDetail.jsx",
     "frontend/src/pages/resources/OSCEDetail.jsx",
+    
 
 
     "frontend/src/pages/resources/MCQSet.jsx",
@@ -97,9 +99,25 @@ FILES_TO_COLLECT = [
     "frontend/src/pages/resources/NoteSet.jsx",
     "frontend/src/pages/resources/FlashcardSet.jsx",
     "frontend/src/pages/resources/OSCESet.jsx",
+    "frontend/src/pages/resources/SingleMCQPage.jsx",
+    "frontend/src/pages/accounts/ReviewedReports.jsx",
 
     "frontend/src/context/AccountsContext.jsx",
     "frontend/src/components/DataTable.jsx",
+    "frontend/src/components/FeedItem.jsx",
+    "frontend/src/components/FilterTabs.jsx",
+    "frontend/src/components/Navbar.jsx",
+    "frontend/src/components/PageLoader.jsx",
+    "frontend/src/components/Pagination.jsx",
+    "frontend/src/components/ProfileInfo.jsx",
+    "frontend/src/components/Sidebar.jsx",
+    "frontend/src/components/Spinner.jsx",
+    "frontend/src/components/SubscriptionBlock.jsx",
+    "frontend/src/components/SubscriptionPrompt.jsx",
+    "frontend/src/components/SuccessCheck.jsx",
+
+
+
     "frontend/src/pages/Contest.jsx",
     "frontend/src/pages/ContestTake.jsx",
     "frontend/src/pages/ContestAnswers.jsx",
@@ -108,7 +126,8 @@ FILES_TO_COLLECT = [
 
     "backend/templates/admin/osce_upload_json.html",
     "backend/templates/admin/flashcard_upload_json.html",
-    "backend/templates/admin/note_upload_document.html"
+    "backend/templates/admin/note_upload_document.html",
+    "backend/templates/admin/mcqs/reportedquestion/change_form.html"
 
     
 ]
