@@ -4,34 +4,116 @@
 {% block extrahead %}{{ block.super }}
 <script src="{% url 'admin:jsi18n' %}"></script>
 {{ media }}
+<script>
+  function copyJson() {
+    var textarea = document.getElementById('json_data');
+    var jsonContent = textarea.value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(jsonContent).then(function() {
+        showCopyFeedback('✅ Copied!');
+      }).catch(function() {
+        fallbackCopy(jsonContent);
+      });
+    } else {
+      fallbackCopy(jsonContent);
+    }
+  }
+
+  function fallbackCopy(text) {
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      showCopyFeedback('✅ Copied!');
+    } catch (e) {
+      showCopyFeedback('❌ Copy failed');
+    }
+    document.body.removeChild(textarea);
+  }
+
+  function showCopyFeedback(msg) {
+    var feedback = document.getElementById('copy-feedback');
+    feedback.textContent = msg;
+    feedback.style.opacity = 1;
+    setTimeout(function() {
+      feedback.style.opacity = 0;
+    }, 2000);
+  }
+</script>
 {% endblock %}
 
 {% block extrastyle %}{{ block.super }}
 <style>
+  /* Contained, centered layout on large screens */
+  #content-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  .module {
+    max-width: 100%;
+    width: 100%;
+  }
   * {
     box-sizing: border-box;
   }
   .status-info {
     background: #f8f9fa;
     color: #212529;
-    padding: 12px 16px;
+    padding: 10px 14px;
     border-radius: 6px;
     margin-bottom: 20px;
-    line-height: 1.6;
-    font-size: 0.95rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
   }
   .status-info strong {
     color: #0d6efd;
   }
   .json-container {
     margin: 20px 0;
+    width: 100%;
+  }
+  .json-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .json-header label {
+    font-weight: bold;
+    font-size: 0.95rem;
+  }
+  .json-header .copy-btn {
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .json-header .copy-btn:hover {
+    background: #5a6268;
+  }
+  .json-header .copy-feedback {
+    font-size: 0.85rem;
+    color: #28a745;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
   .json-container textarea {
     width: 100%;
-    min-height: 300px;
+    min-height: 250px;
     font-family: 'Courier New', monospace;
-    font-size: 14px;
-    padding: 12px;
+    font-size: 13px;
+    padding: 10px;
     border: 1px solid #ced4da;
     border-radius: 6px;
     background: #ffffff;
@@ -43,25 +125,26 @@
   .submit-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 16px;
+    width: 100%;
   }
   .submit-row a,
   .submit-row input[type="submit"] {
-    flex: 1 1 auto;
-    padding: 12px 18px;
-    font-size: 1rem;
+    flex: 0 1 auto;
+    padding: 8px 16px;
+    font-size: 0.9rem;
     border-radius: 6px;
     border: none;
     text-decoration: none;
     text-align: center;
-    min-width: 120px;
     cursor: pointer;
     transition: background 0.2s;
     display: inline-block;
     box-sizing: border-box;
     font-weight: 500;
+    white-space: nowrap;
   }
   .submit-row input[type="submit"] {
     background: #79aec8;
@@ -86,6 +169,7 @@
   }
   .sibling-list {
     margin: 20px 0;
+    width: 100%;
   }
   .sibling-list ul {
     list-style: none;
@@ -93,12 +177,12 @@
     margin: 0;
   }
   .sibling-list li {
-    padding: 10px 12px;
+    padding: 8px 12px;
     background: #f1f3f5;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
     border-radius: 4px;
     word-break: break-word;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
   .sibling-list li a {
     font-weight: 600;
@@ -108,34 +192,39 @@
   .sibling-list li a:hover {
     text-decoration: underline;
   }
-  /* Responsive: stack buttons and make textarea larger */
+  /* Responsive: full-width on small screens */
   @media (max-width: 600px) {
+    #content-main {
+      padding: 0 10px;
+      max-width: 100%;
+    }
     .submit-row {
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     .submit-row a,
     .submit-row input[type="submit"] {
       width: 100%;
-      min-width: unset;
-      padding: 14px;
-      font-size: 1.1rem;
-    }
-    .json-container textarea {
-      min-height: 200px;
-      font-size: 15px;
-      padding: 14px;
-    }
-    .status-info {
-      font-size: 0.9rem;
-      padding: 10px 12px;
-    }
-    .sibling-list li {
-      padding: 12px;
+      flex: 1 1 auto;
+      white-space: normal;
+      padding: 10px 14px;
       font-size: 1rem;
     }
+    .json-container textarea {
+      min-height: 180px;
+      font-size: 14px;
+      padding: 12px;
+    }
+    .status-info {
+      font-size: 0.85rem;
+      padding: 8px 12px;
+    }
+    .sibling-list li {
+      padding: 10px;
+      font-size: 0.95rem;
+    }
   }
-  /* Dark mode support */
+  /* Dark mode */
   @media (prefers-color-scheme: dark) {
     .status-info {
       background: #2b3035;
@@ -163,6 +252,13 @@
     .submit-row a.button:hover {
       background: #555;
     }
+    .json-header .copy-btn {
+      background: #495057;
+      color: #eee;
+    }
+    .json-header .copy-btn:hover {
+      background: #5a6268;
+    }
   }
 </style>
 {% endblock %}
@@ -183,7 +279,11 @@
     <form method="post">
       {% csrf_token %}
       <div class="json-container">
-        <label for="json_data"><strong>JSON (edit the question):</strong></label>
+        <div class="json-header">
+          <label for="json_data"><strong>JSON (edit the question):</strong></label>
+          <button type="button" class="copy-btn" onclick="copyJson()">📋 Copy JSON</button>
+          <span id="copy-feedback" class="copy-feedback"></span>
+        </div>
         <textarea id="json_data" name="json_data" rows="20">{{ snapshot_json }}</textarea>
       </div>
       <div class="submit-row">

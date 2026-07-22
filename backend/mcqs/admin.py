@@ -191,7 +191,8 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
             report.status = 'reviewed'
             report.save(update_fields=['status'])
             messages.success(request, f"Report #{report.id} marked as reviewed.")
-        return redirect('admin:mcqs_reportedquestion_change', object_id=report_id)
+        # Redirect to changelist
+        return redirect('admin:mcqs_reportedquestion_changelist')
 
     # ----- Custom JSON edit view -----
     def change_view(self, request, object_id, form_url='', extra_context=None):
@@ -218,10 +219,10 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
                     if not has_true_false and not has_correct:
                         raise ValueError("Missing either 'TRUE'/'FALSE' arrays or 'CORRECT' key")
 
-                    # Pass the specific report to update its snapshot
                     self._update_mcq_from_json(report.mcq, data, request, report=report)
                     messages.success(request, "Question updated successfully. Changes propagated to all siblings.")
-                    return redirect(reverse('admin:mcqs_reportedquestion_change', args=[report.id]))
+                    # Redirect to changelist
+                    return redirect('admin:mcqs_reportedquestion_changelist')
 
                 except json.JSONDecodeError as e:
                     messages.error(request, f"Invalid JSON: {e}")
@@ -351,8 +352,7 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
                 report.snapshot = new_snapshot
                 report.save(update_fields=['snapshot'])
             else:
-                # Fallback (should not happen): try to find one report for this MCQ
-                # but avoid MultipleObjectsReturned by using filter().first()
+                # Fallback: update first found report (should not happen)
                 report_qs = ReportedQuestion.objects.filter(mcq=mcq)
                 if report_qs.exists():
                     first_report = report_qs.first()
@@ -361,7 +361,7 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
 
 
 # ===========================
-# MCQSet Admin
+# MCQSet Admin (with JSON upload)
 # ===========================
 @admin.register(MCQSet)
 class MCQSetAdmin(admin.ModelAdmin):
