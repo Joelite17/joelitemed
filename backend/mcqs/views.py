@@ -185,6 +185,13 @@ from django.shortcuts import get_object_or_404
 from .models import MCQ, ReportedQuestion
 import json
 
+# ... (other imports) ...
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
+from .models import MCQ, ReportedQuestion
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def report_mcq(request, mcq_id):
@@ -192,38 +199,28 @@ def report_mcq(request, mcq_id):
     comment = request.data.get('comment', '')
 
     # Check for pending report
-    pending_report = ReportedQuestion.objects.filter(
-        mcq=mcq,
-        user=request.user,
-        status='pending'
-    ).first()
-    if pending_report:
+    if ReportedQuestion.objects.filter(mcq=mcq, user=request.user, status='pending').exists():
         return Response({'error': 'You already have a pending report for this question.'}, status=400)
 
-    # Archive any existing reviewed/resolved reports for this MCQ and user
-    old_reports = ReportedQuestion.objects.filter(
-        mcq=mcq,
-        user=request.user
-    ).exclude(status='pending')
-    old_reports.update(status='archived')  # Mark them as archived so they don't show in "Reviewed"
+    # Build snapshot in correct format (MCQ or TF)
+    options = mcq.options.all().order_by('key')
+    base = {
+        "QUESTION": mcq.question or "",
+        "OPTION": {opt.key: opt.text for opt in options},
+        "TOPIC_CATEGORY": mcq.topic or "",
+        "EXPLANATION": mcq.explanation or "",
+    }
 
-    # Build snapshot safely
-    try:
-        options = mcq.options.all().order_by('key')
-        snapshot = {
-            str(mcq.id): {
-                "QUESTION": str(mcq.question) if mcq.question else "",
-                "OPTION": {str(opt.key): str(opt.text) for opt in options},
-                "TRUE": [str(opt.key) for opt in options if opt.is_correct],
-                "FALSE": [str(opt.key) for opt in options if not opt.is_correct],
-                "TOPIC_CATEGORY": str(mcq.topic) if mcq.topic else "",
-                "EXPLANATION": str(mcq.explanation) if mcq.explanation else "",
-            }
-        }
-        json.dumps(snapshot)  # validate
-    except Exception as e:
-        return Response({'error': f'Failed to build question snapshot: {str(e)}'}, status=500)
+    if mcq.mcq_type == 'MCQ':
+        correct_opt = options.filter(is_correct=True).first()
+        base["CORRECT"] = correct_opt.key if correct_opt else ''
+    else:  # TF
+        base["TRUE"] = [opt.key for opt in options if opt.is_correct]
+        base["FALSE"] = [opt.key for opt in options if not opt.is_correct]
 
+    snapshot = {str(mcq.id): base}
+
+    # Save report
     report = ReportedQuestion.objects.create(
         mcq=mcq,
         user=request.user,
@@ -231,6 +228,7 @@ def report_mcq(request, mcq_id):
         snapshot=snapshot
     )
     return Response({'message': 'Report submitted successfully.'}, status=201)
+
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated

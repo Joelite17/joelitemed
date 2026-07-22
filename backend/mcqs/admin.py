@@ -191,7 +191,6 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
             report.status = 'reviewed'
             report.save(update_fields=['status'])
             messages.success(request, f"Report #{report.id} marked as reviewed.")
-        # Redirect to changelist
         return redirect('admin:mcqs_reportedquestion_changelist')
 
     # ----- Custom JSON edit view -----
@@ -201,12 +200,10 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
             if not report:
                 return super().change_view(request, object_id, form_url, extra_context)
 
-            # Handle POST (save edited JSON)
             if request.method == 'POST':
                 json_data = request.POST.get('json_data', '')
                 try:
                     data = json.loads(json_data)
-                    # If JSON has a numeric key, unwrap
                     if len(data) == 1:
                         key = next(iter(data))
                         if key.isdigit():
@@ -221,7 +218,6 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
 
                     self._update_mcq_from_json(report.mcq, data, request, report=report)
                     messages.success(request, "Question updated successfully. Changes propagated to all siblings.")
-                    # Redirect to changelist
                     return redirect('admin:mcqs_reportedquestion_changelist')
 
                 except json.JSONDecodeError as e:
@@ -231,7 +227,7 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
                 except Exception as e:
                     messages.error(request, f"Error updating question: {e}")
 
-            # GET – build snapshot from the MCQ (force rebuild to always show current data)
+            # GET – build snapshot with correct format
             snapshot = self._build_snapshot_from_mcq(report.mcq)
             json_str = json.dumps(snapshot, indent=2)
 
@@ -250,7 +246,6 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
                 'has_delete_permission': self.has_delete_permission(request, report),
             }
 
-            # Use custom template; fallback to default admin if missing
             try:
                 get_template('admin/mcqs/reportedquestion/change_form.html')
                 return render(request, 'admin/mcqs/reportedquestion/change_form.html', context)
@@ -262,23 +257,30 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
             logger.error(f"Error in ReportedQuestionAdmin.change_view: {e}", exc_info=True)
             return super().change_view(request, object_id, form_url, extra_context)
 
-    # ----- Helper methods -----
+    # ===== Helper methods =====
     def _build_snapshot_from_mcq(self, mcq):
+        """Build snapshot in the correct format based on mcq_type."""
         if not mcq:
             return {}
-        return {
-            str(mcq.id): {
-                "QUESTION": mcq.question or "",
-                "OPTION": {
-                    opt.key: opt.text
-                    for opt in mcq.options.order_by('key')
-                },
-                "TRUE": [opt.key for opt in mcq.options.filter(is_correct=True).order_by('key')],
-                "FALSE": [opt.key for opt in mcq.options.filter(is_correct=False).order_by('key')],
-                "TOPIC_CATEGORY": mcq.topic or "",
-                "EXPLANATION": mcq.explanation or "",
-            }
+
+        base = {
+            "QUESTION": mcq.question or "",
+            "OPTION": {
+                opt.key: opt.text
+                for opt in mcq.options.order_by('key')
+            },
+            "TOPIC_CATEGORY": mcq.topic or "",
+            "EXPLANATION": mcq.explanation or "",
         }
+
+        if mcq.mcq_type == 'MCQ':
+            correct_opt = mcq.options.filter(is_correct=True).first()
+            base["CORRECT"] = correct_opt.key if correct_opt else ''
+            return {str(mcq.id): base}
+        else:  # TF
+            base["TRUE"] = [opt.key for opt in mcq.options.filter(is_correct=True).order_by('key')]
+            base["FALSE"] = [opt.key for opt in mcq.options.filter(is_correct=False).order_by('key')]
+            return {str(mcq.id): base}
 
     def _update_mcq_from_json(self, mcq, data, request, report=None):
         with transaction.atomic():
@@ -346,18 +348,18 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
 
                 messages.info(request, f"Updated {len(siblings)} sibling question(s).")
 
-            # Update the snapshot of the specific report
+            # Update snapshot for this specific report
             if report:
                 new_snapshot = self._build_snapshot_from_mcq(mcq)
                 report.snapshot = new_snapshot
                 report.save(update_fields=['snapshot'])
             else:
-                # Fallback: update first found report (should not happen)
                 report_qs = ReportedQuestion.objects.filter(mcq=mcq)
                 if report_qs.exists():
                     first_report = report_qs.first()
                     first_report.snapshot = self._build_snapshot_from_mcq(mcq)
                     first_report.save(update_fields=['snapshot'])
+
 
 
 # ===========================
