@@ -41,6 +41,30 @@ export default function MCQDetailPage() {
   const [pendingNextBatch, setPendingNextBatch] = useState(false);
   const [pendingRestart, setPendingRestart] = useState(false);
 
+  // ---- Touch swipe support ----
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const containerRef = useRef(null);
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const deltaX = touchStartX.current - touchEndX.current;
+    // If swipe is horizontal and significant (> 50px)
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe left -> next question
+        handleNext();
+      } else {
+        // Swipe right -> previous question
+        handleBack();
+      }
+    }
+  };
+
   const mounted = useRef(true);
   useEffect(() => {
     mounted.current = true;
@@ -190,6 +214,7 @@ export default function MCQDetailPage() {
   };
 
   const handleNext = () => {
+    if (mode === "result") return;
     if (current < questions.length - 1) {
       setCurrent(current + 1);
       setShowExplanation(false);
@@ -199,6 +224,7 @@ export default function MCQDetailPage() {
   };
 
   const handleBack = () => {
+    if (mode === "result") return;
     if (current > 0) {
       setCurrent(current - 1);
       setShowExplanation(false);
@@ -419,7 +445,12 @@ export default function MCQDetailPage() {
       <SuccessCheck show={showSuccess} message={successMessage} onClose={handleSuccessClose} />
 
       {/* Main content */}
-      <div className="flex flex-col items-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4">
+      <div
+        ref={containerRef}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="flex flex-col items-center w-full min-h-[400px] bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4"
+      >
         {mode !== "result" && (
           <div className="flex items-center justify-between w-full lg:w-4/6 mb-4">
             <button
