@@ -3,7 +3,7 @@ import logging
 from django.contrib import admin, messages
 from django import forms
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db import transaction
 from django.urls import path, reverse
 from django.utils import timezone
@@ -115,8 +115,7 @@ class MCQAdmin(admin.ModelAdmin):
                     messages.info(request, f"There are {siblings.count()} sibling question(s) with the same content. They will be updated automatically.")
                 else:
                     messages.info(request, "No sibling questions found.")
-        return redirect(request.path)   # stay on the same page after saving
-        # return super().change_view(request, object_id, form_url, extra_context)
+        return super().change_view(request, object_id, form_url, extra_context)
 
 
 # ===========================
@@ -219,7 +218,7 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
 
                     self._update_mcq_from_json(report.mcq, data, request, report=report)
                     messages.success(request, "Question updated successfully. Changes propagated to all siblings.")
-                    return redirect('admin:mcqs_reportedquestion_changelist')
+                    return redirect(request.path)
 
                 except json.JSONDecodeError as e:
                     messages.error(request, f"Invalid JSON: {e}")
@@ -362,13 +361,12 @@ class ReportedQuestionAdmin(admin.ModelAdmin):
                     first_report.save(update_fields=['snapshot'])
 
 
-
 # ===========================
-# MCQSet Admin (with JSON upload)
+# MCQSet Admin (with JSON upload and download)
 # ===========================
 @admin.register(MCQSet)
 class MCQSetAdmin(admin.ModelAdmin):
-    list_display = ['title', 'created_at', 'mcq_count']
+    list_display = ['title', 'created_at', 'mcq_count', 'download_button']
     search_fields = ['title']
     list_filter = ['created_at']
     change_list_template = "admin/mcqs/mcqset/change_list.html"
@@ -376,6 +374,15 @@ class MCQSetAdmin(admin.ModelAdmin):
     def mcq_count(self, obj):
         return obj.mcqs.count()
     mcq_count.short_description = "Number of Questions"
+
+    def download_button(self, obj):
+        url = reverse('admin:mcqset_download_json', args=[obj.id])
+        return format_html(
+            '<a href="{}" class="button" style="background: #28a745; color: white; padding: 4px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; white-space: nowrap;">⬇ Download Set</a>',
+            url
+        )
+    download_button.short_description = "Download"
+    download_button.allow_tags = True
 
     def get_urls(self):
         urls = super().get_urls()
@@ -385,8 +392,73 @@ class MCQSetAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.upload_json),
                 name='mcqs_mcqset_upload_json',
             ),
+            path(
+                'download-json/<int:set_id>/',
+                self.admin_site.admin_view(self.download_set_json),
+                name='mcqset_download_json',
+            ),
         ]
         return custom_urls + urls
+
+    def download_set_json(self, request, set_id):
+        """Download all MCQs in a set as a single JSON file in upload format."""
+        try:
+            mcq_set = MCQSet.objects.get(id=set_id)
+        except MCQSet.DoesNotExist:
+            return HttpResponse("MCQ Set not found.", status=404)
+
+        # Build META_DATA
+        first_mcq = mcq_set.mcqs.first()
+        if first_mcq:
+            set_type = "TRUE FALSE" if first_mcq.mcq_type == 'TF' else "MCQ"
+        else:
+            set_type = "MCQ"
+
+        meta_data = {
+            "META_DATA": {
+                "COURSE": mcq_set.course_mode.upper(),
+                "TITLE": mcq_set.title,
+                "TYPE": set_type
+            }
+        }
+        
+        # Build questions with sequential numbering
+        questions = []
+        question_number = 1
+        for mcq in mcq_set.mcqs.all().order_by('id'):
+            base = {
+                "QUESTION": mcq.question or "",
+                "OPTION": {
+                    opt.key: opt.text
+                    for opt in mcq.options.order_by('key')
+                },
+                "TOPIC_CATEGORY": mcq.topic or "",
+                "EXPLANATION": mcq.explanation or "",
+            }
+
+            if mcq.mcq_type == 'MCQ':
+                correct_opt = mcq.options.filter(is_correct=True).first()
+                base["CORRECT"] = correct_opt.key if correct_opt else ''
+            else:  # TF
+                true_keys = [opt.key for opt in mcq.options.filter(is_correct=True).order_by('key')]
+                false_keys = [opt.key for opt in mcq.options.filter(is_correct=False).order_by('key')]
+                base["TRUE"] = true_keys
+                base["FALSE"] = false_keys
+
+            questions.append({str(question_number): base})
+            question_number += 1
+
+        # Combine: meta data first, then questions
+        output_data = [meta_data] + questions
+
+        # Return as JSON download with compact arrays
+        response = HttpResponse(
+            json.dumps(output_data, indent=2, separators=(',', ': ')),
+            content_type='application/json'
+        )
+        filename = f"{mcq_set.title.replace(' ', '_')}.json"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
