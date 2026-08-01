@@ -410,9 +410,9 @@ class MCQSetAdmin(admin.ModelAdmin):
         # Build META_DATA
         first_mcq = mcq_set.mcqs.first()
         if first_mcq:
-            set_type = "TRUE FALSE" if first_mcq.mcq_type == 'TF' else "MCQ"
+            set_type = "TRUE FALSE" if first_mcq.mcq_type == 'TF' else "BEST OPTION"
         else:
-            set_type = "MCQ"
+            set_type = "BEST OPTION"
 
         meta_data = {
             "META_DATA": {
